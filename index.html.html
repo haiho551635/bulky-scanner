@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="AHM Scanner">
+<title>Ahamove Scanner</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#1a1a1a}
+#app{max-width:480px;margin:0 auto;min-height:100vh;background:#f5f5f5}
+
+/* TOPBAR */
+.topbar{background:#FF6B00;padding:16px;padding-top:max(16px,env(safe-area-inset-top));display:flex;align-items:center;gap:12px}
+.topbar-icon{width:40px;height:40px;background:rgba(255,255,255,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center}
+.topbar-icon svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.topbar h1{color:#fff;font-size:17px;font-weight:600;line-height:1.2}
+.topbar p{color:rgba(255,255,255,0.8);font-size:12px;margin-top:1px}
+
+/* STATUS BAR */
+#statusbar{background:#fff3e0;border-bottom:1px solid #ffe0b2;padding:8px 16px;font-size:12px;color:#e65100;display:flex;align-items:center;gap:6px}
+#statusbar.ok{background:#e8f5e9;border-color:#c8e6c9;color:#2e7d32}
+#statusbar.err{background:#ffebee;border-color:#ffcdd2;color:#c62828}
+
+/* BODY */
+.body{padding:12px}
+
+/* CARD */
+.card{background:#fff;border-radius:16px;overflow:hidden;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+
+/* CAMERA */
+#vcam{width:100%;aspect-ratio:4/3;background:#111;display:none;position:relative}
+#video{width:100%;height:100%;object-fit:cover;display:block}
+.overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.frame{width:200px;height:200px;position:relative}
+.corner{position:absolute;width:28px;height:28px;border-color:#FF6B00;border-style:solid}
+.tl{top:0;left:0;border-width:3px 0 0 3px;border-radius:3px 0 0 0}
+.tr{top:0;right:0;border-width:3px 3px 0 0;border-radius:0 3px 0 0}
+.bl{bottom:0;left:0;border-width:0 0 3px 3px;border-radius:0 0 0 3px}
+.br{bottom:0;right:0;border-width:0 3px 3px 0;border-radius:0 0 3px 0}
+.scanline{position:absolute;left:5%;right:5%;height:2px;background:#FF6B00;animation:sl 2s ease-in-out infinite}
+@keyframes sl{0%,100%{top:5%}50%{top:90%}}
+.camlabel{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:12px;color:rgba(255,255,255,0.7)}
+
+/* CONTROLS */
+.btnrow{display:flex;gap:8px;padding:12px}
+.btn-main{flex:1;background:#FF6B00;color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s}
+.btn-main:active{background:#e65100}
+.btn-main.active{background:#c45200}
+.btn-sec{background:#f5f5f5;border:1px solid #e0e0e0;color:#333;border-radius:12px;padding:13px 16px;font-size:15px;cursor:pointer;transition:background .15s}
+.btn-sec:active{background:#e8e8e8}
+.manrow{display:flex;gap:8px;padding:0 12px 12px}
+#inp{flex:1;padding:12px 14px;font-size:15px;border:1.5px solid #e0e0e0;border-radius:12px;background:#fff;color:#1a1a1a;letter-spacing:1.5px;text-transform:uppercase;outline:none;transition:border-color .15s}
+#inp:focus{border-color:#FF6B00}
+.btn-find{background:#FF6B00;border:none;color:#fff;border-radius:12px;padding:12px 18px;font-size:15px;cursor:pointer;font-weight:600}
+.btn-find:active{background:#e65100}
+.hint{font-size:12px;color:#888;text-align:center;padding:0 12px 12px;line-height:1.5}
+
+/* LOADING */
+#loading{display:none;text-align:center;padding:20px;background:#fff;border-radius:16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+.spinner{width:32px;height:32px;border:3px solid #f0f0f0;border-top-color:#FF6B00;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loading p{font-size:13px;color:#888}
+
+/* RESULT CARD */
+#result{display:none;margin-bottom:12px}
+.rcard{border-radius:16px;padding:16px;border-left:4px solid;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+.rcard.ok{background:#fff;border-color:#43a047}
+.rcard.warn{background:#fff;border-color:#fb8c00}
+.rcard.fail{background:#fff;border-color:#e53935}
+.rcard.notfound{background:#fff;border-color:#bdbdbd}
+
+.r-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:8px}
+.r-code{font-size:20px;font-weight:700;letter-spacing:2px;color:#1a1a1a}
+.badge{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
+.badge.ok{background:#e8f5e9;color:#2e7d32}
+.badge.warn{background:#fff3e0;color:#e65100}
+.badge.fail{background:#ffebee;color:#c62828}
+.badge.notfound{background:#f5f5f5;color:#757575}
+
+.r-rows{border-top:1px solid #f0f0f0;margin-top:8px}
+.r-row{display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid #f9f9f9;gap:8px}
+.r-row:last-child{border-bottom:none}
+.rl{font-size:12px;color:#888;flex-shrink:0;min-width:80px}
+.rv{font-size:13px;color:#1a1a1a;text-align:right;font-weight:500;word-break:break-word;max-width:60%}
+
+/* HISTORY */
+#hist{background:#fff;border-radius:16px;padding:12px;box-shadow:0 1px 3px rgba(0,0,0,0.08);display:none;margin-bottom:12px}
+.h-title{font-size:12px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.hitem{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;cursor:pointer;transition:background .1s}
+.hitem:active{background:#f5f5f5}
+.hcopy{background:#f0f0f0;border:none;border-radius:8px;padding:4px 10px;font-size:11px;color:#555;cursor:pointer;flex-shrink:0}
+.hcopy:active{background:#e0e0e0}
+.copied{background:#e8f5e9;color:#2e7d32}
+.hdot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.hdot.ok{background:#43a047}
+.hdot.warn{background:#fb8c00}
+.hdot.fail,.hdot.notfound{background:#bdbdbd}
+.hcode{font-size:14px;font-weight:600;flex:1;letter-spacing:0.5px}
+.hst{font-size:11px;color:#888;text-align:right}
+.htime{font-size:10px;color:#bbb}
+
+svg.icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-icon">
+      <svg viewBox="0 0 24 24"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/><rect x="17" y="14" width="4" height="4" rx="0.5"/><line x1="14" y1="14" x2="14" y2="14.01"/><line x1="14" y1="18" x2="14" y2="22"/><line x1="18" y1="14" x2="22" y2="14"/></svg>
+    </div>
+    <div>
+      <h1>Ahamove Scanner</h1>
+      <p>Scan mã đơn — kiểm tra trạng thái bulky</p>
+    </div>
+  </div>
+
+  <div id="statusbar">
+    <svg class="icon" style="width:14px;height:14px" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <span id="statustext">Đang kết nối Google Sheet...</span>
+  </div>
+
+  <div class="body">
+    <div class="card">
+      <div id="vcam">
+        <video id="video" autoplay playsinline muted></video>
+        <div class="overlay">
+          <div class="frame">
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+            <div class="scanline"></div>
+          </div>
+        </div>
+        <div class="camlabel">Đưa mã vạch vào khung đỏ cam</div>
+      </div>
+      <div class="btnrow">
+        <button class="btn-main" id="btnCam" onclick="toggleCam()">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+          Mở camera scan
+        </button>
+      </div>
+      <div class="manrow">
+        <input id="inp" type="text" placeholder="NHẬP MÃ TAY (VD: GYTUC6QM)" maxlength="20"
+          oninput="this.value=this.value.toUpperCase()"
+          onkeydown="if(event.key==='Enter'){this.blur();doSearch(this.value)}">
+        <button class="btn-find" onclick="doSearch(document.getElementById('inp').value)">
+          <svg class="icon" style="stroke:#fff" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+      </div>
+      <p class="hint" id="hint">Dữ liệu lấy từ Google Sheet bulky của bạn</p>
+    </div>
+
+    <div id="loading">
+      <div class="spinner"></div>
+      <p>Đang tìm kiếm...</p>
+    </div>
+
+    <div id="result"></div>
+    <div id="hist"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+<script>
+// ✅ URL MỚI — đã fix doGet đọc đúng header dòng 2
+const API_URL = "https://script.google.com/macros/s/AKfycbzO9kyqnuOHmujx2FkciLKGbbtD8Oyb6KXdCKC8Tu6hcHJJBfZ4TKUc22dZI2LrTRJ3jg/exec";
+
+let sheetData = null;
+let camStream = null, scanning = false, scanTimer = null;
+let history = [];
+
+// ── Load Google Sheet ──
+async function loadSheet() {
+  setStatus('loading', 'Đang tải dữ liệu từ Google Sheet...');
+  try {
+    const r = await fetch(API_URL);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    sheetData = await r.json();
+    setStatus('ok', `Đã tải ${sheetData.length.toLocaleString('vi-VN')} đơn hàng — Sẵn sàng scan`);
+    document.getElementById('hint').textContent = `${sheetData.length.toLocaleString('vi-VN')} đơn trong hệ thống. Scan hoặc nhập mã bên dưới.`;
+  } catch(e) {
+    setStatus('err', 'Không tải được dữ liệu. Kiểm tra kết nối internet.');
+    document.getElementById('hint').textContent = 'Lỗi kết nối. Thử lại sau.';
+  }
+}
+
+function setStatus(type, msg) {
+  const bar = document.getElementById('statusbar');
+  const txt = document.getElementById('statustext');
+  bar.className = type === 'ok' ? 'ok' : type === 'err' ? 'err' : '';
+  txt.textContent = msg;
+}
+
+// ── Search ──
+function doSearch(code) {
+  code = (code || '').trim().toUpperCase();
+  if (!code) { document.getElementById('hint').textContent = 'Vui lòng nhập mã đơn hàng'; return; }
+  if (!sheetData) { alert('Dữ liệu chưa tải xong. Vui lòng đợi hoặc kiểm tra kết nối.'); return; }
+
+  document.getElementById('inp').value = '';
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('result').style.display = 'none';
+
+  setTimeout(() => {
+    document.getElementById('loading').style.display = 'none';
+    // ✅ tìm theo key tracking_number (đúng với JSON mới)
+    const row = sheetData.find(r => (r.tracking_number || '').toString().toUpperCase() === code);
+    renderResult(code, row);
+  }, 250);
+}
+
+// ── Render result ──
+// ✅ Dùng đúng key từ JSON: tracking_number, dropoff, wh, district, ward, cod, weight, address_seller, mobile_seller, request_time, area_code, dcc, kho
+function fmt(val) { return val && val !== '0' && val !== 0 ? val : '—'; }
+
+function fmtWeight(val) {
+  const n = Number(val);
+  return n && n > 0 ? n.toFixed(3) + ' kg' : '—';
+}
+
+function fmtTime(val) {
+  if (!val) return '—';
+  try {
+    const d = new Date(val);
+    if (isNaN(d)) return String(val);
+    const dd = String(d.getDate()).padStart(2,'0');
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const yyyy = d.getFullYear();
+    const hh = String(d.getHours()).padStart(2,'0');
+    const min = String(d.getMinutes()).padStart(2,'0');
+    return `${dd}/${mm}/${yyyy} ${hh}:${min}`;
+  } catch(e) { return String(val); }
+}
+
+function renderResult(code, row) {
+  const area = document.getElementById('result');
+  area.style.display = 'block';
+
+  if (!row) {
+    area.innerHTML = `
+      <div class="rcard notfound">
+        <div class="r-header">
+          <div class="r-code">${code}</div>
+          <span class="badge notfound">Không tìm thấy</span>
+        </div>
+        <div class="r-rows">
+          <div class="r-row"><span class="rl">Kết quả</span><span class="rv" style="color:#c62828">Mã đơn không có trong dữ liệu hiện tại</span></div>
+          <div class="r-row"><span class="rl">Gợi ý</span><span class="rv">Kiểm tra lại mã hoặc chờ đồng bộ dữ liệu (30 phút/lần)</span></div>
+        </div>
+      </div>`;
+    addHist(code, 'notfound', 'Không tìm thấy');
+    return;
+  }
+
+  // ✅ Đơn tìm thấy — dùng đúng key JSON
+  area.innerHTML = `
+    <div class="rcard ok">
+      <div class="r-header">
+        <div class="r-code">${code}</div>
+        <span class="badge ok">Có trong hệ thống</span>
+      </div>
+      <div class="r-rows">
+        <div class="r-row"><span class="rl">Thời gian</span><span class="rv">${fmtTime(row.request_time)}</span></div>
+        <div class="r-row"><span class="rl">Kho</span><span class="rv">${fmt(row.wh)}</span></div>
+        <div class="r-row"><span class="rl">Quận</span><span class="rv">${fmt(row.district)}</span></div>
+        <div class="r-row"><span class="rl">Phường</span><span class="rv">${fmt(row.ward)}</span></div>
+        <div class="r-row"><span class="rl">Địa chỉ giao</span><span class="rv">${fmt(row.dropoff)}</span></div>
+        <div class="r-row"><span class="rl">Người gửi</span><span class="rv">${fmt(row.address_seller)}</span></div>
+        <div class="r-row"><span class="rl">SĐT gửi</span><span class="rv">${fmt(row.mobile_seller)}</span></div>
+        <div class="r-row"><span class="rl">Cân nặng</span><span class="rv">${fmtWeight(row.weight)}</span></div>
+        <div class="r-row"><span class="rl">Area Code</span><span class="rv">${fmt(row.area_code)}</span></div>
+        <div class="r-row"><span class="rl">DCC</span><span class="rv">${fmt(row.dcc)}</span></div>
+        <div class="r-row"><span class="rl">KHO</span><span class="rv">${fmt(row.kho)}</span></div>
+      </div>
+    </div>`;
+
+  addHist(code, 'ok', 'Có trong hệ thống');
+}
+
+// ── History ──
+function addHist(code, cls, label) {
+  const now = new Date();
+  const time = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+  history.unshift({ code, cls, label, time });
+  
+  renderHist();
+}
+
+function deleteHist(i) {
+  history.splice(i, 1);
+  renderHist();
+}
+
+function renderHist() {
+  const el = document.getElementById('hist');
+  if (!history.length) { el.style.display = 'none'; return; }
+  el.style.display = 'block';
+
+  // Đếm số lần xuất hiện mỗi mã
+  const countMap = {};
+  history.forEach(h => { countMap[h.code] = (countMap[h.code] || 0) + 1; });
+  const dupCodes = new Set(Object.keys(countMap).filter(c => countMap[c] > 1));
+  const dupCount = dupCodes.size;
+
+  const dupWarning = dupCount > 0
+    ? `<div style="background:#fff3e0;border:1px solid #ffcc02;border-radius:8px;padding:7px 10px;margin-bottom:8px;font-size:12px;color:#e65100;display:flex;align-items:center;gap:6px">
+        <svg style="width:14px;height:14px;flex-shrink:0" fill="none" stroke="#e65100" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Phát hiện <b style="margin:0 2px">${dupCount}</b> mã trùng — kiểm tra lại bên dưới
+       </div>`
+    : '';
+
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div class="h-title" style="margin-bottom:0">Lịch sử scan <span style="background:#FF6B00;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:6px;vertical-align:middle">${history.length} đơn</span></div>
+      <button id="btnCopyAll" class="hcopy" onclick="copyAll()">Copy tất cả</button>
+    </div>
+    ${dupWarning}` +
+    history.map((h,i) => {
+      const isDup = dupCodes.has(h.code);
+      const rowBg = isDup ? 'background:#fff8e1;border-radius:8px;border:1px solid #ffe082;' : '';
+      const dupBadge = isDup ? `<span style="background:#ff6b00;color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:4px">TRÙNG</span>` : '';
+      return `
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;${rowBg}padding:${isDup?'3px 4px':'0'}">
+        <div class="hitem" style="flex:1;margin-bottom:0" onclick="doSearch('${h.code}')">
+          <div class="hdot ${h.cls}"></div>
+          <span class="hcode">${h.code}</span>${dupBadge}
+          <span class="hst">${h.label}</span>
+          <span class="htime">${h.time}</span>
+        </div>
+        <button class="hcopy" id="cp${i}" onclick="copyCode('${h.code}','cp${i}')">Copy</button>
+        <button class="hcopy" style="background:#ffebee;color:#c62828" onclick="deleteHist(${i})">Xóa</button>
+      </div>`;
+    }).join('');
+}
+
+// ── Camera ──
+async function toggleCam() {
+  if (scanning) { stopCam(); return; }
+  const btn = document.getElementById('btnCam');
+  try {
+    camStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 } },
+      audio: false
+    });
+    const v = document.getElementById('video');
+    v.srcObject = camStream;
+    document.getElementById('vcam').style.display = 'block';
+    btn.innerHTML = `<svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Dừng camera`;
+    btn.classList.add('active');
+    scanning = true;
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    scanTimer = setInterval(() => {
+      if (v.readyState === v.HAVE_ENOUGH_DATA) {
+        canvas.width = v.videoWidth;
+        canvas.height = v.videoHeight;
+        ctx.drawImage(v, 0, 0);
+        const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const qr = jsQR(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' });
+        if (qr && qr.data && qr.data.trim()) {
+          const code = qr.data.trim().toUpperCase();
+          stopCam();
+          doSearch(code);
+        }
+      }
+    }, 250);
+  } catch(e) {
+    document.getElementById('hint').textContent = 'Không truy cập được camera. Dùng nhập tay bên dưới.';
+  }
+}
+
+function stopCam() {
+  if (camStream) { camStream.getTracks().forEach(t => t.stop()); camStream = null; }
+  clearInterval(scanTimer); scanning = false;
+  document.getElementById('vcam').style.display = 'none';
+  const btn = document.getElementById('btnCam');
+  btn.innerHTML = `<svg class="icon" viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg> Mở camera scan`;
+  btn.classList.remove('active');
+}
+
+// ── Copy ──
+function copyCode(code, btnId) {
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = document.getElementById(btnId);
+    if (btn) { btn.textContent = 'Đã copy!'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500); }
+  }).catch(() => {
+    const el = document.createElement('textarea');
+    el.value = code; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
+    const btn = document.getElementById(btnId);
+    if (btn) { btn.textContent = 'Đã copy!'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500); }
+  });
+}
+
+function copyAll() {
+  const codes = history.map(h => h.code).join('\n');
+  navigator.clipboard.writeText(codes).catch(() => {
+    const el = document.createElement('textarea');
+    el.value = codes; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
+  });
+  const btn = document.getElementById('btnCopyAll');
+  if (btn) { btn.textContent = 'Đã copy tất cả!'; setTimeout(() => { btn.textContent = 'Copy tất cả'; }, 1500); }
+}
+
+// ── Init ──
+loadSheet();
+</script>
+</body>
+</html>
