@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AURA — Ứng dụng tài xế</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f4f4f4; }
+:root {
+  --brand: #1D9E75; --brand-light: #E1F5EE; --brand-dark: #085041;
+  --danger: #E24B4A; --danger-light: #FCEBEB;
+  --warn: #BA7517; --warn-light: #FAEEDA;
+  --gray: #f4f4f4; --border: #e0e0e0;
+  --text: #1a1a1a; --text-sub: #666;
+}
+.app { max-width: 430px; margin: 0 auto; min-height: 100vh; background: white; display: flex; flex-direction: column; position: relative; }
+.screen { display: none; flex-direction: column; flex: 1; min-height: 100vh; }
+.screen.active { display: flex; }
+
+/* LOGIN */
+.login-header { background: var(--brand); padding: 3rem 1.5rem 2.5rem; text-align: center; }
+.brand-name { font-size: 28px; font-weight: 700; color: white; letter-spacing: 0.1em; margin-top: 12px; }
+.brand-sub { font-size: 14px; color: rgba(255,255,255,0.85); margin-top: 6px; }
+.login-body { padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; flex: 1; }
+.field label { font-size: 13px; color: var(--text-sub); display: block; margin-bottom: 6px; font-weight: 500; }
+.field input { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 15px; outline: none; color: var(--text); }
+.field input:focus { border-color: var(--brand); }
+.btn-primary { width: 100%; padding: 14px; background: var(--brand); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-primary:active { opacity: 0.85; transform: scale(0.98); }
+.error-msg { background: var(--danger-light); color: var(--danger); padding: 10px 14px; border-radius: 8px; font-size: 13px; display: none; }
+
+/* TOPBAR */
+.topbar { background: var(--brand); padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; }
+.topbar-left .topbar-title { font-size: 16px; font-weight: 600; color: white; }
+.topbar-left .topbar-sub { font-size: 12px; color: rgba(255,255,255,0.8); margin-top: 2px; }
+.topbar-right { color: white; font-size: 22px; cursor: pointer; padding: 4px; }
+
+/* HOME */
+.home-body { padding: 1rem; flex: 1; background: var(--gray); }
+.section-label { font-size: 12px; color: var(--text-sub); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; }
+.order-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.25rem; cursor: pointer; margin-bottom: 10px; }
+.order-card:active { background: #f9f9f9; }
+.order-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.order-id { font-size: 15px; font-weight: 600; color: var(--text); }
+.badge { font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 600; }
+.badge-active { background: var(--brand-light); color: var(--brand-dark); }
+.badge-done { background: #EAF3DE; color: #27500A; }
+.badge-pending { background: var(--warn-light); color: var(--warn); }
+.order-meta { font-size: 13px; color: var(--text-sub); display: flex; gap: 14px; }
+.progress-bar { height: 5px; background: #eee; border-radius: 3px; margin-top: 12px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--brand); border-radius: 3px; transition: width 0.3s; }
+.empty-state { text-align: center; padding: 4rem 1rem; color: var(--text-sub); }
+.empty-state i { font-size: 48px; color: #ccc; display: block; margin-bottom: 12px; }
+
+/* DETAIL */
+.detail-header { background: var(--brand); padding: 1rem 1.25rem; }
+.back-btn { color: white; font-size: 13px; display: flex; align-items: center; gap: 4px; cursor: pointer; margin-bottom: 10px; opacity: 0.9; }
+.detail-title { font-size: 18px; font-weight: 700; color: white; }
+.detail-sub { font-size: 13px; color: rgba(255,255,255,0.8); margin-top: 4px; }
+.detail-body { padding: 1rem; display: flex; flex-direction: column; gap: 10px; flex: 1; background: var(--gray); }
+.stop-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 1rem; }
+.stop-card.done-card { border-color: #639922; border-left: 4px solid #639922; }
+.stop-card.fail-card { border-color: var(--danger); border-left: 4px solid var(--danger); }
+.stop-card.active-card { border-color: var(--brand); border-left: 4px solid var(--brand); }
+.stop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.stop-label { font-size: 12px; color: var(--text-sub); font-weight: 600; display: flex; align-items: center; gap: 4px; }
+.stop-name { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.stop-addr { font-size: 13px; color: var(--text-sub); }
+.stop-actions { display: flex; gap: 8px; margin-top: 14px; }
+.btn-success { flex: 1; padding: 11px; background: var(--brand-light); color: var(--brand-dark); border: 1px solid #9FE1CB; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.btn-fail { flex: 1; padding: 11px; background: var(--danger-light); color: #791F1F; border: 1px solid #F7C1C1; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.status-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.dot-done { background: #639922; } .dot-fail { background: var(--danger); }
+.dot-pending { background: #ccc; } .dot-active { background: var(--brand); }
+.finish-btn { margin: 0 1rem 1.5rem; padding: 15px; background: var(--brand); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+/* MODAL */
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 200; background: rgba(0,0,0,0.5); align-items: flex-end; justify-content: center; }
+.modal-sheet { background: white; border-radius: 20px 20px 0 0; padding: 1.5rem; width: 100%; max-width: 430px; }
+.modal-handle { width: 40px; height: 4px; background: #ddd; border-radius: 2px; margin: 0 auto 1.25rem; }
+.modal-title { font-size: 17px; font-weight: 700; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px; }
+.field select { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 15px; outline: none; color: var(--text); background: white; }
+.photo-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 2rem; text-align: center; cursor: pointer; color: var(--text-sub); font-size: 14px; margin: 12px 0; }
+.photo-zone i { font-size: 32px; display: block; margin-bottom: 8px; color: #aaa; }
+.photo-preview { width: 100%; border-radius: 12px; margin: 12px 0; display: none; max-height: 200px; object-fit: cover; }
+.modal-actions { display: flex; gap: 10px; margin-top: 4px; }
+.btn-cancel { flex: 1; padding: 12px; background: #f4f4f4; border: none; border-radius: 10px; font-size: 15px; cursor: pointer; color: var(--text); }
+.btn-confirm { flex: 1; padding: 12px; background: var(--danger); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
+
+/* LOADING */
+.loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 300; background: rgba(255,255,255,0.85); align-items: center; justify-content: center; flex-direction: column; gap: 12px; }
+.spinner { width: 36px; height: 36px; border: 3px solid #eee; border-top-color: var(--brand); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 14px; color: var(--text-sub); }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- LOADING -->
+  <div class="loading-overlay" id="loading">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loading-text">Đang xử lý...</div>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="screen active" id="screen-login">
+    <div class="login-header">
+      <i class="ti ti-truck-delivery" style="font-size:52px;color:white;opacity:0.95;display:block;margin:0 auto"></i>
+      <div class="brand-name">AURA</div>
+      <div class="brand-sub">Ứng dụng tài xế</div>
+    </div>
+    <div class="login-body">
+      <div id="login-error" class="error-msg"></div>
+      <div class="field">
+        <label>Mã tài xế</label>
+        <input type="text" id="inp-code" placeholder="VD: TX001" autocomplete="off" />
+      </div>
+      <div style="flex:1"></div>
+      <button class="btn-primary" onclick="doLogin()">
+        <i class="ti ti-login"></i> Đăng nhập
+      </button>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div class="screen" id="screen-home">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-title" id="home-name">Tài xế</div>
+        <div class="topbar-sub" id="home-date"></div>
+      </div>
+      <i class="ti ti-logout topbar-right" onclick="doLogout()" title="Đăng xuất"></i>
+    </div>
+    <div class="home-body">
+      <div class="section-label">Đơn hàng hôm nay</div>
+      <div id="order-list"></div>
+    </div>
+  </div>
+
+  <!-- ORDER DETAIL -->
+  <div class="screen" id="screen-detail">
+    <div class="detail-header">
+      <div class="back-btn" onclick="goHome()"><i class="ti ti-arrow-left"></i> Quay lại</div>
+      <div class="detail-title" id="detail-id"></div>
+      <div class="detail-sub" id="detail-stops-sum"></div>
+    </div>
+    <div class="detail-body" id="detail-body"></div>
+    <button class="finish-btn" id="finish-btn" onclick="finishOrder()" style="display:none">
+      <i class="ti ti-flag-check"></i> Kết thúc đơn
+    </button>
+  </div>
+
+  <!-- MODAL THẤT BẠI -->
+  <div id="fail-modal" class="modal-overlay">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title"><i class="ti ti-alert-circle" style="color:var(--danger)"></i> Giao thất bại</div>
+      <div class="field" style="margin-bottom:4px">
+        <label>Lý do thất bại</label>
+        <select id="fail-reason">
+          <option>Khách không có nhà</option>
+          <option>Khách hủy</option>
+          <option>Sai địa chỉ</option>
+          <option>Khách không nhận</option>
+          <option>Khác</option>
+        </select>
+      </div>
+      <div class="photo-zone" id="photo-zone" onclick="triggerPhoto()">
+        <i class="ti ti-camera"></i>
+        Chụp ảnh bằng chứng
+      </div>
+      <img id="photo-preview" class="photo-preview" />
+      <input type="file" id="file-inp" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto(this)" />
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal()">Hủy</button>
+        <button class="btn-confirm" onclick="confirmFail()">Xác nhận thất bại</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbxwuqIuNnPbL5PAoOF3opMT2gltYG6a1NKHY2ovqHj4t0XbHQmNOtwn2EcAGRe4wnvMaw/exec';
+
+let state = {
+  driver: null,
+  orders: [],
+  currentOrder: null,
+  pendingStop: null
+};
+
+// ---- UTILS ----
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function showLoading(text) {
+  document.getElementById('loading-text').textContent = text || 'Đang xử lý...';
+  document.getElementById('loading').style.display = 'flex';
+}
+function hideLoading() {
+  document.getElementById('loading').style.display = 'none';
+}
+async function apiGet(params) {
+  const url = API_URL + '?' + new URLSearchParams(params);
+  const res = await fetch(url);
+  return res.json();
+}
+async function apiPost(body) {
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    body: JSON.stringify(body)
+  });
+  return res.json();
+}
+
+// ---- LOGIN ----
+async function doLogin() {
+  const code = document.getElementById('inp-code').value.trim();
+  if (!code) { showError('Vui lòng nhập mã tài xế'); return; }
+
+  showLoading('Đang đăng nhập...');
+  try {
+    const res = await apiGet({ action: 'login', code });
+    hideLoading();
+    if (res.success) {
+      state.driver = res.driver;
+      document.getElementById('home-name').textContent = res.driver.name;
+      const now = new Date();
+      document.getElementById('home-date').textContent = now.toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit' });
+      await loadOrders();
+      show('screen-home');
+    } else {
+      showError(res.message || 'Đăng nhập thất bại');
+    }
+  } catch (e) {
+    hideLoading();
+    showError('Lỗi kết nối, vui lòng thử lại');
+  }
+}
+function showError(msg) {
+  const el = document.getElementById('login-error');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function doLogout() {
+  state.driver = null;
+  state.orders = [];
+  document.getElementById('inp-code').value = '';
+  document.getElementById('login-error').style.display = 'none';
+  show('screen-login');
+}
+
+// ---- ORDERS ----
+async function loadOrders() {
+  showLoading('Đang tải đơn hàng...');
+  try {
+    const res = await apiGet({ action: 'getOrders', code: state.driver.code });
+    hideLoading();
+    if (res.success) {
+      state.orders = res.orders || [];
+    }
+  } catch (e) {
+    hideLoading();
+  }
+  renderOrders();
+}
+
+function getProgress(o) {
+  const t = o.stops.length;
+  const d = o.stops.filter(s => s.status === 'done' || s.status === 'fail').length;
+  return { done: d, total: t };
+}
+function getStatus(o) {
+  const { done, total } = getProgress(o);
+  return done === 0 ? 'pending' : done === total ? 'done' : 'active';
+}
+
+function renderOrders() {
+  const list = document.getElementById('order-list');
+  if (!state.orders || state.orders.length === 0) {
+    list.innerHTML = `<div class="empty-state"><i class="ti ti-inbox"></i><p>Không có đơn hàng hôm nay</p></div>`;
+    return;
+  }
+  list.innerHTML = state.orders.map((o, i) => {
+    const { done, total } = getProgress(o);
+    const st = getStatus(o);
+    const pct = Math.round(done / total * 100);
+    const bc = st === 'done' ? 'badge-done' : st === 'active' ? 'badge-active' : 'badge-pending';
+    const bt = st === 'done' ? 'Hoàn thành' : st === 'active' ? 'Đang giao' : 'Chờ giao';
+    return `<div class="order-card" onclick="openOrder(${i})">
+      <div class="order-top"><span class="order-id">${o.id}</span><span class="badge ${bc}">${bt}</span></div>
+      <div class="order-meta">
+        <span><i class="ti ti-map-pin" style="font-size:13px"></i> ${total - 1} điểm giao</span>
+        <span><i class="ti ti-check" style="font-size:13px"></i> ${done}/${total} điểm</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function openOrder(idx) {
+  state.currentOrder = idx;
+  renderDetail();
+  show('screen-detail');
+}
+function goHome() {
+  renderOrders();
+  show('screen-home');
+}
+
+// ---- DETAIL ----
+function renderDetail() {
+  const order = state.orders[state.currentOrder];
+  const { done, total } = getProgress(order);
+  document.getElementById('detail-id').textContent = order.id;
+  document.getElementById('detail-stops-sum').textContent = `${done}/${total} điểm hoàn thành`;
+  document.getElementById('finish-btn').style.display = done === total ? 'flex' : 'none';
+  const firstPending = order.stops.findIndex(s => s.status === 'pending');
+
+  document.getElementById('detail-body').innerHTML = order.stops.map((stop, si) => {
+    const isActive = si === firstPending;
+    const isDone = stop.status === 'done';
+    const isFail = stop.status === 'fail';
+    const isPickup = stop.type === 'pickup';
+    const cc = isDone ? 'done-card' : isFail ? 'fail-card' : isActive ? 'active-card' : '';
+    const dc = isDone ? 'dot-done' : isFail ? 'dot-fail' : isActive ? 'dot-active' : 'dot-pending';
+    const lbl = isPickup ? 'Điểm lấy hàng' : `Điểm giao ${si}`;
+    const ico = isPickup ? 'ti-building-warehouse' : 'ti-map-pin';
+
+    let actions = '';
+    if (isActive && isPickup) {
+      actions = `<div class="stop-actions"><button class="btn-success" style="flex:1" onclick="markStop(${si},'done')"><i class="ti ti-check"></i> Đã lấy hàng</button></div>`;
+    } else if (isActive) {
+      actions = `<div class="stop-actions">
+        <button class="btn-success" onclick="markStop(${si},'done')"><i class="ti ti-check"></i> Hoàn thành</button>
+        <button class="btn-fail" onclick="openFail(${si})"><i class="ti ti-x"></i> Thất bại</button>
+      </div>`;
+    }
+
+    let sl = '';
+    if (isDone) sl = `<div style="margin-top:8px;font-size:12px;color:#3B6D11;font-weight:600"><i class="ti ti-circle-check"></i> Hoàn thành</div>`;
+    else if (isFail) sl = `<div style="margin-top:8px;font-size:12px;color:var(--danger);font-weight:600"><i class="ti ti-circle-x"></i> Thất bại${stop.reason ? ' — ' + stop.reason : ''}</div>`;
+    else if (!isActive) sl = `<div style="margin-top:8px;font-size:12px;color:var(--text-sub)">Chờ giao</div>`;
+
+    return `<div class="stop-card ${cc}">
+      <div class="stop-header">
+        <span class="stop-label"><i class="ti ${ico}" style="font-size:14px"></i>${lbl}</span>
+        <span class="status-dot ${dc}"></span>
+      </div>
+      <div class="stop-name">${stop.name}</div>
+      <div class="stop-addr">${stop.addr}</div>
+      ${sl}${actions}
+    </div>`;
+  }).join('');
+}
+
+async function markStop(si, status, extra) {
+  const order = state.orders[state.currentOrder];
+  order.stops[si].status = status;
+  if (extra) Object.assign(order.stops[si], extra);
+  renderDetail();
+
+  // Gửi lên Apps Script
+  try {
+    await apiPost({
+      action: 'updateStop',
+      driver_code: state.driver.code,
+      driver_name: state.driver.name,
+      order_id: order.id,
+      stop_index: si,
+      stop_type: order.stops[si].type,
+      stop_name: order.stops[si].name,
+      stop_addr: order.stops[si].addr,
+      status: status,
+      reason: extra ? extra.reason || '' : '',
+      photo_url: extra ? extra.photo_url || '' : ''
+    });
+  } catch (e) {
+    console.log('Lỗi gửi update:', e);
+  }
+}
+
+async function finishOrder() {
+  const order = state.orders[state.currentOrder];
+  const done = order.stops.filter(s => s.status === 'done').length;
+  const fail = order.stops.filter(s => s.status === 'fail').length;
+
+  showLoading('Đang kết thúc đơn...');
+  try {
+    await apiPost({
+      action: 'finishOrder',
+      driver_code: state.driver.code,
+      driver_name: state.driver.name,
+      order_id: order.id,
+      done_count: done,
+      fail_count: fail
+    });
+  } catch (e) {}
+  hideLoading();
+
+  alert(`Đơn ${order.id} đã kết thúc!\n✅ Hoàn thành: ${done} điểm\n❌ Thất bại: ${fail} điểm`);
+  order.finished = true;
+  goHome();
+}
+
+// ---- MODAL THẤT BẠI ----
+function openFail(si) {
+  state.pendingStop = si;
+  document.getElementById('photo-preview').style.display = 'none';
+  document.getElementById('photo-preview').src = '';
+  document.getElementById('photo-zone').style.display = 'block';
+  document.getElementById('fail-modal').style.display = 'flex';
+}
+function closeModal() {
+  document.getElementById('fail-modal').style.display = 'none';
+  state.pendingStop = null;
+}
+function triggerPhoto() {
+  document.getElementById('file-inp').click();
+}
+function handlePhoto(inp) {
+  if (!inp.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const p = document.getElementById('photo-preview');
+    p.src = e.target.result;
+    p.style.display = 'block';
+    document.getElementById('photo-zone').style.display = 'none';
+  };
+  reader.readAsDataURL(inp.files[0]);
+}
+function confirmFail() {
+  const reason = document.getElementById('fail-reason').value;
+  const photo = document.getElementById('photo-preview').src;
+  markStop(state.pendingStop, 'fail', { reason, photo_url: photo ? 'photo_attached' : '' });
+  closeModal();
+}
+</script>
+</body>
+</html>

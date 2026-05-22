@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AURA — Quản lý đơn hàng</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; color: #1a1a1a; }
+:root {
+  --brand: #1D9E75; --brand-light: #E1F5EE; --brand-dark: #085041;
+  --danger: #E24B4A; --danger-light: #FCEBEB;
+  --warn: #BA7517; --warn-light: #FAEEDA;
+  --border: #e0e0e0; --text-sub: #666;
+}
+
+/* LAYOUT */
+.topbar { background: var(--brand); padding: 0 1.5rem; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+.topbar-brand { font-size: 18px; font-weight: 700; color: white; letter-spacing: 0.08em; display: flex; align-items: center; gap: 10px; }
+.topbar-right { display: flex; align-items: center; gap: 8px; }
+.page { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem; }
+
+/* TABS */
+.tabs { display: flex; gap: 4px; background: white; border-radius: 12px; padding: 6px; border: 1px solid var(--border); margin-bottom: 1.5rem; }
+.tab { flex: 1; padding: 10px; border: none; background: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; color: var(--text-sub); display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s; }
+.tab.active { background: var(--brand); color: white; }
+.tab:hover:not(.active) { background: #f4f4f4; }
+
+/* CARDS */
+.card { background: white; border-radius: 14px; border: 1px solid var(--border); padding: 1.25rem; margin-bottom: 1rem; }
+.card-title { font-size: 16px; font-weight: 600; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px; }
+
+/* FORM */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.form-row.single { grid-template-columns: 1fr; }
+.form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+@media(max-width:600px){ .form-row, .form-row.triple { grid-template-columns: 1fr; } }
+.field label { font-size: 12px; color: var(--text-sub); font-weight: 600; display: block; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.04em; }
+.field input, .field select, .field textarea {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+  border-radius: 8px; font-size: 14px; outline: none; color: #1a1a1a;
+  background: white; font-family: inherit;
+}
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--brand); }
+.field textarea { resize: vertical; min-height: 80px; }
+
+/* STOPS */
+.stops-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.stop-row { display: flex; align-items: flex-start; gap: 8px; background: #f9f9f9; border-radius: 10px; padding: 10px 12px; border: 1px solid var(--border); }
+.stop-num { width: 24px; height: 24px; border-radius: 50%; background: var(--brand); color: white; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.stop-num.pickup { background: #378ADD; }
+.stop-fields { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+@media(max-width:500px){ .stop-fields { grid-template-columns: 1fr; } }
+.stop-fields input { padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; outline: none; width: 100%; }
+.stop-fields input:focus { border-color: var(--brand); }
+.btn-remove { background: none; border: none; color: #ccc; cursor: pointer; font-size: 18px; padding: 2px; flex-shrink: 0; }
+.btn-remove:hover { color: var(--danger); }
+
+/* PASTE AREA */
+.paste-area { background: #f9f9f9; border: 2px dashed var(--border); border-radius: 10px; padding: 1rem; margin-bottom: 12px; }
+.paste-area textarea { background: white; font-size: 13px; font-family: monospace; }
+.paste-hint { font-size: 12px; color: var(--text-sub); margin-top: 6px; }
+
+/* BUTTONS */
+.btn { padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; border: none; }
+.btn-primary { background: var(--brand); color: white; }
+.btn-primary:hover { background: var(--brand-dark); }
+.btn-secondary { background: #f0f0f0; color: #333; }
+.btn-secondary:hover { background: #e4e4e4; }
+.btn-danger { background: var(--danger-light); color: var(--danger); border: 1px solid #F7C1C1; }
+.btn-sm { padding: 6px 12px; font-size: 13px; }
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 1rem; }
+
+/* TABLE */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; padding: 10px 12px; font-size: 12px; color: var(--text-sub); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 2px solid var(--border); white-space: nowrap; }
+td { padding: 12px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+tr:hover td { background: #fafafa; }
+.badge { font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 600; white-space: nowrap; }
+.badge-active { background: var(--brand-light); color: var(--brand-dark); }
+.badge-done { background: #EAF3DE; color: #27500A; }
+.badge-pending { background: var(--warn-light); color: var(--warn); }
+.badge-inprogress { background: #E6F1FB; color: #185FA5; }
+
+/* MODAL */
+.modal-bg { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.4); z-index: 500; align-items: center; justify-content: center; padding: 1rem; }
+.modal-box { background: white; border-radius: 16px; padding: 1.5rem; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+.modal-title { font-size: 17px; font-weight: 700; margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between; }
+.modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-sub); }
+
+/* LOADING */
+.loading-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; z-index:999; background: rgba(255,255,255,0.85); align-items: center; justify-content: center; flex-direction: column; gap: 12px; }
+.spinner { width: 36px; height: 36px; border: 3px solid #eee; border-top-color: var(--brand); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* TOAST */
+.toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; z-index: 999; display: none; white-space: nowrap; }
+.toast.success { background: var(--brand); }
+.toast.error { background: var(--danger); }
+
+/* FILTER BAR */
+.filter-bar { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
+.filter-bar input, .filter-bar select { padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; background: white; }
+.filter-bar input:focus, .filter-bar select:focus { border-color: var(--brand); }
+
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+.stat-card { background: white; border-radius: 12px; border: 1px solid var(--border); padding: 1rem; text-align: center; }
+.stat-num { font-size: 28px; font-weight: 700; color: var(--brand); }
+.stat-label { font-size: 12px; color: var(--text-sub); margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <div style="font-size:14px;color:#666" id="loading-text">Đang xử lý...</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <i class="ti ti-truck-delivery"></i> AURA
+    <span style="font-size:12px;font-weight:400;opacity:0.8">Quản lý</span>
+  </div>
+  <div class="topbar-right">
+    <span style="font-size:13px;color:rgba(255,255,255,0.85)" id="topbar-info"></span>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('orders')" id="tab-orders">
+      <i class="ti ti-clipboard-list"></i> Đơn hàng
+    </button>
+    <button class="tab" onclick="switchTab('create')" id="tab-create">
+      <i class="ti ti-plus"></i> Tạo đơn
+    </button>
+    <button class="tab" onclick="switchTab('drivers')" id="tab-drivers">
+      <i class="ti ti-users"></i> Tài xế
+    </button>
+  </div>
+
+  <!-- TAB: DANH SÁCH ĐƠN -->
+  <div id="tab-content-orders">
+    <div class="stats-row" id="stats-row">
+      <div class="stat-card"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Tổng đơn</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-pending">0</div><div class="stat-label">Chờ giao</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-inprogress">0</div><div class="stat-label">Đang giao</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Hoàn thành</div></div>
+    </div>
+    <div class="filter-bar">
+      <input type="text" id="filter-search" placeholder="Tìm mã đơn, tài xế..." oninput="renderOrderTable()" style="flex:1;min-width:160px">
+      <select id="filter-status" onchange="renderOrderTable()">
+        <option value="">Tất cả trạng thái</option>
+        <option value="pending">Chờ giao</option>
+        <option value="inprogress">Đang giao</option>
+        <option value="done">Hoàn thành</option>
+      </select>
+      <button class="btn btn-secondary btn-sm" onclick="loadOrders()"><i class="ti ti-refresh"></i> Làm mới</button>
+    </div>
+    <div class="card" style="padding:0">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Mã đơn</th>
+              <th>Ngày tạo</th>
+              <th>Điểm giao</th>
+              <th>Tài xế</th>
+              <th>Trạng thái</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="order-tbody">
+            <tr><td colspan="6" style="text-align:center;padding:2rem;color:#999">Đang tải...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: TẠO ĐƠN -->
+  <div id="tab-content-create" style="display:none">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-file-plus" style="color:var(--brand)"></i> Thông tin đơn hàng</div>
+      <div class="form-row">
+        <div class="field">
+          <label>Mã đơn hàng (tự sinh)</label>
+          <div style="display:flex;gap:8px;align-items:center"><input type="text" id="inp-orderid" readonly style="background:#f4f4f4;font-weight:600;color:#1D9E75;letter-spacing:0.05em" /><button onclick="refreshOrderId()" style="padding:8px 10px;background:#f0f0f0;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;font-size:13px;flex-shrink:0"><i class="ti ti-refresh"></i></button></div>
+        </div>
+        <div class="field">
+          <label>Ngày giao *</label>
+          <input type="date" id="inp-date" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>Gán tài xế</label>
+          <select id="inp-driver">
+            <option value="">-- Chọn tài xế --</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Ghi chú</label>
+          <input type="text" id="inp-note" placeholder="Ghi chú thêm (nếu có)" />
+        </div>
+      </div>
+    </div>
+
+    <!-- NHẬP TAY -->
+    <div class="card">
+      <div class="card-title"><i class="ti ti-map-pins" style="color:var(--brand)"></i> Điểm giao hàng</div>
+
+      <!-- PICKUP -->
+      <div style="margin-bottom:10px">
+        <div style="font-size:12px;color:var(--text-sub);font-weight:600;margin-bottom:6px;text-transform:uppercase">Điểm lấy hàng</div>
+        <div class="stop-row">
+          <div class="stop-num pickup"><i class="ti ti-building-warehouse" style="font-size:12px"></i></div>
+          <div class="stop-fields">
+            <input type="text" id="pickup-name" placeholder="Tên kho / địa điểm lấy" />
+            <input type="text" id="pickup-addr" placeholder="Địa chỉ lấy hàng" />
+          </div>
+        </div>
+      </div>
+
+      <!-- DROP STOPS -->
+      <div style="font-size:12px;color:var(--text-sub);font-weight:600;margin-bottom:6px;text-transform:uppercase">Điểm giao</div>
+      <div class="stops-list" id="stops-list"></div>
+      <button class="btn btn-secondary btn-sm" onclick="addStop()">
+        <i class="ti ti-plus"></i> Thêm điểm giao
+      </button>
+    </div>
+
+    <!-- PASTE TỪ EXCEL -->
+    <div class="card">
+      <div class="card-title"><i class="ti ti-table-import" style="color:#378ADD"></i> Paste từ Excel / Google Sheet</div>
+      <div class="paste-area">
+        <div class="field">
+          <label>Dán dữ liệu vào đây</label>
+          <textarea id="paste-data" rows="5" placeholder="Copy từ Excel rồi dán vào đây&#10;Định dạng mỗi dòng: Tên khách | Địa chỉ&#10;VD:&#10;Nguyễn Văn A	45 Nguyễn Huệ Q.1&#10;Trần Thị B	88 Lê Lợi Q.3"></textarea>
+        </div>
+        <div class="paste-hint"><i class="ti ti-info-circle"></i> Mỗi dòng 1 điểm giao, 2 cột: Tên khách — Địa chỉ (phân cách bằng Tab hoặc dấu |)</div>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="parsePaste()">
+        <i class="ti ti-arrow-bar-to-down"></i> Nhập từ dữ liệu paste
+      </button>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="submitOrder()">
+        <i class="ti ti-send"></i> Tạo đơn hàng
+      </button>
+      <button class="btn btn-secondary" onclick="resetForm()">
+        <i class="ti ti-refresh"></i> Làm lại
+      </button>
+    </div>
+  </div>
+
+  <!-- TAB: TÀI XẾ -->
+  <div id="tab-content-drivers" style="display:none">
+    <div class="card" style="padding:0">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Mã</th>
+              <th>Tên tài xế</th>
+              <th>SĐT</th>
+              <th>Biển số</th>
+              <th>Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody id="driver-tbody">
+            <tr><td colspan="5" style="text-align:center;padding:2rem;color:#999">Đang tải...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL GÁN TÀI XẾ -->
+<div class="modal-bg" id="assign-modal">
+  <div class="modal-box">
+    <div class="modal-title">
+      <span><i class="ti ti-user-check" style="color:var(--brand)"></i> Gán tài xế</span>
+      <button class="modal-close" onclick="closeAssignModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div style="margin-bottom:12px;font-size:14px;color:var(--text-sub)">Đơn: <strong id="assign-order-id"></strong></div>
+    <div class="field">
+      <label>Chọn tài xế</label>
+      <select id="assign-driver-select" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px"></select>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="confirmAssign()"><i class="ti ti-check"></i> Xác nhận gán</button>
+      <button class="btn btn-secondary" onclick="closeAssignModal()">Hủy</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbxwuqIuNnPbL5PAoOF3opMT2gltYG6a1NKHY2ovqHj4t0XbHQmNOtwn2EcAGRe4wnvMaw/exec';
+
+let appData = { orders: [], drivers: [] };
+let assigningOrderId = null;
+let stopCount = 0;
+
+// ---- INIT ----
+window.onload = async () => {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('inp-date').value = today;
+  document.getElementById('inp-orderid').value = genOrderId();
+  addStop();
+  await Promise.all([loadOrders(), loadDrivers()]);
+};
+
+// ---- UTILS ----
+function showLoading(t){ document.getElementById('loading-text').textContent=t||'Đang xử lý...'; document.getElementById('loading').style.display='flex'; }
+function hideLoading(){ document.getElementById('loading').style.display='none'; }
+function showToast(msg, type='success'){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='toast '+type; el.style.display='block';
+  setTimeout(()=>{ el.style.display='none'; }, 3000);
+}
+async function apiGet(params){ const res=await fetch(API_URL+'?'+new URLSearchParams(params)); return res.json(); }
+async function apiPost(body){ const res=await fetch(API_URL,{method:'POST',body:JSON.stringify(body)}); return res.json(); }
+
+function switchTab(name) {
+  ['orders','create','drivers'].forEach(t => {
+    document.getElementById('tab-content-'+t).style.display = t===name ? 'block' : 'none';
+    document.getElementById('tab-'+t).classList.toggle('active', t===name);
+  });
+}
+
+// ---- LOAD DATA ----
+async function loadOrders() {
+  try {
+    const res = await apiGet({ action: 'getAdminOrders' });
+    if (res.success) {
+      appData.orders = res.orders || [];
+      renderOrderTable();
+      updateStats();
+    }
+  } catch(e) {}
+}
+
+async function loadDrivers() {
+  try {
+    const res = await apiGet({ action: 'getDrivers' });
+    if (res.success) {
+      appData.drivers = res.drivers || [];
+      renderDriverTable();
+      populateDriverSelects();
+    }
+  } catch(e) {}
+}
+
+function updateStats() {
+  const o = appData.orders;
+  document.getElementById('stat-total').textContent = o.length;
+  document.getElementById('stat-pending').textContent = o.filter(x=>x.status==='pending').length;
+  document.getElementById('stat-inprogress').textContent = o.filter(x=>x.status==='inprogress').length;
+  document.getElementById('stat-done').textContent = o.filter(x=>x.status==='done').length;
+}
+
+function renderOrderTable() {
+  const search = document.getElementById('filter-search').value.toLowerCase();
+  const statusFilter = document.getElementById('filter-status').value;
+  let orders = appData.orders.filter(o => {
+    const matchSearch = !search || o.id.toLowerCase().includes(search) || (o.driver_name||'').toLowerCase().includes(search);
+    const matchStatus = !statusFilter || o.status === statusFilter;
+    return matchSearch && matchStatus;
+  });
+
+  const badgeMap = { pending:'badge-pending', inprogress:'badge-inprogress', done:'badge-done' };
+  const labelMap = { pending:'Chờ giao', inprogress:'Đang giao', done:'Hoàn thành' };
+
+  const tbody = document.getElementById('order-tbody');
+  if (!orders.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#999">Không có đơn hàng</td></tr>';
+    return;
+  }
+  tbody.innerHTML = orders.map(o => {
+    const orderId = o.order_id || o.id || '—';
+    const dateRaw = o.date || o.created_at || '';
+    let dateDisplay = dateRaw;
+    try {
+      if (dateRaw) {
+        const d = new Date(dateRaw);
+        if (!isNaN(d)) dateDisplay = d.toLocaleDateString('vi-VN', {day:'2-digit',month:'2-digit',year:'numeric'});
+      }
+    } catch(e) {}
+    const dropCount = (o.stops||[]).filter(s => s.type === 'drop').length;
+    const driverName = o.driver_name || '';
+    const statusKey = o.status || 'pending';
+    return `<tr>
+      <td><strong>${orderId}</strong></td>
+      <td style="color:var(--text-sub);font-size:13px">${dateDisplay}</td>
+      <td style="font-size:13px">${dropCount} điểm</td>
+      <td>${driverName ? `<span style="font-size:13px">${driverName}</span>` : `<span style="color:#ccc;font-size:13px">Chưa gán</span>`}</td>
+      <td><span class="badge ${badgeMap[statusKey]||'badge-pending'}">${labelMap[statusKey]||'Chờ giao'}</span></td>
+      <td>
+        <button class="btn btn-secondary btn-sm" onclick="openAssignModal('${orderId}')">
+          <i class="ti ti-user-plus"></i> Gán tài xế
+        </button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderDriverTable() {
+  const statusMap = { active: { label:'Hoạt động', cls:'badge-active' }, off: { label:'Đã nghỉ', cls:'badge-pending' }, locked: { label:'Bị khóa', cls:'' } };
+  const tbody = document.getElementById('driver-tbody');
+  if (!appData.drivers.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#999">Không có tài xế</td></tr>';
+    return;
+  }
+  tbody.innerHTML = appData.drivers.map(d => {
+    const code = d.driver_code || d.code || '—';
+    const name = d.driver_name || d.name || '—';
+    const phone = d.phone || '—';
+    const plate = d.license_plate || '—';
+    const statusKey = String(d.status || '').trim();
+    const s = statusMap[statusKey] || { label: statusKey || '—', cls:'' };
+    return `<tr>
+      <td><strong>${code}</strong></td>
+      <td>${name}</td>
+      <td style="font-size:13px;color:var(--text-sub)">${phone}</td>
+      <td style="font-size:13px">${plate}</td>
+      <td><span class="badge ${s.cls}">${s.label}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function populateDriverSelects() {
+  const active = appData.drivers.filter(d => String(d.status||'').trim() === 'active');
+  const opts = active.map(d => {
+    const code = d.driver_code || d.code || '';
+    const name = d.driver_name || d.name || '';
+    return `<option value="${code}">${name} (${code})</option>`;
+  }).join('');
+  document.getElementById('inp-driver').innerHTML = '<option value="">-- Chọn tài xế --</option>' + opts;
+  document.getElementById('assign-driver-select').innerHTML = '<option value="">-- Chọn tài xế --</option>' + opts;
+}
+
+// ---- STOPS ----
+function addStop() {
+  stopCount++;
+  const si = stopCount;
+  const div = document.createElement('div');
+  div.className = 'stop-row';
+  div.id = 'stop-row-' + si;
+  div.innerHTML = `
+    <div class="stop-num">${si}</div>
+    <div class="stop-fields">
+      <input type="text" placeholder="Tên khách hàng" id="stop-name-${si}" />
+      <input type="text" placeholder="Địa chỉ giao hàng" id="stop-addr-${si}" />
+    </div>
+    <button class="btn-remove" onclick="removeStop(${si})"><i class="ti ti-x"></i></button>
+  `;
+  document.getElementById('stops-list').appendChild(div);
+}
+
+function removeStop(si) {
+  const el = document.getElementById('stop-row-' + si);
+  if (el) el.remove();
+  renumberStops();
+}
+
+function renumberStops() {
+  const rows = document.querySelectorAll('#stops-list .stop-row');
+  rows.forEach((r, i) => { const num = r.querySelector('.stop-num'); if(num) num.textContent = i+1; });
+}
+
+// ---- PASTE PARSE ----
+function parsePaste() {
+  const raw = document.getElementById('paste-data').value.trim();
+  if (!raw) { showToast('Chưa có dữ liệu paste', 'error'); return; }
+  const lines = raw.split('\n').filter(l => l.trim());
+  let added = 0;
+  lines.forEach(line => {
+    const parts = line.includes('\t') ? line.split('\t') : line.split('|');
+    if (parts.length >= 2) {
+      stopCount++;
+      const si = stopCount;
+      const div = document.createElement('div');
+      div.className = 'stop-row';
+      div.id = 'stop-row-' + si;
+      div.innerHTML = `
+        <div class="stop-num">${document.querySelectorAll('#stops-list .stop-row').length + 1}</div>
+        <div class="stop-fields">
+          <input type="text" value="${parts[0].trim()}" id="stop-name-${si}" />
+          <input type="text" value="${parts[1].trim()}" id="stop-addr-${si}" />
+        </div>
+        <button class="btn-remove" onclick="removeStop(${si})"><i class="ti ti-x"></i></button>
+      `;
+      document.getElementById('stops-list').appendChild(div);
+      added++;
+    }
+  });
+  document.getElementById('paste-data').value = '';
+  showToast(`Đã thêm ${added} điểm giao`);
+}
+
+// ---- SINH MÃ ĐƠN ----
+function genOrderId() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let code = 'AURA-';
+  for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  return code;
+}
+function refreshOrderId() {
+  document.getElementById('inp-orderid').value = genOrderId();
+}
+
+// ---- SUBMIT ORDER ----
+async function submitOrder() {
+  const orderId = document.getElementById('inp-orderid').value.trim();
+  const date = document.getElementById('inp-date').value;
+  const driverCode = document.getElementById('inp-driver').value;
+  const note = document.getElementById('inp-note').value.trim();
+  const pickupName = document.getElementById('pickup-name').value.trim();
+  const pickupAddr = document.getElementById('pickup-addr').value.trim();
+
+  if (!orderId) { showToast('Lỗi sinh mã đơn, bấm nút refresh', 'error'); return; }
+  if (!pickupName || !pickupAddr) { showToast('Vui lòng nhập thông tin điểm lấy hàng', 'error'); return; }
+
+  const stops = [{ type: 'pickup', name: pickupName, addr: pickupAddr, status: 'pending' }];
+  const rows = document.querySelectorAll('#stops-list .stop-row');
+  let valid = true;
+  rows.forEach(r => {
+    const id = r.id.replace('stop-row-', '');
+    const name = document.getElementById('stop-name-' + id)?.value.trim();
+    const addr = document.getElementById('stop-addr-' + id)?.value.trim();
+    if (!name || !addr) { valid = false; return; }
+    stops.push({ type: 'drop', name, addr, status: 'pending' });
+  });
+
+  if (!valid) { showToast('Vui lòng điền đầy đủ tên và địa chỉ các điểm giao', 'error'); return; }
+  if (stops.length < 2) { showToast('Cần ít nhất 1 điểm giao', 'error'); return; }
+
+  const driverInfo = appData.drivers.find(d => (d.driver_code || d.code) === driverCode);
+
+  showLoading('Đang tạo đơn hàng...');
+  try {
+    const res = await apiPost({
+      action: 'createOrder',
+      order_id: orderId,
+      date,
+      driver_code: driverCode || '',
+      driver_name: driverInfo ? (driverInfo.driver_name || driverInfo.name || '') : '',
+      note,
+      stops
+    });
+    hideLoading();
+    if (res.success) {
+      showToast('Tạo đơn ' + orderId + ' thành công!');
+      resetForm();
+      await loadOrders();
+      switchTab('orders');
+    } else {
+      showToast(res.message || 'Lỗi tạo đơn', 'error');
+    }
+  } catch(e) {
+    hideLoading();
+    showToast('Lỗi kết nối', 'error');
+  }
+}
+
+function resetForm() {
+  document.getElementById('inp-orderid').value = genOrderId();
+  document.getElementById('inp-note').value = '';
+  document.getElementById('pickup-name').value = '';
+  document.getElementById('pickup-addr').value = '';
+  document.getElementById('stops-list').innerHTML = '';
+  document.getElementById('paste-data').value = '';
+  stopCount = 0;
+  addStop();
+}
+
+// ---- ASSIGN MODAL ----
+function openAssignModal(orderId) {
+  assigningOrderId = orderId;
+  document.getElementById('assign-order-id').textContent = orderId;
+  const order = appData.orders.find(o => o.id === orderId);
+  if (order && order.driver_code) {
+    document.getElementById('assign-driver-select').value = order.driver_code;
+  }
+  document.getElementById('assign-modal').style.display = 'flex';
+}
+function closeAssignModal() {
+  document.getElementById('assign-modal').style.display = 'none';
+  assigningOrderId = null;
+}
+async function confirmAssign() {
+  const driverCode = document.getElementById('assign-driver-select').value;
+  if (!driverCode) { showToast('Vui lòng chọn tài xế', 'error'); return; }
+  const driverInfo = appData.drivers.find(d => d.code === driverCode);
+  showLoading('Đang gán tài xế...');
+  try {
+    const res = await apiPost({
+      action: 'assignDriver',
+      order_id: assigningOrderId,
+      driver_code: driverCode,
+      driver_name: driverInfo ? driverInfo.name : ''
+    });
+    hideLoading();
+    if (res.success) {
+      showToast('Gán tài xế thành công!');
+      closeAssignModal();
+      await loadOrders();
+    } else {
+      showToast(res.message || 'Lỗi gán tài xế', 'error');
+    }
+  } catch(e) {
+    hideLoading();
+    showToast('Lỗi kết nối', 'error');
+  }
+}
+</script>
+</body>
+</html>
