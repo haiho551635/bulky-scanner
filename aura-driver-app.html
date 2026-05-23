@@ -1,304 +1,762 @@
-// ============================================================
-// AURA Driver App — Apps Script
-// Sheet ID: 1jLWq3NxB5zMxgWPMttmXChE0fUr5i3pQnMDQtTFuRhg
-// ============================================================
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AURA — Ứng dụng tài xế</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f4f4f4; }
+:root {
+  --brand: #1D9E75; --brand-light: #E1F5EE; --brand-dark: #085041;
+  --danger: #E24B4A; --danger-light: #FCEBEB;
+  --warn: #BA7517; --warn-light: #FAEEDA;
+  --gray: #f4f4f4; --border: #e0e0e0;
+  --text: #1a1a1a; --text-sub: #666;
+  --tab-h: 62px;
+}
+.app { max-width: 430px; margin: 0 auto; min-height: 100vh; background: white; display: flex; flex-direction: column; position: relative; }
+.screen { display: none; flex-direction: column; flex: 1; min-height: 100vh; }
+.screen.active { display: flex; }
 
-const SHEET_ID = '1jLWq3NxB5zMxgWPMttmXChE0fUr5i3pQnMDQtTFuRhg';
+/* ---- LOGIN ---- */
+.login-header { background: var(--brand); padding: 3rem 1.5rem 2.5rem; text-align: center; }
+.brand-name { font-size: 28px; font-weight: 700; color: white; letter-spacing: 0.1em; margin-top: 12px; }
+.brand-sub { font-size: 14px; color: rgba(255,255,255,0.85); margin-top: 6px; }
+.login-body { padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; flex: 1; }
+.field label { font-size: 13px; color: var(--text-sub); display: block; margin-bottom: 6px; font-weight: 500; }
+.field input { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 15px; outline: none; color: var(--text); }
+.field input:focus { border-color: var(--brand); }
+.btn-primary { width: 100%; padding: 14px; background: var(--brand); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-primary:active { opacity: 0.85; transform: scale(0.98); }
+.error-msg { background: var(--danger-light); color: var(--danger); padding: 10px 14px; border-radius: 8px; font-size: 13px; display: none; }
 
-const DRIVERS_HEADERS = [
-  'driver_code', 'driver_name', 'phone', 'license_plate', 'status', 'created_at'
-];
-const UPDATES_HEADERS = [
-  'timestamp', 'driver_code', 'driver_name', 'order_id',
-  'stop_index', 'stop_type', 'stop_name', 'stop_addr',
-  'status', 'reason', 'photo_url'
-];
-const ORDERS_HEADERS = [
-  'order_id', 'date', 'driver_code', 'driver_name', 'status', 'note', 'stops', 'created_at'
-];
+/* ---- TOPBAR ---- */
+.topbar { background: var(--brand); padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.topbar-left .topbar-title { font-size: 16px; font-weight: 600; color: white; }
+.topbar-left .topbar-sub { font-size: 12px; color: rgba(255,255,255,0.8); margin-top: 2px; }
+.topbar-right { color: white; font-size: 22px; cursor: pointer; padding: 4px; }
 
-// ============================================================
-// SETUP
-// ============================================================
-function setupSheets() {
-  const ss = SpreadsheetApp.openById(SHEET_ID);
+/* ---- BOTTOM TAB BAR ---- */
+.tab-bar {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 430px;
+  background: white; border-top: 1px solid var(--border);
+  display: none; /* shown when logged in */
+  height: var(--tab-h);
+  z-index: 100;
+}
+.tab-bar.visible { display: flex; }
+.tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #aaa; font-size: 11px; font-weight: 600; padding-bottom: 4px; transition: color 0.15s; }
+.tab-item i { font-size: 22px; }
+.tab-item.active { color: var(--brand); }
+.tab-spacer { height: var(--tab-h); flex-shrink: 0; } /* pushes content above tab bar */
 
-  const driversSheet = ss.getSheetByName('drivers');
-  if (driversSheet.getLastRow() === 0) {
-    driversSheet.appendRow(DRIVERS_HEADERS);
-    driversSheet.getRange(1, 1, 1, DRIVERS_HEADERS.length)
-      .setFontWeight('bold').setBackground('#1D9E75').setFontColor('#ffffff');
+/* ---- HOME ---- */
+.home-body { padding: 1rem; flex: 1; background: var(--gray); overflow-y: auto; }
+.section-label { font-size: 12px; color: var(--text-sub); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; }
+.order-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.25rem; cursor: pointer; margin-bottom: 10px; }
+.order-card:active { background: #f9f9f9; }
+.order-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.order-id { font-size: 15px; font-weight: 600; color: var(--text); }
+.badge { font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 600; }
+.badge-active { background: var(--brand-light); color: var(--brand-dark); }
+.badge-done { background: #EAF3DE; color: #27500A; }
+.badge-pending { background: var(--warn-light); color: var(--warn); }
+.order-meta { font-size: 13px; color: var(--text-sub); display: flex; gap: 14px; flex-wrap: wrap; }
+.progress-bar { height: 5px; background: #eee; border-radius: 3px; margin-top: 12px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--brand); border-radius: 3px; transition: width 0.3s; }
+.empty-state { text-align: center; padding: 4rem 1rem; color: var(--text-sub); }
+.empty-state i { font-size: 48px; color: #ccc; display: block; margin-bottom: 12px; }
+
+/* ---- HISTORY ---- */
+.history-body { padding: 1rem; flex: 1; background: var(--gray); overflow-y: auto; }
+.hist-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.25rem; cursor: pointer; margin-bottom: 10px; }
+.hist-card:active { background: #f9f9f9; }
+.hist-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+.hist-id { font-size: 15px; font-weight: 600; color: var(--text); }
+.hist-date { font-size: 12px; color: var(--text-sub); margin-bottom: 6px; }
+.hist-summary { display: flex; gap: 10px; font-size: 12px; }
+.hist-done { color: #3B6D11; font-weight: 600; }
+.hist-fail { color: var(--danger); font-weight: 600; }
+
+/* ---- HISTORY DETAIL ---- */
+.hd-header { background: var(--brand); padding: 1rem 1.25rem; flex-shrink: 0; }
+.hd-back { color: white; font-size: 13px; display: flex; align-items: center; gap: 4px; cursor: pointer; margin-bottom: 10px; opacity: 0.9; }
+.hd-title { font-size: 18px; font-weight: 700; color: white; }
+.hd-sub { font-size: 13px; color: rgba(255,255,255,0.8); margin-top: 4px; }
+.hd-body { padding: 1rem; flex: 1; background: var(--gray); overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.hd-stop-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 1rem; }
+.hd-stop-card.hd-done { border-left: 4px solid #639922; }
+.hd-stop-card.hd-fail { border-left: 4px solid var(--danger); }
+.hd-stop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.hd-stop-lbl { font-size: 12px; color: var(--text-sub); font-weight: 600; display: flex; align-items: center; gap: 4px; }
+.hd-stop-name { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+.hd-stop-addr { font-size: 13px; color: var(--text-sub); }
+.hd-stop-phone { font-size: 13px; color: var(--brand-dark); font-weight: 600; margin-top: 4px; }
+.hd-status-row { margin-top: 8px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.hd-status-done { color: #3B6D11; }
+.hd-status-fail { color: var(--danger); }
+.hd-proof-thumb { width: 72px; height: 72px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); cursor: pointer; margin-top: 8px; }
+.hd-summary-bar { background: white; border-radius: 14px; border: 1px solid var(--border); padding: 1rem; display: flex; justify-content: space-around; text-align: center; }
+.hd-sum-item .hd-sum-num { font-size: 22px; font-weight: 700; }
+.hd-sum-item .hd-sum-lbl { font-size: 11px; color: var(--text-sub); margin-top: 2px; }
+.hd-sum-done .hd-sum-num { color: #3B6D11; }
+.hd-sum-fail .hd-sum-num { color: var(--danger); }
+.hd-sum-total .hd-sum-num { color: var(--brand); }
+
+/* ---- DETAIL (active order) ---- */
+.detail-header { background: var(--brand); padding: 1rem 1.25rem; flex-shrink: 0; }
+.back-btn { color: white; font-size: 13px; display: flex; align-items: center; gap: 4px; cursor: pointer; margin-bottom: 10px; opacity: 0.9; }
+.detail-title { font-size: 18px; font-weight: 700; color: white; }
+.detail-sub { font-size: 13px; color: rgba(255,255,255,0.8); margin-top: 4px; }
+.detail-body { padding: 1rem; display: flex; flex-direction: column; gap: 10px; flex: 1; background: var(--gray); overflow-y: auto; }
+.stop-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 1rem; }
+.stop-card.done-card { border-color: #639922; border-left: 4px solid #639922; }
+.stop-card.fail-card { border-color: var(--danger); border-left: 4px solid var(--danger); }
+.stop-card.active-card { border-color: var(--brand); border-left: 4px solid var(--brand); }
+.stop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.stop-label { font-size: 12px; color: var(--text-sub); font-weight: 600; display: flex; align-items: center; gap: 4px; }
+.stop-name { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.stop-addr { font-size: 13px; color: var(--text-sub); margin-bottom: 4px; }
+.stop-phone-row { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+.stop-phone-num { font-size: 14px; font-weight: 600; color: var(--brand-dark); }
+.btn-call { display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; background: var(--brand-light); color: var(--brand-dark); border: 1px solid #9FE1CB; border-radius: 20px; font-size: 12px; font-weight: 600; text-decoration: none; }
+.stop-actions { display: flex; gap: 8px; margin-top: 14px; }
+.btn-success { flex: 1; padding: 11px; background: var(--brand-light); color: var(--brand-dark); border: 1px solid #9FE1CB; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.btn-success:active { opacity: 0.8; }
+.btn-fail { flex: 1; padding: 11px; background: var(--danger-light); color: #791F1F; border: 1px solid #F7C1C1; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.btn-fail:active { opacity: 0.8; }
+.status-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.dot-done { background: #639922; } .dot-fail { background: var(--danger); }
+.dot-pending { background: #ccc; } .dot-active { background: var(--brand); }
+.finish-btn { margin: 0 1rem 1rem; padding: 15px; background: var(--brand); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; flex-shrink: 0; }
+.proof-thumb { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; margin-top: 8px; border: 1px solid var(--border); cursor: pointer; }
+
+/* ---- MODAL ---- */
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 200; background: rgba(0,0,0,0.5); align-items: flex-end; justify-content: center; }
+.modal-sheet { background: white; border-radius: 20px 20px 0 0; padding: 1.5rem; width: 100%; max-width: 430px; max-height: 92vh; overflow-y: auto; }
+.modal-handle { width: 40px; height: 4px; background: #ddd; border-radius: 2px; margin: 0 auto 1.25rem; }
+.modal-title { font-size: 17px; font-weight: 700; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px; }
+.modal-info-box { background: var(--gray); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; }
+.modal-info-box .info-label { font-size: 11px; color: var(--text-sub); font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
+.modal-info-box .info-name { font-size: 15px; font-weight: 600; color: var(--text); }
+.modal-info-box .info-phone { font-size: 13px; color: var(--brand-dark); margin-top: 2px; }
+.field select { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 15px; outline: none; color: var(--text); background: white; }
+.photo-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; cursor: pointer; color: var(--text-sub); font-size: 14px; margin: 12px 0; }
+.photo-zone:active { background: #f9f9f9; border-color: var(--brand); }
+.photo-zone i { font-size: 32px; display: block; margin-bottom: 8px; color: #aaa; }
+.photo-preview-wrap { position: relative; margin: 12px 0; }
+.photo-preview { width: 100%; border-radius: 12px; display: none; max-height: 220px; object-fit: cover; }
+.photo-retake { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.55); color: white; border: none; border-radius: 8px; padding: 5px 10px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+.photo-required-hint { font-size: 12px; color: var(--danger); text-align: center; display: none; margin-top: -8px; margin-bottom: 4px; }
+.modal-actions { display: flex; gap: 10px; margin-top: 12px; }
+.btn-cancel { flex: 1; padding: 12px; background: #f4f4f4; border: none; border-radius: 10px; font-size: 15px; cursor: pointer; color: var(--text); }
+.btn-confirm-success { flex: 2; padding: 12px; background: var(--brand); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.btn-confirm-fail { flex: 2; padding: 12px; background: var(--danger); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.photo-zone.required-flash { border-color: var(--danger); background: var(--danger-light); animation: flash 0.4s ease; }
+@keyframes flash { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+/* ---- LOADING ---- */
+.loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 300; background: rgba(255,255,255,0.85); align-items: center; justify-content: center; flex-direction: column; gap: 12px; }
+.spinner { width: 36px; height: 36px; border: 3px solid #eee; border-top-color: var(--brand); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 14px; color: var(--text-sub); }
+
+/* ---- IMG VIEWER ---- */
+.img-viewer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 400; align-items: center; justify-content: center; }
+.img-viewer img { max-width: 96%; max-height: 92vh; border-radius: 10px; }
+.img-viewer-close { position: absolute; top: 16px; right: 16px; color: white; font-size: 28px; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- LOADING -->
+  <div class="loading-overlay" id="loading">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loading-text">Đang xử lý...</div>
+  </div>
+
+  <!-- IMG VIEWER -->
+  <div class="img-viewer" id="img-viewer" onclick="closeImgViewer()">
+    <i class="ti ti-x img-viewer-close"></i>
+    <img id="img-viewer-src" src="" />
+  </div>
+
+  <!-- ==================== LOGIN ==================== -->
+  <div class="screen active" id="screen-login">
+    <div class="login-header">
+      <i class="ti ti-truck-delivery" style="font-size:52px;color:white;opacity:0.95;display:block;margin:0 auto"></i>
+      <div class="brand-name">AURA</div>
+      <div class="brand-sub">Ứng dụng tài xế</div>
+    </div>
+    <div class="login-body">
+      <div id="login-error" class="error-msg"></div>
+      <div class="field">
+        <label>Mã tài xế</label>
+        <input type="text" id="inp-code" placeholder="VD: TX001" autocomplete="off" />
+      </div>
+      <div style="flex:1"></div>
+      <button class="btn-primary" onclick="doLogin()">
+        <i class="ti ti-login"></i> Đăng nhập
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== HOME (đơn hôm nay) ==================== -->
+  <div class="screen" id="screen-home">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-title" id="home-name">Tài xế</div>
+        <div class="topbar-sub" id="home-date"></div>
+      </div>
+      <i class="ti ti-logout topbar-right" onclick="doLogout()" title="Đăng xuất"></i>
+    </div>
+    <div class="home-body">
+      <div class="section-label">Đơn hàng hôm nay</div>
+      <div id="order-list"></div>
+    </div>
+    <div class="tab-spacer"></div>
+  </div>
+
+  <!-- ==================== HISTORY ==================== -->
+  <div class="screen" id="screen-history">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-title">Lịch sử đơn hàng</div>
+        <div class="topbar-sub" id="hist-driver-name"></div>
+      </div>
+      <i class="ti ti-logout topbar-right" onclick="doLogout()" title="Đăng xuất"></i>
+    </div>
+    <div class="history-body">
+      <div class="section-label">Đơn đã hoàn thành</div>
+      <div id="hist-list"></div>
+    </div>
+    <div class="tab-spacer"></div>
+  </div>
+
+  <!-- ==================== HISTORY DETAIL ==================== -->
+  <div class="screen" id="screen-hist-detail">
+    <div class="hd-header">
+      <div class="hd-back" id="hd-back-btn" onclick="goBackFromHistDetail()">
+        <i class="ti ti-arrow-left"></i> Quay lại
+      </div>
+      <div class="hd-title" id="hd-title"></div>
+      <div class="hd-sub" id="hd-sub"></div>
+    </div>
+    <div class="hd-body" id="hd-body"></div>
+    <div class="tab-spacer"></div>
+  </div>
+
+  <!-- ==================== ORDER DETAIL (active) ==================== -->
+  <div class="screen" id="screen-detail">
+    <div class="detail-header">
+      <div class="back-btn" onclick="goHome()"><i class="ti ti-arrow-left"></i> Quay lại</div>
+      <div class="detail-title" id="detail-id"></div>
+      <div class="detail-sub" id="detail-stops-sum"></div>
+    </div>
+    <div class="detail-body" id="detail-body"></div>
+    <button class="finish-btn" id="finish-btn" onclick="finishOrder()" style="display:none">
+      <i class="ti ti-flag-check"></i> Kết thúc đơn
+    </button>
+  </div>
+
+  <!-- ==================== BOTTOM TAB BAR ==================== -->
+  <div class="tab-bar" id="tab-bar">
+    <div class="tab-item active" id="tab-today" onclick="switchTab('today')">
+      <i class="ti ti-clipboard-list"></i>
+      Hôm nay
+    </div>
+    <div class="tab-item" id="tab-history" onclick="switchTab('history')">
+      <i class="ti ti-history"></i>
+      Lịch sử
+    </div>
+  </div>
+
+  <!-- ==================== MODAL CHỤP ẢNH ==================== -->
+  <div id="photo-modal" class="modal-overlay">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="modal-title-text"></div>
+      <div class="modal-info-box" id="modal-info-box">
+        <div class="info-label" id="modal-info-label"></div>
+        <div class="info-name" id="modal-info-name"></div>
+        <div class="info-phone" id="modal-info-phone"></div>
+      </div>
+      <div class="field" id="reason-field" style="display:none;margin-bottom:12px">
+        <label>Lý do thất bại</label>
+        <select id="fail-reason">
+          <option>Khách không có nhà</option>
+          <option>Khách hủy</option>
+          <option>Sai địa chỉ</option>
+          <option>Khách không nhận hàng</option>
+          <option>Hàng bị lỗi / hư</option>
+          <option>Không liên lạc được</option>
+          <option>Khác</option>
+        </select>
+      </div>
+      <div class="photo-zone" id="photo-zone" onclick="triggerPhoto()">
+        <i class="ti ti-camera"></i>
+        <span id="photo-zone-text">Chụp ảnh bằng chứng <span style="color:var(--danger)">*</span></span>
+      </div>
+      <div class="photo-preview-wrap">
+        <img id="photo-preview" class="photo-preview" onclick="viewImg(this.src)" />
+        <button class="photo-retake" id="photo-retake" style="display:none" onclick="retakePhoto()">
+          <i class="ti ti-refresh"></i> Chụp lại
+        </button>
+      </div>
+      <div class="photo-required-hint" id="photo-hint">⚠️ Vui lòng chụp ảnh bằng chứng trước khi xác nhận</div>
+      <input type="file" id="file-inp" accept="image/*" style="display:none" onchange="handlePhoto(this)" />
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal()">Hủy</button>
+        <button id="modal-confirm-btn" onclick="confirmModal()">Xác nhận</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbxwuqIuNnPbL5PAoOF3opMT2gltYG6a1NKHY2ovqHj4t0XbHQmNOtwn2EcAGRe4wnvMaw/exec';
+
+let state = {
+  driver: null,
+  orders: [],          // đơn đang giao (chưa done)
+  histOrders: [],      // đơn đã done
+  histLoaded: false,
+  currentOrder: null,  // index trong state.orders
+  histDetailOrder: null, // object đơn lịch sử đang xem
+  histDetailFrom: 'history', // để biết back về đâu
+  modal: { stopIndex: null, resultStatus: null, photoData: null }
+};
+
+// ---- UTILS ----
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function showLoading(t) {
+  document.getElementById('loading-text').textContent = t || 'Đang xử lý...';
+  document.getElementById('loading').style.display = 'flex';
+}
+function hideLoading() { document.getElementById('loading').style.display = 'none'; }
+async function apiGet(p) {
+  const res = await fetch(API_URL + '?' + new URLSearchParams(p));
+  return res.json();
+}
+async function apiPost(body) {
+  const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(body) });
+  return res.json();
+}
+function viewImg(src) {
+  document.getElementById('img-viewer-src').src = src;
+  document.getElementById('img-viewer').style.display = 'flex';
+}
+function closeImgViewer() { document.getElementById('img-viewer').style.display = 'none'; }
+
+// ---- TAB BAR ----
+function showTabBar() { document.getElementById('tab-bar').classList.add('visible'); }
+function hideTabBar() { document.getElementById('tab-bar').classList.remove('visible'); }
+function switchTab(tab) {
+  document.getElementById('tab-today').classList.toggle('active', tab === 'today');
+  document.getElementById('tab-history').classList.toggle('active', tab === 'history');
+  if (tab === 'today') {
+    renderOrders();
+    show('screen-home');
+  } else {
+    loadHistory();
+    show('screen-history');
   }
-
-  const updatesSheet = ss.getSheetByName('driver_updates');
-  if (updatesSheet.getLastRow() === 0) {
-    updatesSheet.appendRow(UPDATES_HEADERS);
-    updatesSheet.getRange(1, 1, 1, UPDATES_HEADERS.length)
-      .setFontWeight('bold').setBackground('#1D9E75').setFontColor('#ffffff');
-  }
-
-  let ordersSheet = ss.getSheetByName('orders');
-  if (!ordersSheet) {
-    ordersSheet = ss.insertSheet('orders');
-    ordersSheet.appendRow(ORDERS_HEADERS);
-    ordersSheet.getRange(1, 1, 1, ORDERS_HEADERS.length)
-      .setFontWeight('bold').setBackground('#1D9E75').setFontColor('#ffffff');
-  }
-
-  return 'Setup hoàn tất!';
 }
 
-// ============================================================
-// doGet
-// ============================================================
-function doGet(e) {
-  const action = e.parameter.action || '';
+// ---- LOGIN ----
+async function doLogin() {
+  const code = document.getElementById('inp-code').value.trim();
+  if (!code) { showLoginError('Vui lòng nhập mã tài xế'); return; }
+  showLoading('Đang đăng nhập...');
   try {
-    let result;
-    if (action === 'login') {
-      result = loginDriver(e.parameter.code);
-    } else if (action === 'getOrders') {
-      const includeAll = e.parameter.includeAll === '1';
-      result = getOrdersByDriver(e.parameter.code, includeAll);
-    } else if (action === 'getAdminOrders') {
-      result = getAdminOrders();
-    } else if (action === 'getDrivers') {
-      result = getDrivers();
+    const res = await apiGet({ action: 'login', code });
+    hideLoading();
+    if (res.success) {
+      state.driver = res.driver;
+      document.getElementById('home-name').textContent = res.driver.name;
+      document.getElementById('hist-driver-name').textContent = res.driver.name;
+      const now = new Date();
+      document.getElementById('home-date').textContent = now.toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit' });
+      await loadOrders();
+      showTabBar();
+      show('screen-home');
     } else {
-      result = { success: false, message: 'Action không hợp lệ' };
+      showLoginError(res.message || 'Đăng nhập thất bại');
     }
-    return jsonResponse(result);
-  } catch (err) {
-    return jsonResponse({ success: false, message: err.toString() });
+  } catch (e) {
+    hideLoading();
+    showLoginError('Lỗi kết nối, vui lòng thử lại');
   }
 }
+function showLoginError(msg) {
+  const el = document.getElementById('login-error');
+  el.textContent = msg; el.style.display = 'block';
+}
+function doLogout() {
+  state = { driver: null, orders: [], histOrders: [], histLoaded: false, currentOrder: null, histDetailOrder: null, histDetailFrom: 'history', modal: { stopIndex: null, resultStatus: null, photoData: null } };
+  document.getElementById('inp-code').value = '';
+  document.getElementById('login-error').style.display = 'none';
+  hideTabBar();
+  show('screen-login');
+}
 
-// ============================================================
-// doPost
-// ============================================================
-function doPost(e) {
+// ---- LOAD ORDERS (active) ----
+async function loadOrders() {
+  showLoading('Đang tải đơn hàng...');
   try {
-    const body = JSON.parse(e.postData.contents);
-    const action = body.action || '';
-    let result;
-    if (action === 'updateStop') {
-      result = updateStop(body);
-    } else if (action === 'finishOrder') {
-      result = finishOrder(body);
-    } else if (action === 'createOrder') {
-      result = createOrder(body);
-    } else if (action === 'assignDriver') {
-      result = assignDriver(body);
-    } else {
-      result = { success: false, message: 'Action không hợp lệ' };
-    }
-    return jsonResponse(result);
-  } catch (err) {
-    return jsonResponse({ success: false, message: err.toString() });
-  }
+    const res = await apiGet({ action: 'getOrders', code: state.driver.code });
+    hideLoading();
+    if (res.success) state.orders = res.orders || [];
+  } catch (e) { hideLoading(); }
+  renderOrders();
 }
 
-// ============================================================
-// DRIVER APP FUNCTIONS
-// ============================================================
-function loginDriver(code) {
-  if (!code) return { success: false, message: 'Thiếu mã tài xế' };
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-  const sheet = ss.getSheetByName('drivers');
-  const data = sheet.getDataRange().getValues();
-  const headers = data[0];
-  const codeIdx = headers.indexOf('driver_code');
-  const nameIdx = headers.indexOf('driver_name');
-  const statusIdx = headers.indexOf('status');
-  for (let i = 1; i < data.length; i++) {
-    if (String(data[i][codeIdx]).trim() === String(code).trim()) {
-      const status = data[i][statusIdx];
-      if (status === 'locked') return { success: false, message: 'Tài khoản đã bị khóa' };
-      if (status === 'off') return { success: false, message: 'Tài khoản đã nghỉ' };
-      return {
-        success: true,
-        driver: { code: data[i][codeIdx], name: data[i][nameIdx], status: status }
-      };
-    }
-  }
-  return { success: false, message: 'Không tìm thấy tài xế' };
+function getProgress(o) {
+  const t = o.stops.length;
+  const d = o.stops.filter(s => s.status === 'done' || s.status === 'fail').length;
+  return { done: d, total: t };
+}
+function getStatus(o) {
+  const { done, total } = getProgress(o);
+  return done === 0 ? 'pending' : done === total ? 'done' : 'active';
 }
 
-// includeAll = true  → trả tất cả đơn của tài xế (gồm done) — dùng cho tab Lịch sử
-// includeAll = false → chỉ trả đơn chưa done — dùng cho tab Hôm nay
-function getOrdersByDriver(driverCode, includeAll) {
-  if (!driverCode) return { success: false, message: 'Thiếu mã tài xế' };
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-  const sheet = ss.getSheetByName('orders');
-  if (!sheet) return { success: true, orders: [] };
-  const data = sheet.getDataRange().getValues();
-  if (data.length <= 1) return { success: true, orders: [] };
-  const headers = data[0];
-  const orders = [];
+function renderOrders() {
+  const list = document.getElementById('order-list');
+  if (!state.orders || state.orders.length === 0) {
+    list.innerHTML = `<div class="empty-state"><i class="ti ti-inbox"></i><p>Không có đơn hàng hôm nay</p></div>`;
+    return;
+  }
+  list.innerHTML = state.orders.map((o, i) => {
+    const { done, total } = getProgress(o);
+    const st = getStatus(o);
+    const pct = Math.round(done / total * 100);
+    const bc = st === 'done' ? 'badge-done' : st === 'active' ? 'badge-active' : 'badge-pending';
+    const bt = st === 'done' ? 'Hoàn thành' : st === 'active' ? 'Đang giao' : 'Chờ giao';
+    const pickups = o.stops.filter(s => s.type === 'pickup').length;
+    const drops = o.stops.filter(s => s.type === 'drop').length;
+    return `<div class="order-card" onclick="openOrder(${i})">
+      <div class="order-top"><span class="order-id">${o.id}</span><span class="badge ${bc}">${bt}</span></div>
+      <div class="order-meta">
+        <span><i class="ti ti-building-warehouse" style="font-size:13px"></i> ${pickups} lấy</span>
+        <span><i class="ti ti-map-pin" style="font-size:13px"></i> ${drops} giao</span>
+        <span><i class="ti ti-check" style="font-size:13px"></i> ${done}/${total}</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+}
 
-  for (let i = 1; i < data.length; i++) {
-    const row = data[i];
-    const obj = {};
-    headers.forEach(function(h, j) { obj[h] = row[j]; });
+function openOrder(idx) {
+  state.currentOrder = idx;
+  renderDetail();
+  hideTabBar();
+  show('screen-detail');
+}
+function goHome() {
+  renderOrders();
+  showTabBar();
+  document.getElementById('tab-today').classList.add('active');
+  document.getElementById('tab-history').classList.remove('active');
+  show('screen-home');
+}
 
-    const sameDriver = String(obj.driver_code).trim() === String(driverCode).trim();
-    if (!sameDriver) continue;
-    if (!includeAll && obj.status === 'done') continue;
+// ---- ORDER DETAIL ----
+function renderDetail() {
+  const order = state.orders[state.currentOrder];
+  const { done, total } = getProgress(order);
+  document.getElementById('detail-id').textContent = order.id;
+  document.getElementById('detail-stops-sum').textContent = `${done}/${total} điểm hoàn thành`;
+  document.getElementById('finish-btn').style.display = done === total ? 'flex' : 'none';
+  const firstPending = order.stops.findIndex(s => s.status === 'pending');
 
-    try { obj.stops = JSON.parse(obj.stops || '[]'); } catch(e) { obj.stops = []; }
+  document.getElementById('detail-body').innerHTML = order.stops.map((stop, si) => {
+    const isActive = si === firstPending;
+    const isDone = stop.status === 'done';
+    const isFail = stop.status === 'fail';
+    const isPickup = stop.type === 'pickup';
+    const cc = isDone ? 'done-card' : isFail ? 'fail-card' : isActive ? 'active-card' : '';
+    const dc = isDone ? 'dot-done' : isFail ? 'dot-fail' : isActive ? 'dot-active' : 'dot-pending';
+    const lbl = isPickup ? `Điểm lấy hàng ${si + 1}` : `Điểm giao hàng ${si}`;
+    const ico = isPickup ? 'ti-building-warehouse' : 'ti-map-pin';
+    const phone = stop.phone || stop.sdt || '';
+    const phoneHtml = phone ? `<div class="stop-phone-row">
+      <i class="ti ti-phone" style="font-size:14px;color:var(--brand)"></i>
+      <span class="stop-phone-num">${phone}</span>
+      <a class="btn-call" href="tel:${phone}"><i class="ti ti-phone-call" style="font-size:12px"></i> Gọi</a>
+    </div>` : '';
 
-    orders.push({
-      id: obj.order_id,
-      date: obj.date ? String(obj.date) : '',
-      stops: obj.stops,
-      status: obj.status,
-      note: obj.note || '',
-      created_at: obj.created_at ? String(obj.created_at) : ''
+    let actions = '';
+    if (isActive) {
+      const sl = isPickup ? 'Đã lấy hàng' : 'Đã giao hàng';
+      const fl = isPickup ? 'Lấy thất bại' : 'Giao thất bại';
+      actions = `<div class="stop-actions">
+        <button class="btn-success" onclick="openPhotoModal(${si},'done')"><i class="ti ti-camera"></i> ${sl}</button>
+        <button class="btn-fail" onclick="openPhotoModal(${si},'fail')"><i class="ti ti-camera"></i> ${fl}</button>
+      </div>`;
+    }
+
+    let sl2 = '';
+    if (isDone) {
+      const th = stop.photo_data ? `<img class="proof-thumb" src="${stop.photo_data}" onclick="viewImg(this.src)" />` : '';
+      sl2 = `<div style="margin-top:8px;font-size:12px;color:#3B6D11;font-weight:600"><i class="ti ti-circle-check"></i> Hoàn thành</div>${th}`;
+    } else if (isFail) {
+      const th = stop.photo_data ? `<img class="proof-thumb" src="${stop.photo_data}" onclick="viewImg(this.src)" />` : '';
+      sl2 = `<div style="margin-top:8px;font-size:12px;color:var(--danger);font-weight:600"><i class="ti ti-circle-x"></i> Thất bại${stop.reason ? ' — ' + stop.reason : ''}</div>${th}`;
+    } else if (!isActive) {
+      sl2 = `<div style="margin-top:8px;font-size:12px;color:var(--text-sub)">Chờ xử lý</div>`;
+    }
+
+    return `<div class="stop-card ${cc}">
+      <div class="stop-header">
+        <span class="stop-label"><i class="ti ${ico}" style="font-size:14px"></i>${lbl}</span>
+        <span class="status-dot ${dc}"></span>
+      </div>
+      <div class="stop-name">${stop.name}</div>
+      <div class="stop-addr">${stop.addr || ''}</div>
+      ${phoneHtml}${sl2}${actions}
+    </div>`;
+  }).join('');
+}
+
+async function markStop(si, status, extra) {
+  const order = state.orders[state.currentOrder];
+  order.stops[si].status = status;
+  if (extra) Object.assign(order.stops[si], extra);
+  renderDetail();
+  try {
+    await apiPost({
+      action: 'updateStop',
+      driver_code: state.driver.code,
+      driver_name: state.driver.name,
+      order_id: order.id,
+      stop_index: si,
+      stop_type: order.stops[si].type,
+      stop_name: order.stops[si].name,
+      stop_addr: order.stops[si].addr || '',
+      status,
+      reason: extra ? extra.reason || '' : '',
+      photo_url: extra && extra.photo_data ? 'photo_attached' : ''
     });
-  }
+  } catch (e) { console.log('Lỗi gửi update:', e); }
+}
 
-  // Đơn active lên đầu, đơn done xuống cuối (mới nhất lên trước trong done)
-  orders.sort(function(a, b) {
-    if (a.status === 'done' && b.status !== 'done') return 1;
-    if (a.status !== 'done' && b.status === 'done') return -1;
-    if (a.status === 'done' && b.status === 'done') {
-      return new Date(b.created_at) - new Date(a.created_at);
+async function finishOrder() {
+  const order = state.orders[state.currentOrder];
+  const done = order.stops.filter(s => s.status === 'done').length;
+  const fail = order.stops.filter(s => s.status === 'fail').length;
+  showLoading('Đang kết thúc đơn...');
+  try {
+    await apiPost({ action: 'finishOrder', driver_code: state.driver.code, driver_name: state.driver.name, order_id: order.id, done_count: done, fail_count: fail });
+  } catch (e) {}
+  hideLoading();
+  // move to history
+  order.status = 'done';
+  state.histOrders.unshift(order); // prepend vào lịch sử local
+  state.orders.splice(state.currentOrder, 1);
+  alert(`Đơn ${order.id} đã kết thúc!\n✅ Hoàn thành: ${done} điểm\n❌ Thất bại: ${fail} điểm`);
+  goHome();
+}
+
+// ---- HISTORY ----
+async function loadHistory() {
+  if (state.histLoaded) { renderHistory(); return; }
+  showLoading('Đang tải lịch sử...');
+  try {
+    const res = await apiGet({ action: 'getOrders', code: state.driver.code, includeAll: '1' });
+    hideLoading();
+    // API hiện tại chỉ trả đơn chưa done — lịch sử local từ finishOrder()
+    // Nếu sau này API hỗ trợ includeAll thì merge vào đây
+    if (res.success && res.orders) {
+      // Lấy đơn done từ API nếu có
+      const apiDone = res.orders.filter(o => o.status === 'done');
+      // Merge với local (tránh trùng)
+      const existing = new Set(state.histOrders.map(o => o.id || o.order_id));
+      apiDone.forEach(o => { if (!existing.has(o.id || o.order_id)) state.histOrders.push(o); });
     }
-    return 0;
-  });
-
-  return { success: true, orders: orders };
+    state.histLoaded = true;
+  } catch (e) { hideLoading(); state.histLoaded = true; }
+  renderHistory();
 }
 
-function updateStop(body) {
-  const required = ['driver_code', 'driver_name', 'order_id', 'stop_index', 'stop_type', 'stop_name', 'stop_addr', 'status'];
-  for (var k = 0; k < required.length; k++) {
-    var field = required[k];
-    if (!body[field] && body[field] !== 0) {
-      return { success: false, message: 'Thiếu field: ' + field };
+function renderHistory() {
+  const list = document.getElementById('hist-list');
+  if (!state.histOrders || state.histOrders.length === 0) {
+    list.innerHTML = `<div class="empty-state"><i class="ti ti-history"></i><p>Chưa có đơn nào hoàn thành</p></div>`;
+    return;
+  }
+  list.innerHTML = state.histOrders.map((o, i) => {
+    const stops = o.stops || [];
+    const doneCount = stops.filter(s => s.status === 'done').length;
+    const failCount = stops.filter(s => s.status === 'fail').length;
+    const dateStr = o.date ? o.date : (o.created_at ? new Date(o.created_at).toLocaleDateString('vi-VN') : '');
+    return `<div class="hist-card" onclick="openHistDetail(${i})">
+      <div class="hist-top">
+        <span class="hist-id">${o.id || o.order_id}</span>
+        <span class="badge badge-done">Hoàn thành</span>
+      </div>
+      <div class="hist-date"><i class="ti ti-calendar" style="font-size:12px"></i> ${dateStr}</div>
+      <div class="hist-summary">
+        <span><i class="ti ti-map-pin" style="font-size:12px"></i> ${stops.length} điểm</span>
+        <span class="hist-done"><i class="ti ti-circle-check" style="font-size:12px"></i> ${doneCount} thành công</span>
+        ${failCount > 0 ? `<span class="hist-fail"><i class="ti ti-circle-x" style="font-size:12px"></i> ${failCount} thất bại</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openHistDetail(idx) {
+  state.histDetailOrder = state.histOrders[idx];
+  state.histDetailFrom = 'history';
+  renderHistDetail();
+  hideTabBar();
+  show('screen-hist-detail');
+}
+
+function goBackFromHistDetail() {
+  showTabBar();
+  document.getElementById('tab-history').classList.add('active');
+  document.getElementById('tab-today').classList.remove('active');
+  show('screen-history');
+}
+
+function renderHistDetail() {
+  const o = state.histDetailOrder;
+  const stops = o.stops || [];
+  const doneCount = stops.filter(s => s.status === 'done').length;
+  const failCount = stops.filter(s => s.status === 'fail').length;
+  const dateStr = o.date || (o.created_at ? new Date(o.created_at).toLocaleDateString('vi-VN') : '');
+
+  document.getElementById('hd-title').textContent = o.id || o.order_id;
+  document.getElementById('hd-sub').textContent = `Ngày ${dateStr} · ${stops.length} điểm`;
+
+  // Summary bar
+  const summaryHtml = `<div class="hd-summary-bar">
+    <div class="hd-sum-item hd-sum-total"><div class="hd-sum-num">${stops.length}</div><div class="hd-sum-lbl">Tổng điểm</div></div>
+    <div class="hd-sum-item hd-sum-done"><div class="hd-sum-num">${doneCount}</div><div class="hd-sum-lbl">Thành công</div></div>
+    <div class="hd-sum-item hd-sum-fail"><div class="hd-sum-num">${failCount}</div><div class="hd-sum-lbl">Thất bại</div></div>
+  </div>`;
+
+  // Stops
+  const stopsHtml = stops.map((stop, si) => {
+    const isDone = stop.status === 'done';
+    const isFail = stop.status === 'fail';
+    const isPickup = stop.type === 'pickup';
+    const cardClass = isDone ? 'hd-done' : isFail ? 'hd-fail' : '';
+    const ico = isPickup ? 'ti-building-warehouse' : 'ti-map-pin';
+    const lbl = isPickup ? `Điểm lấy hàng ${si + 1}` : `Điểm giao hàng ${si}`;
+    const phone = stop.phone || stop.sdt || '';
+
+    let statusHtml = '';
+    if (isDone) {
+      statusHtml = `<div class="hd-status-row hd-status-done"><i class="ti ti-circle-check"></i> Hoàn thành</div>`;
+    } else if (isFail) {
+      statusHtml = `<div class="hd-status-row hd-status-fail"><i class="ti ti-circle-x"></i> Thất bại${stop.reason ? ' — ' + stop.reason : ''}</div>`;
     }
-  }
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-  const sheet = ss.getSheetByName('driver_updates');
-  sheet.appendRow([
-    new Date(), body.driver_code, body.driver_name, body.order_id,
-    body.stop_index, body.stop_type, body.stop_name, body.stop_addr,
-    body.status, body.reason || '', body.photo_url || ''
-  ]);
-  return { success: true, message: 'Đã lưu cập nhật' };
+
+    const thumbHtml = stop.photo_data
+      ? `<img class="hd-proof-thumb" src="${stop.photo_data}" onclick="viewImg(this.src)" title="Xem ảnh bằng chứng" />`
+      : '';
+
+    return `<div class="hd-stop-card ${cardClass}">
+      <div class="hd-stop-header">
+        <span class="hd-stop-lbl"><i class="ti ${ico}" style="font-size:14px"></i>${lbl}</span>
+      </div>
+      <div class="hd-stop-name">${stop.name}</div>
+      ${stop.addr ? `<div class="hd-stop-addr">${stop.addr}</div>` : ''}
+      ${phone ? `<div class="hd-stop-phone"><i class="ti ti-phone" style="font-size:12px"></i> ${phone}</div>` : ''}
+      ${statusHtml}${thumbHtml}
+    </div>`;
+  }).join('');
+
+  document.getElementById('hd-body').innerHTML = summaryHtml + stopsHtml;
 }
 
-function finishOrder(body) {
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-  const updatesSheet = ss.getSheetByName('driver_updates');
-  updatesSheet.appendRow([
-    new Date(), body.driver_code, body.driver_name, body.order_id,
-    'FINISH', 'finish', 'Kết thúc đơn', '', 'done',
-    'Hoàn thành: ' + (body.done_count || 0) + ', Thất bại: ' + (body.fail_count || 0), ''
-  ]);
+// ---- PHOTO MODAL ----
+function openPhotoModal(si, resultStatus) {
+  const order = state.orders[state.currentOrder];
+  const stop = order.stops[si];
+  const isPickup = stop.type === 'pickup';
+  const isFail = resultStatus === 'fail';
+  state.modal = { stopIndex: si, resultStatus, photoData: null };
 
-  // Cập nhật trạng thái đơn thành done
-  const ordersSheet = ss.getSheetByName('orders');
-  if (ordersSheet) {
-    const data = ordersSheet.getDataRange().getValues();
-    const headers = data[0];
-    const idIdx = headers.indexOf('order_id');
-    const statusIdx = headers.indexOf('status');
-    for (let i = 1; i < data.length; i++) {
-      if (String(data[i][idIdx]).trim() === String(body.order_id).trim()) {
-        ordersSheet.getRange(i + 1, statusIdx + 1).setValue('done');
-        break;
-      }
-    }
+  const titleEl = document.getElementById('modal-title-text');
+  if (isFail) {
+    titleEl.innerHTML = `<i class="ti ti-alert-circle" style="color:var(--danger)"></i> ${isPickup ? 'Lấy hàng thất bại' : 'Giao hàng thất bại'}`;
+  } else {
+    titleEl.innerHTML = `<i class="ti ti-camera" style="color:var(--brand)"></i> ${isPickup ? 'Xác nhận lấy hàng' : 'Xác nhận giao hàng'}`;
   }
-  return { success: true, message: 'Đơn đã kết thúc' };
+
+  document.getElementById('modal-info-label').textContent = isPickup ? 'Người giao / kho' : 'Người nhận hàng';
+  document.getElementById('modal-info-name').textContent = stop.name || '—';
+  const phone = stop.phone || stop.sdt || '';
+  document.getElementById('modal-info-phone').textContent = phone ? '📞 ' + phone : '';
+  document.getElementById('reason-field').style.display = isFail ? 'block' : 'none';
+
+  const zone = document.getElementById('photo-zone');
+  zone.className = 'photo-zone';
+  zone.style.display = 'block';
+  document.getElementById('photo-preview').src = '';
+  document.getElementById('photo-preview').style.display = 'none';
+  document.getElementById('photo-retake').style.display = 'none';
+  document.getElementById('photo-hint').style.display = 'none';
+  document.getElementById('file-inp').value = '';
+
+  const btn = document.getElementById('modal-confirm-btn');
+  if (isFail) { btn.className = 'btn-confirm-fail'; btn.textContent = 'Xác nhận thất bại'; }
+  else { btn.className = 'btn-confirm-success'; btn.textContent = 'Xác nhận hoàn thành'; }
+
+  document.getElementById('photo-modal').style.display = 'flex';
 }
 
-// ============================================================
-// ADMIN APP FUNCTIONS
-// ============================================================
-function getAdminOrders() {
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-  const sheet = ss.getSheetByName('orders');
-  if (!sheet) return { success: true, orders: [] };
-  const data = sheet.getDataRange().getValues();
-  if (data.length <= 1) return { success: true, orders: [] };
-  const headers = data[0];
-  const orders = [];
-  for (let i = 1; i < data.length; i++) {
-    const row = data[i];
-    const obj = {};
-    headers.forEach((h, j) => { obj[h] = row[j]; });
-    try { obj.stops = JSON.parse(obj.stops || '[]'); } catch(e) { obj.stops = []; }
-    orders.push(obj);
-  }
-  return { success: true, orders: orders };
+function closeModal() {
+  document.getElementById('photo-modal').style.display = 'none';
+  state.modal = { stopIndex: null, resultStatus: null, photoData: null };
 }
-
-function getDrivers() {
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-  const sheet = ss.getSheetByName('drivers');
-  const data = sheet.getDataRange().getValues();
-  if (data.length <= 1) return { success: true, drivers: [] };
-  const headers = data[0];
-  const drivers = [];
-  for (let i = 1; i < data.length; i++) {
-    const row = data[i];
-    const obj = {};
-    headers.forEach((h, j) => { obj[h] = row[j]; });
-    drivers.push(obj);
-  }
-  return { success: true, drivers: drivers };
+function triggerPhoto() { document.getElementById('file-inp').click(); }
+function handlePhoto(inp) {
+  if (!inp.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const p = document.getElementById('photo-preview');
+    p.src = e.target.result; p.style.display = 'block';
+    document.getElementById('photo-zone').style.display = 'none';
+    document.getElementById('photo-retake').style.display = 'flex';
+    document.getElementById('photo-hint').style.display = 'none';
+    state.modal.photoData = e.target.result;
+  };
+  reader.readAsDataURL(inp.files[0]);
 }
-
-function createOrder(body) {
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-  let sheet = ss.getSheetByName('orders');
-  if (!sheet) {
-    sheet = ss.insertSheet('orders');
-    sheet.appendRow(ORDERS_HEADERS);
-    sheet.getRange(1, 1, 1, ORDERS_HEADERS.length)
-      .setFontWeight('bold').setBackground('#1D9E75').setFontColor('#ffffff');
-  }
-  const data = sheet.getDataRange().getValues();
-  const headers = data[0];
-  const idIdx = headers.indexOf('order_id');
-  for (let i = 1; i < data.length; i++) {
-    if (String(data[i][idIdx]).trim() === String(body.order_id).trim()) {
-      return { success: false, message: 'Mã đơn đã tồn tại' };
-    }
-  }
-  sheet.appendRow([
-    body.order_id, body.date || '', body.driver_code || '', body.driver_name || '',
-    'pending', body.note || '', JSON.stringify(body.stops || []), new Date()
-  ]);
-  return { success: true, message: 'Tạo đơn thành công' };
+function retakePhoto() {
+  document.getElementById('file-inp').value = '';
+  document.getElementById('photo-preview').style.display = 'none';
+  document.getElementById('photo-preview').src = '';
+  document.getElementById('photo-zone').style.display = 'block';
+  document.getElementById('photo-retake').style.display = 'none';
+  state.modal.photoData = null;
+  document.getElementById('file-inp').click();
 }
-
-function assignDriver(body) {
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-  const sheet = ss.getSheetByName('orders');
-  if (!sheet) return { success: false, message: 'Không tìm thấy sheet orders' };
-  const data = sheet.getDataRange().getValues();
-  const headers = data[0];
-  const idIdx = headers.indexOf('order_id');
-  const driverCodeIdx = headers.indexOf('driver_code');
-  const driverNameIdx = headers.indexOf('driver_name');
-  for (let i = 1; i < data.length; i++) {
-    if (String(data[i][idIdx]).trim() === String(body.order_id).trim()) {
-      sheet.getRange(i + 1, driverCodeIdx + 1).setValue(body.driver_code);
-      sheet.getRange(i + 1, driverNameIdx + 1).setValue(body.driver_name);
-      return { success: true, message: 'Gán tài xế thành công' };
-    }
+async function confirmModal() {
+  if (!state.modal.photoData) {
+    const zone = document.getElementById('photo-zone');
+    zone.classList.add('required-flash');
+    setTimeout(() => zone.classList.remove('required-flash'), 600);
+    document.getElementById('photo-hint').style.display = 'block';
+    return;
   }
-  return { success: false, message: 'Không tìm thấy đơn hàng' };
+  const { stopIndex, resultStatus, photoData } = state.modal;
+  const reason = resultStatus === 'fail' ? document.getElementById('fail-reason').value : '';
+  closeModal();
+  await markStop(stopIndex, resultStatus, { reason, photo_data: photoData });
 }
-
-// ============================================================
-// HELPER
-// ============================================================
-function jsonResponse(data) {
-  return ContentService
-    .createTextOutput(JSON.stringify(data))
-    .setMimeType(ContentService.MimeType.JSON);
-}
+</script>
+</body>
+</html>
