@@ -584,8 +584,7 @@ async function submitOrder() {
 
 // ---- CANCEL ORDER ----
 async function cancelOrder(orderId) {
-  if (!confirm('Bạn có chắc muốn hủy đơn ' + orderId + '?
-Hành động này không thể hoàn tác.')) return;
+  if (!confirm('Bạn có chắc muốn hủy đơn ' + orderId + '?\nHành động này không thể hoàn tác.')) return;
   showLoading('Đang hủy đơn...');
   try {
     const res = await apiPost({ action: 'cancelOrder', order_id: orderId });
