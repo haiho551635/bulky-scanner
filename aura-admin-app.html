@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AURA — Quản lý đơn hàng</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; color: #1a1a1a; }
@@ -162,6 +163,7 @@ tr:hover td { background: #fafafa; }
         <option value="done">Hoàn thành</option>
       </select>
       <button class="btn btn-secondary btn-sm" onclick="loadOrders()"><i class="ti ti-refresh"></i> Làm mới</button>
+      <button class="btn btn-primary btn-sm" onclick="exportExcel()"><i class="ti ti-file-spreadsheet"></i> Tải Excel</button>
     </div>
     <div class="card" style="padding:0">
       <div class="table-wrap">
@@ -571,6 +573,56 @@ async function submitOrder() {
     hideLoading();
     showToast('Lỗi kết nối', 'error');
   }
+}
+
+
+// ---- EXPORT EXCEL ----
+function exportExcel() {
+  const orders = appData.orders;
+  if (!orders.length) { showToast('Không có đơn hàng để xuất', 'error'); return; }
+
+  const rows = [];
+  orders.forEach(o => {
+    const orderId = o.order_id || o.id || '';
+    const date = o.date || '';
+    const driverName = o.driver_name || '';
+    const driverCode = o.driver_code || '';
+    const driver = appData.drivers.find(d => (d.driver_code || d.code) === driverCode);
+    const plate = driver ? (driver.license_plate || '') : '';
+    const note = o.note || '';
+    const statusMap = { pending: 'Chờ giao', inprogress: 'Đang giao', done: 'Hoàn thành' };
+    const status = statusMap[o.status] || o.status || '';
+    const createdAt = o.created_at || '';
+    const stops = o.stops || [];
+
+    stops.forEach((stop, si) => {
+      rows.push({
+        'Mã đơn': orderId,
+        'Ngày giao': date,
+        'Trạng thái đơn': status,
+        'Tài xế': driverName,
+        'Mã TX': driverCode,
+        'Biển số xe': plate,
+        'Ghi chú': note,
+        'STT điểm': si + 1,
+        'Loại điểm': stop.type === 'pickup' ? 'Lấy hàng' : 'Giao hàng',
+        'Tên': stop.name || '',
+        'Địa chỉ': stop.addr || '',
+        'SĐT': stop.phone || stop.sdt || '',
+        'Trạng thái điểm': stop.status === 'done' ? 'Hoàn thành' : stop.status === 'fail' ? 'Thất bại' : 'Chưa xử lý',
+        'Lý do thất bại': stop.reason || '',
+        'Thời gian tạo đơn': createdAt
+      });
+    });
+  });
+
+  const ws = XLSX.utils.json_to_sheet(rows);
+  ws['!cols'] = [15,14,14,18,8,12,20,8,12,22,30,14,14,20,22].map(w => ({ wch: w }));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Don hang');
+  const today = new Date().toISOString().slice(0,10);
+  XLSX.writeFile(wb, 'AURA_DonHang_' + today + '.xlsx');
+  showToast('Đã xuất ' + orders.length + ' đơn hàng ra Excel!');
 }
 
 function resetForm() {
