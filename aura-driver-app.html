@@ -371,6 +371,24 @@ function switchTab(tab) {
   }
 }
 
+// ---- AUTO LOGIN khi reload ----
+window.addEventListener("load", async () => {
+  const saved = localStorage.getItem("aura_driver");
+  if (saved) {
+    try {
+      const driver = JSON.parse(saved);
+      state.driver = driver;
+      document.getElementById("home-name").textContent = driver.name;
+      document.getElementById("hist-driver-name").textContent = driver.name;
+      const now = new Date();
+      document.getElementById("home-date").textContent = now.toLocaleDateString("vi-VN", { weekday: "long", day: "2-digit", month: "2-digit" });
+      await loadOrders();
+      showTabBar();
+      show("screen-home");
+    } catch(e) { localStorage.removeItem("aura_driver"); }
+  }
+});
+
 // ---- LOGIN ----
 async function doLogin() {
   const code = document.getElementById('inp-code').value.trim();
@@ -381,6 +399,7 @@ async function doLogin() {
     hideLoading();
     if (res.success) {
       state.driver = res.driver;
+      localStorage.setItem("aura_driver", JSON.stringify(res.driver));
       document.getElementById('home-name').textContent = res.driver.name;
       document.getElementById('hist-driver-name').textContent = res.driver.name;
       const now = new Date();
@@ -401,6 +420,7 @@ function showLoginError(msg) {
   el.textContent = msg; el.style.display = 'block';
 }
 function doLogout() {
+  localStorage.removeItem("aura_driver");
   state = { driver: null, orders: [], histOrders: [], histLoaded: false, currentOrder: null, histDetailOrder: null, histDetailFrom: 'history', modal: { stopIndex: null, resultStatus: null, photoData: null } };
   document.getElementById('inp-code').value = '';
   document.getElementById('login-error').style.display = 'none';
