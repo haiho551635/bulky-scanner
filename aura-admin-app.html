@@ -643,8 +643,18 @@ function showPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   const page=document.getElementById('page-'+name);
-  if(page) page.classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n=>{ if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+name+"'")) n.classList.add('active'); });
+  if(page){ page.classList.add('active'); } else { console.warn('Page not found:',name); return; }
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    const oc=n.getAttribute('onclick')||'';
+    if(oc.includes("'"+name+"'")) n.classList.add('active');
+  });
+  // Load data cho từng trang
+  if(name==='orders') renderOrderTable();
+  if(name==='drivers') renderDriverTable();
+  if(name==='vehicles') renderVehicleList();
+  if(name==='quotes') renderQuotes();
+  if(name==='contracts') renderContracts();
+  if(name==='costs') renderCosts();
 }
 function openModal(id){ document.getElementById(id).classList.add('open'); }
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
