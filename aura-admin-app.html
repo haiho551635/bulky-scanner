@@ -767,21 +767,12 @@ function saveQuote(){
   if(!document.getElementById('qm-partner').value){toast('Vui lòng nhập tên đối tác','r');return;}
   var q={id:editQIdx!==null?db.quotes[editQIdx].id:'BG-'+Date.now(),type:document.getElementById('qm-type').value,partner:document.getElementById('qm-partner').value,vtype:document.getElementById('qm-vtype').value,route:document.getElementById('qm-route').value,price:document.getElementById('qm-price').value,valid:document.getElementById('qm-valid').value,note:document.getElementById('qm-note').value,date:editQIdx!==null?db.quotes[editQIdx].date:new Date().toISOString(),file:upFiles.qm?upFiles.qm.name:'',status:'active'};
   if(upFiles.qm){
-    // Lưu file data trực tiếp vào object
     q.file=upFiles.qm.name;
     q.fileData=upFiles.qm.data;
     q.fileUrl=null;
     if(editQIdx!==null) db.quotes[editQIdx]=q; else db.quotes.push(q);
     editQIdx=null;resetUp('qm');renderQuotes();closeM('quote-modal');
-    toast('Đã lưu báo giá + file!');
-    // Thử upload Drive ngầm
-    uploadToDrive(upFiles.qm,function(res){
-      if(res&&res.fileUrl){
-        var idx=db.quotes.findIndex(function(x){return x.id===q.id;});
-        if(idx>=0){db.quotes[idx].fileUrl=res.fileUrl;db.quotes[idx].fileData=null;renderQuotes();}
-        toast('File đã lên Drive!');
-      }
-    });
+    toast('Đã lưu!');
   } else {
     if(editQIdx!==null) db.quotes[editQIdx]=q; else db.quotes.push(q);
     editQIdx=null;renderQuotes();closeM('quote-modal');toast('Đã lưu báo giá');
@@ -806,11 +797,11 @@ function renderQuotes(){
   var vl=function(t){return t==='van_1t'?'Van 1T':t==='truck_2t'?'Tải 2T':'Cả hai';};
   document.getElementById('qout-tbody').innerHTML=out.length?out.map(function(q){
     var ri=db.quotes.indexOf(q);
-    return '<tr><td class="td-b td-m">'+q.id+'</td><td class="td-b">'+q.partner+'</td><td style="font-size:12px">'+vl(q.vtype)+'</td><td style="font-size:12px">'+(q.route||'—')+'</td><td style="font-family:\'DM Mono\',monospace;font-size:12px">'+fmtM(q.price)+'</td><td style="font-size:12px">'+fmtD(q.date)+'</td><td style="font-size:12px">'+fmtD(q.valid)+'</td><td><span class="badge b-green">Hiệu lực</span></td><td style="font-size:12px;color:var(--text3)">'+(q.file||'—')+'</td><td><div class="act-btns"><button class="bico" onclick="editQuote('+ri+')" title="Sửa"><i class="ti ti-edit"></i></button><button class="bico del" onclick="delQuote('+ri+')" title="Xóa"><i class="ti ti-trash"></i></button></div></td></tr>';
+    return '<tr><td class="td-b td-m">'+q.id+'</td><td class="td-b">'+q.partner+'</td><td style="font-size:12px">'+vl(q.vtype)+'</td><td style="font-size:12px">'+(q.route||'—')+'</td><td style="font-family:\'DM Mono\',monospace;font-size:12px">'+fmtM(q.price)+'</td><td style="font-size:12px">'+fmtD(q.date)+'</td><td style="font-size:12px">'+fmtD(q.valid)+'</td><td><span class="badge b-green">Hiệu lực</span></td><td style="font-size:12px;color:var(--text3)">'+(q.fileData?'<a href="'+q.fileData+'" download="'+q.file+'" style="color:var(--brand);font-size:12px;font-weight:500"><i class="ti ti-download"></i> Tải file</a>':(q.fileUrl?'<a href="'+q.fileUrl+'" target="_blank" style="color:var(--brand);font-size:12px"><i class="ti ti-eye"></i> Xem</a>':(q.file||'—')))+'</td><td><div class="act-btns"><button class="bico" onclick="editQuote('+ri+')" title="Sửa"><i class="ti ti-edit"></i></button><button class="bico del" onclick="delQuote('+ri+')" title="Xóa"><i class="ti ti-trash"></i></button></div></td></tr>';
   }).join(''):'<tr><td colspan="10" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có báo giá</td></tr>';
   document.getElementById('qin-tbody').innerHTML=inp.length?inp.map(function(q){
     var ri=db.quotes.indexOf(q);
-    return '<tr><td class="td-b td-m">'+q.id+'</td><td class="td-b">'+q.partner+'</td><td style="font-size:12px">'+(q.route||'—')+'</td><td style="font-family:\'DM Mono\',monospace;font-size:12px">'+fmtM(q.price)+'</td><td style="font-size:12px">'+fmtD(q.valid)+'</td><td><span class="badge b-green">Hiệu lực</span></td><td style="font-size:12px;color:var(--text3)">'+(q.file||'—')+'</td><td><div class="act-btns"><button class="bico" onclick="editQuote('+ri+')" title="Sửa"><i class="ti ti-edit"></i></button><button class="bico del" onclick="delQuote('+ri+')" title="Xóa"><i class="ti ti-trash"></i></button></div></td></tr>';
+    return '<tr><td class="td-b td-m">'+q.id+'</td><td class="td-b">'+q.partner+'</td><td style="font-size:12px">'+(q.route||'—')+'</td><td style="font-family:\'DM Mono\',monospace;font-size:12px">'+fmtM(q.price)+'</td><td style="font-size:12px">'+fmtD(q.valid)+'</td><td><span class="badge b-green">Hiệu lực</span></td><td style="font-size:12px;color:var(--text3)">'+(q.fileData?'<a href="'+q.fileData+'" download="'+q.file+'" style="color:var(--brand);font-size:12px;font-weight:500"><i class="ti ti-download"></i> Tải file</a>':(q.fileUrl?'<a href="'+q.fileUrl+'" target="_blank" style="color:var(--brand);font-size:12px"><i class="ti ti-eye"></i> Xem</a>':(q.file||'—')))+'</td><td><div class="act-btns"><button class="bico" onclick="editQuote('+ri+')" title="Sửa"><i class="ti ti-edit"></i></button><button class="bico del" onclick="delQuote('+ri+')" title="Xóa"><i class="ti ti-trash"></i></button></div></td></tr>';
   }).join(''):'<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có báo giá</td></tr>';
 }
 
@@ -826,14 +817,7 @@ function saveContract(){
     c.fileUrl=null;
     if(editCIdx!==null) db.contracts[editCIdx]=c; else db.contracts.push(c);
     editCIdx=null;resetUp('cm');renderContracts();closeM('contract-modal');
-    toast('Đã lưu hợp đồng + file!');
-    uploadToDrive(upFiles.cm,function(res){
-      if(res&&res.fileUrl){
-        var idx=db.contracts.findIndex(function(x){return x.id===c.id;});
-        if(idx>=0){db.contracts[idx].fileUrl=res.fileUrl;db.contracts[idx].fileData=null;renderContracts();}
-        toast('File đã lên Drive!');
-      }
-    });
+    toast('Đã lưu!');
   } else {
     if(editCIdx!==null) db.contracts[editCIdx]=c; else db.contracts.push(c);
     editCIdx=null;renderContracts();closeM('contract-modal');toast('Đã lưu hợp đồng');
@@ -860,7 +844,7 @@ function renderContracts(){
   var soft=db.contracts.filter(function(c){return c.type==='soft';});
   document.getElementById('chard-tbody').innerHTML=hard.length?hard.map(function(c){
     var ri=db.contracts.indexOf(c);
-    return '<tr><td class="td-b td-m">'+c.id+'</td><td class="td-b">'+c.partner+'</td><td style="font-size:12px">'+c.service+'</td><td style="font-size:12px">'+fmtD(c.sign)+'</td><td style="font-size:12px">'+fmtD(c.expire)+'</td><td style="font-family:\'DM Mono\',monospace;font-size:12px">'+fmtM(c.value)+'</td><td>'+expBadge(c)+'</td><td style="font-size:12px">'+(c.file?(c.fileUrl?'<a href="'+c.fileUrl+'" target="_blank" class="btn btn-ghost btn-sm"><i class="ti ti-eye"></i> Xem file</a>':c.fileData?'<button class="btn btn-ghost btn-sm" onclick="openFileData(\'contract\','+ri+')"><i class="ti ti-download"></i> '+c.file+'</button>':'<span style="font-size:12px;color:var(--text3)">'+c.file+'</span>'):'<span style="color:var(--text3)">—</span>')+'</td><td><div class="act-btns"><button class="bico" onclick="editContract('+ri+')" title="Sửa"><i class="ti ti-edit"></i></button><button class="bico del" onclick="delContract('+ri+')" title="Xóa"><i class="ti ti-trash"></i></button></div></td></tr>';
+    return '<tr><td class="td-b td-m">'+c.id+'</td><td class="td-b">'+c.partner+'</td><td style="font-size:12px">'+c.service+'</td><td style="font-size:12px">'+fmtD(c.sign)+'</td><td style="font-size:12px">'+fmtD(c.expire)+'</td><td style="font-family:\'DM Mono\',monospace;font-size:12px">'+fmtM(c.value)+'</td><td>'+expBadge(c)+'</td><td style="font-size:12px">'+(c.file?(c.fileUrl?'<a href="'+c.fileUrl+'" target="_blank" class="btn btn-ghost btn-sm"><i class="ti ti-eye"></i> Xem file</a>':c.fileData?'<a href="'+c.fileData+'" download="'+c.file+'" style="color:var(--brand);font-size:12px;font-weight:500"><i class="ti ti-download"></i> Tải file</a>':(c.file?'<span style="font-size:12px;color:var(--text3)">'+c.file+'</span>':'<span style="color:var(--text3)">—</span>'))+'</td><td><div class="act-btns"><button class="bico" onclick="editContract('+ri+')" title="Sửa"><i class="ti ti-edit"></i></button><button class="bico del" onclick="delContract('+ri+')" title="Xóa"><i class="ti ti-trash"></i></button></div></td></tr>';
   }).join(''):'<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có hợp đồng</td></tr>';
   document.getElementById('csoft-tbody').innerHTML=soft.length?soft.map(function(c){
     var ri=db.contracts.indexOf(c);
