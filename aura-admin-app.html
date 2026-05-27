@@ -652,7 +652,9 @@ function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 // LOAD ALL
 async function loadAll(){
   showLoading('Đang tải dữ liệu...');
-  await Promise.all([loadOrders(),loadDrivers()]);
+  try{
+    await Promise.all([loadOrders(),loadDrivers()]);
+  }catch(e){ console.log('Load error:',e); }
   hideLoading();
   renderDashboard();
 }
