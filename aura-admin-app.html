@@ -22,88 +22,62 @@
   --shadow-lg:0 10px 40px rgba(0,0,0,.12);
 }
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text)}
-
-/* TOPBAR */
 .topbar{height:var(--topbar);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:1rem;position:fixed;top:0;left:0;right:0;z-index:200;box-shadow:var(--shadow)}
 .topbar-brand{font-size:18px;font-weight:700;letter-spacing:.1em;color:var(--brand);display:flex;align-items:center;gap:8px;min-width:var(--sidebar)}
-.topbar-brand span{font-size:11px;font-weight:400;color:var(--text3);letter-spacing:.05em}
+.topbar-brand span{font-size:11px;font-weight:400;color:var(--text3)}
 .search-bar{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 12px;width:280px}
 .search-bar input{border:none;background:none;outline:none;font-size:13px;font-family:inherit;color:var(--text);width:100%}
 .topbar-right{display:flex;align-items:center;gap:12px;margin-left:auto}
 .topbar-pill{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--brand-light);color:var(--brand)}
-.avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand2));display:flex;align-items:center;justify-content:center;color:white;font-size:13px;font-weight:600;cursor:pointer}
-
-/* SIDEBAR */
+.avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand2));display:flex;align-items:center;justify-content:center;color:white;font-size:13px;font-weight:600}
 .sidebar{width:var(--sidebar);background:var(--surface);border-right:1px solid var(--border);position:fixed;top:var(--topbar);left:0;bottom:0;overflow-y:auto;z-index:100;padding:.75rem 0}
 .nav-label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;padding:.75rem 1.25rem .25rem}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);margin:1px .5rem;transition:all .15s;user-select:none}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);margin:1px .5rem;transition:background .15s,color .15s;-webkit-user-select:none;user-select:none}
 .nav-item:hover{background:var(--surface2);color:var(--text)}
 .nav-item.active{background:var(--brand-light);color:var(--brand)}
 .nav-item.active .ni{color:var(--brand)}
-.ni{font-size:18px;color:var(--text3)}
-.nav-item:hover .ni{color:var(--text)}
-.nav-badge{margin-left:auto;background:var(--danger);color:white;font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;min-width:18px;text-align:center}
+.ni{font-size:18px;color:var(--text3);transition:color .15s;pointer-events:none}
+.nav-item:hover .ni{color:var(--text2)}
+.nav-badge{margin-left:auto;background:var(--danger);color:white;font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;min-width:18px;text-align:center;display:none}
 .nav-divider{height:1px;background:var(--border);margin:.5rem .75rem}
-
-/* MAIN */
 .main{margin-left:var(--sidebar);margin-top:var(--topbar);padding:1.5rem;min-height:calc(100vh - var(--topbar))}
 .page{display:none}.page.active{display:block}
-
-/* PAGE HEADER */
 .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:12px}
 .page-title{font-size:20px;font-weight:700;display:flex;align-items:center;gap:10px}
 .page-title .ni{color:var(--brand);font-size:22px}
-
-/* STATS */
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem}
 .stat-card{background:var(--surface);border-radius:var(--radius);padding:1.25rem;border:1px solid var(--border);box-shadow:var(--shadow)}
 .stat-icon{width:36px;height:36px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;margin-bottom:10px;font-size:18px}
-.si-green{background:var(--brand-light);color:var(--brand)}
-.si-blue{background:var(--info-light);color:var(--info)}
-.si-warn{background:var(--warn-light);color:var(--warn)}
-.si-red{background:var(--danger-light);color:var(--danger)}
+.si-green{background:var(--brand-light);color:var(--brand)}.si-blue{background:var(--info-light);color:var(--info)}
+.si-warn{background:var(--warn-light);color:var(--warn)}.si-red{background:var(--danger-light);color:var(--danger)}
 .stat-num{font-size:26px;font-weight:700;font-family:'DM Mono',monospace;line-height:1}
 .stat-label{font-size:12px;color:var(--text3);margin-top:4px}
-
-/* CARD */
 .card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:1rem}
 .card-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
 .card-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
 .card-title .ni{color:var(--brand)}
 .card-body{padding:1.25rem}
-
-/* TABLE */
 .table-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{text-align:left;padding:10px 12px;font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border);white-space:nowrap;background:var(--surface2)}
 td{padding:11px 12px;border-bottom:1px solid #f1f5f9;vertical-align:middle;color:var(--text2)}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#fafbfc}
-.td-bold{color:var(--text);font-weight:600}
-.td-mono{font-family:'DM Mono',monospace;font-size:12px}
-
-/* BADGE */
+.td-b{color:var(--text);font-weight:600}.td-m{font-family:'DM Mono',monospace;font-size:12px}
 .badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 9px;border-radius:20px;font-weight:600;white-space:nowrap}
-.b-green{background:var(--brand-light);color:var(--brand)}
-.b-blue{background:var(--info-light);color:var(--info)}
-.b-warn{background:var(--warn-light);color:#92400e}
-.b-red{background:var(--danger-light);color:var(--danger)}
+.b-green{background:var(--brand-light);color:var(--brand)}.b-blue{background:var(--info-light);color:var(--info)}
+.b-warn{background:var(--warn-light);color:#92400e}.b-red{background:var(--danger-light);color:var(--danger)}
 .b-gray{background:#f1f5f9;color:var(--text3)}
 .bdot{width:6px;height:6px;border-radius:50%;background:currentColor}
-
-/* BUTTONS */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:all .15s;white-space:nowrap}
 .btn-primary{background:var(--brand);color:white}.btn-primary:hover{background:var(--brand2)}
 .btn-secondary{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}.btn-secondary:hover{background:var(--border)}
-.btn-ghost{background:none;color:var(--brand);border:none}.btn-ghost:hover{background:var(--brand-light)}
+.btn-ghost{background:none;color:var(--brand)}.btn-ghost:hover{background:var(--brand-light)}
 .btn-sm{padding:5px 10px;font-size:12px}
-.btn-icon{width:30px;height:30px;border-radius:6px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;color:var(--text2);display:inline-flex;align-items:center;justify-content:center;font-size:15px;transition:all .15s}
-.btn-icon:hover{background:var(--border)}
-
-/* FORMS */
+.bico{width:30px;height:30px;border-radius:6px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;color:var(--text2);display:inline-flex;align-items:center;justify-content:center;font-size:15px;transition:all .15s;flex-shrink:0}
+.bico:hover{background:var(--border)}.bico.del{color:var(--danger)}.bico.del:hover{background:var(--danger-light)}
 .form-grid{display:grid;gap:12px}
-.fg2{grid-template-columns:1fr 1fr}
-.fg3{grid-template-columns:1fr 1fr 1fr}
+.fg2{grid-template-columns:1fr 1fr}.fg3{grid-template-columns:1fr 1fr 1fr}
 @media(max-width:600px){.fg2,.fg3{grid-template-columns:1fr}}
 .field{display:flex;flex-direction:column;gap:5px}
 .field label{font-size:12px;font-weight:600;color:var(--text2)}
@@ -111,90 +85,63 @@ tr:hover td{background:#fafbfc}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(29,158,117,.08)}
 .field textarea{resize:vertical;min-height:80px}
 .field-ro input{background:var(--surface2);color:var(--brand);font-family:'DM Mono',monospace;font-weight:600}
-
-/* FILTER */
-.filter-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.filter-bar input,.filter-bar select{padding:7px 11px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;outline:none;background:var(--surface)}
-.filter-bar input{flex:1;min-width:160px}
-.filter-bar input:focus,.filter-bar select:focus{border-color:var(--brand)}
-
-/* MODAL */
+.fbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.fbar input,.fbar select{padding:7px 11px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;outline:none;background:var(--surface)}
+.fbar input{flex:1;min-width:160px}.fbar input:focus,.fbar select:focus{border-color:var(--brand)}
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:500;align-items:center;justify-content:center;padding:1rem}
 .modal-bg.open{display:flex}
 .modal{background:var(--surface);border-radius:var(--radius);width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
 .modal-lg{max-width:680px}
-.modal-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:1}
 .modal-title{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
 .modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3);width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center}
 .modal-close:hover{background:var(--surface2);color:var(--text)}
 .modal-body{padding:1.5rem}
 .modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;background:var(--surface2);border-radius:0 0 var(--radius) var(--radius)}
-
-/* TABS */
 .tab-bar{display:flex;border-bottom:1px solid var(--border);margin-bottom:1.25rem}
 .tab-btn{padding:9px 16px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;font-family:inherit}
-.tab-btn:hover{color:var(--text)}
-.tab-btn.active{color:var(--brand);border-bottom-color:var(--brand)}
+.tab-btn:hover{color:var(--text)}.tab-btn.active{color:var(--brand);border-bottom-color:var(--brand)}
 .tab-pane{display:none}.tab-pane.active{display:block}
-
-/* STOP ROW */
 .stop-row{display:flex;align-items:flex-start;gap:8px;background:var(--surface2);border-radius:var(--radius-sm);padding:10px 12px;border:1px solid var(--border);margin-bottom:6px}
 .stop-num{width:26px;height:26px;border-radius:50%;background:var(--brand);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
-.stop-num.pickup-num{background:var(--info)}
+.stop-num.pku{background:var(--info)}
 .stop-fields{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px}
 @media(max-width:500px){.stop-fields{grid-template-columns:1fr}}
-.stop-input{padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;outline:none;width:100%;font-family:inherit;background:var(--surface)}
-.stop-input:focus{border-color:var(--brand)}
-.btn-remove{background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;padding:2px;border-radius:4px;flex-shrink:0;margin-top:2px}
-.btn-remove:hover{color:var(--danger)}
-
-/* UPLOAD */
-.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:1.5rem;text-align:center;cursor:pointer;color:var(--text3);transition:all .2s}
-.upload-zone:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-light)}
-.upload-zone .ni{font-size:28px;display:block;margin-bottom:6px}
-
-/* VEHICLE CARD */
+.sinput{padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;outline:none;width:100%;font-family:inherit;background:var(--surface)}
+.sinput:focus{border-color:var(--brand)}
+.brem{background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;padding:2px;border-radius:4px;flex-shrink:0;margin-top:2px}
+.brem:hover{color:var(--danger)}
+.upzone{border:2px dashed var(--border);border-radius:var(--radius);padding:1.5rem;text-align:center;cursor:pointer;transition:all .2s;margin-top:12px}
+.upzone:hover{border-color:var(--brand);background:var(--brand-light)}
+.upzone .ni{font-size:28px;display:block;margin-bottom:6px;color:var(--text3)}
+.upzone:hover .ni{color:var(--brand)}
+.upzone p{font-size:12px;color:var(--text3);margin-top:4px}
 .vcard-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
 .vcard{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:1.25rem;box-shadow:var(--shadow);transition:all .2s;cursor:pointer}
 .vcard:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
-.vcard-plate{font-family:'DM Mono',monospace;font-size:16px;font-weight:700;color:var(--text)}
-.vcard-type{font-size:12px;color:var(--text3);margin-top:4px}
-.vcard-info{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;font-size:12px}
-.vcard-info-label{color:var(--text3);display:block}
-.vcard-info-val{font-weight:500;color:var(--text)}
 .km-bar{height:4px;background:var(--surface2);border-radius:2px;margin-top:8px;overflow:hidden}
 .km-fill{height:100%;background:var(--brand);border-radius:2px}
-
-/* TOAST */
-.toast{position:fixed;bottom:1.5rem;right:1.5rem;padding:12px 18px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;z-index:9999;display:none;align-items:center;gap:8px;box-shadow:var(--shadow-lg);max-width:300px}
-.toast.show{display:flex}
-.t-green{background:var(--brand);color:white}
-.t-red{background:var(--danger);color:white}
-.t-warn{background:var(--warn);color:white}
-
-/* LOADING */
+.vci{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;font-size:12px}
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;padding:12px 18px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;z-index:9999;display:none;align-items:center;gap:8px;box-shadow:var(--shadow-lg);max-width:320px}
+.toast.show{display:flex}.t-g{background:var(--brand);color:white}.t-r{background:var(--danger);color:white}.t-w{background:var(--warn);color:white}
 .loading{display:none;position:fixed;inset:0;background:rgba(255,255,255,.75);z-index:9998;align-items:center;justify-content:center;flex-direction:column;gap:12px}
 .loading.show{display:flex}
 .spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* MISC */
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-@media(max-width:768px){.grid2{grid-template-columns:1fr}.sidebar{display:none}.main{margin-left:0}}
-.mono{font-family:'DM Mono',monospace}
-.text-green{color:var(--brand)}
-.text-red{color:var(--danger)}
-.text-warn{color:var(--warn)}
-.text-gray{color:var(--text3)}
-.sticky-preview{position:sticky;top:calc(var(--topbar) + 1.5rem)}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+.sticky-p{position:sticky;top:calc(var(--topbar) + 1.5rem)}
+.act-btns{display:flex;gap:4px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem}
+.info-box{background:var(--surface2);border-radius:var(--radius-sm);padding:12px}
+.info-box-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.info-box-val{font-weight:600;font-size:14px}
 </style>
 </head>
 <body>
-
 <div class="loading" id="loading"><div class="spinner"></div><span style="font-size:13px;color:var(--text3)" id="load-txt">Đang tải...</span></div>
 <div class="toast" id="toast"></div>
 
-<!-- TOPBAR -->
 <div class="topbar">
   <div class="topbar-brand"><i class="ti ti-truck-delivery" style="font-size:22px"></i>AURA <span>LOGISTICS</span></div>
   <div class="search-bar"><i class="ti ti-search" style="color:var(--text3)"></i><input type="text" placeholder="Tìm kiếm..."></div>
@@ -204,12 +151,11 @@ tr:hover td{background:#fafbfc}
   </div>
 </div>
 
-<!-- SIDEBAR -->
 <div class="sidebar">
   <div class="nav-label">Tổng quan</div>
   <div class="nav-item active" id="nav-dashboard" onclick="goPage('dashboard')"><i class="ti ti-layout-dashboard ni"></i>Dashboard</div>
   <div class="nav-label">Vận hành</div>
-  <div class="nav-item" id="nav-orders" onclick="goPage('orders')"><i class="ti ti-clipboard-list ni"></i>Đơn hàng<span class="nav-badge" id="badge-orders" style="display:none">0</span></div>
+  <div class="nav-item" id="nav-orders" onclick="goPage('orders')"><i class="ti ti-clipboard-list ni"></i>Đơn hàng<span class="nav-badge" id="badge-orders">0</span></div>
   <div class="nav-item" id="nav-create-order" onclick="goPage('create-order')"><i class="ti ti-plus ni"></i>Tạo đơn mới</div>
   <div class="nav-item" id="nav-drivers" onclick="goPage('drivers')"><i class="ti ti-users ni"></i>Tài xế</div>
   <div class="nav-item" id="nav-vehicles" onclick="goPage('vehicles')"><i class="ti ti-truck ni"></i>Quản lý xe</div>
@@ -221,7 +167,6 @@ tr:hover td{background:#fafbfc}
   <div class="nav-item" id="nav-settings" onclick="goPage('settings')"><i class="ti ti-settings ni"></i>Cài đặt</div>
 </div>
 
-<!-- MAIN CONTENT -->
 <div class="main">
 
 <!-- DASHBOARD -->
@@ -231,23 +176,19 @@ tr:hover td{background:#fafbfc}
     <button class="btn btn-secondary btn-sm" onclick="loadAll()"><i class="ti ti-refresh"></i> Làm mới</button>
   </div>
   <div class="stats-grid">
-    <div class="stat-card"><div class="stat-icon si-green"><i class="ti ti-clipboard-check"></i></div><div class="stat-num text-green" id="d-orders">—</div><div class="stat-label">Đơn hôm nay</div></div>
-    <div class="stat-card"><div class="stat-icon si-blue"><i class="ti ti-truck"></i></div><div class="stat-num" style="color:var(--info)" id="d-vehicles">—</div><div class="stat-label">Xe hoạt động</div></div>
-    <div class="stat-card"><div class="stat-icon si-warn"><i class="ti ti-clock"></i></div><div class="stat-num" style="color:var(--warn)" id="d-pending">—</div><div class="stat-label">Đơn chờ giao</div></div>
-    <div class="stat-card"><div class="stat-icon si-red"><i class="ti ti-alert-triangle"></i></div><div class="stat-num text-red" id="d-expire">0</div><div class="stat-label">Đăng kiểm sắp hết</div></div>
+    <div class="stat-card"><div class="stat-icon si-green"><i class="ti ti-clipboard-check"></i></div><div class="stat-num" style="color:var(--brand)" id="d-orders">0</div><div class="stat-label">Đơn hôm nay</div></div>
+    <div class="stat-card"><div class="stat-icon si-blue"><i class="ti ti-truck"></i></div><div class="stat-num" style="color:var(--info)" id="d-vehicles">0</div><div class="stat-label">Xe hoạt động</div></div>
+    <div class="stat-card"><div class="stat-icon si-warn"><i class="ti ti-clock"></i></div><div class="stat-num" style="color:var(--warn)" id="d-pending">0</div><div class="stat-label">Đơn chờ giao</div></div>
+    <div class="stat-card"><div class="stat-icon si-red"><i class="ti ti-alert-triangle"></i></div><div class="stat-num" style="color:var(--danger)" id="d-expire">0</div><div class="stat-label">Đăng kiểm sắp hết</div></div>
   </div>
   <div class="grid2">
     <div class="card">
       <div class="card-header"><div class="card-title"><i class="ti ti-clipboard-list ni"></i>Đơn gần đây</div><button class="btn btn-ghost btn-sm" onclick="goPage('orders')">Xem tất cả →</button></div>
-      <div class="table-wrap"><table><thead><tr><th>Mã đơn</th><th>Tài xế</th><th>Trạng thái</th></tr></thead><tbody id="dash-orders">
-        <tr><td colspan="3" style="text-align:center;padding:1.5rem;color:var(--text3)">Chưa có dữ liệu</td></tr>
-      </tbody></table></div>
+      <div class="table-wrap"><table><thead><tr><th>Mã đơn</th><th>Tài xế</th><th>Trạng thái</th></tr></thead><tbody id="dash-orders"><tr><td colspan="3" style="text-align:center;padding:1.5rem;color:var(--text3)">Chưa có dữ liệu</td></tr></tbody></table></div>
     </div>
     <div class="card">
       <div class="card-header"><div class="card-title"><i class="ti ti-truck ni"></i>Trạng thái xe</div><button class="btn btn-ghost btn-sm" onclick="goPage('vehicles')">Xem tất cả →</button></div>
-      <div class="table-wrap"><table><thead><tr><th>Biển số</th><th>Loại</th><th>Trạng thái</th></tr></thead><tbody id="dash-vehicles">
-        <tr><td colspan="3" style="text-align:center;padding:1.5rem;color:var(--text3)">Chưa có dữ liệu</td></tr>
-      </tbody></table></div>
+      <div class="table-wrap"><table><thead><tr><th>Biển số</th><th>Loại</th><th>Trạng thái</th></tr></thead><tbody id="dash-vehicles"><tr><td colspan="3" style="text-align:center;padding:1.5rem;color:var(--text3)">Chưa có dữ liệu</td></tr></tbody></table></div>
     </div>
   </div>
 </div>
@@ -257,23 +198,23 @@ tr:hover td{background:#fafbfc}
   <div class="page-header">
     <div class="page-title"><i class="ti ti-clipboard-list ni"></i>Đơn hàng</div>
     <div style="display:flex;gap:8px">
-      <button class="btn btn-secondary" onclick="exportOrdersExcel()"><i class="ti ti-table-export"></i> Xuất Excel</button>
+      <button class="btn btn-secondary" onclick="exportExcel()"><i class="ti ti-table-export"></i> Xuất Excel</button>
       <button class="btn btn-primary" onclick="goPage('create-order')"><i class="ti ti-plus"></i> Tạo đơn mới</button>
     </div>
   </div>
   <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
     <div class="stat-card"><div class="stat-num" id="o-total">0</div><div class="stat-label">Tổng đơn</div></div>
-    <div class="stat-card"><div class="stat-num text-warn" id="o-pending">0</div><div class="stat-label">Chờ giao</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--info)" id="o-inprogress">0</div><div class="stat-label">Đang giao</div></div>
-    <div class="stat-card"><div class="stat-num text-green" id="o-done">0</div><div class="stat-label">Hoàn thành</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--warn)" id="o-pending">0</div><div class="stat-label">Chờ giao</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--info)" id="o-prog">0</div><div class="stat-label">Đang giao</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--brand)" id="o-done">0</div><div class="stat-label">Hoàn thành</div></div>
   </div>
   <div class="card">
     <div class="card-header">
-      <div class="filter-bar" style="flex:1">
+      <div class="fbar" style="flex:1">
         <input type="text" id="o-search" placeholder="Tìm mã đơn, tài xế..." oninput="renderOrders()">
-        <select id="o-status" onchange="renderOrders()"><option value="">Tất cả trạng thái</option><option value="pending">Chờ giao</option><option value="inprogress">Đang giao</option><option value="done">Hoàn thành</option></select>
+        <select id="o-sf" onchange="renderOrders()"><option value="">Tất cả trạng thái</option><option value="pending">Chờ giao</option><option value="inprogress">Đang giao</option><option value="done">Hoàn thành</option></select>
       </div>
-      <button class="btn-icon" onclick="loadOrders()" title="Làm mới"><i class="ti ti-refresh"></i></button>
+      <button class="bico" onclick="loadOrders()"><i class="ti ti-refresh"></i></button>
     </div>
     <div class="table-wrap"><table>
       <thead><tr><th>Mã đơn</th><th>Ngày giao</th><th>Điểm giao</th><th>Tài xế</th><th>Trạng thái</th><th>Ghi chú</th><th>Thao tác</th></tr></thead>
@@ -294,37 +235,33 @@ tr:hover td{background:#fafbfc}
         <div class="card-header"><div class="card-title"><i class="ti ti-info-circle ni"></i>Thông tin đơn</div></div>
         <div class="card-body">
           <div class="form-grid fg2">
-            <div class="field field-ro"><label>Mã đơn (tự sinh)</label>
-              <div style="display:flex;gap:6px"><input id="inp-orderid" readonly /><button class="btn-icon" onclick="refreshOrderId()"><i class="ti ti-refresh"></i></button></div>
-            </div>
+            <div class="field field-ro"><label>Mã đơn (tự sinh)</label><div style="display:flex;gap:6px"><input id="inp-orderid" readonly><button class="bico" onclick="refreshOrderId()"><i class="ti ti-refresh"></i></button></div></div>
             <div class="field"><label>Ngày giao *</label><input type="date" id="inp-date"></div>
             <div class="field"><label>Loại xe</label><select id="inp-vtype"><option value="">-- Chọn loại --</option><option value="van_1t">Van 1 tấn</option><option value="truck_2t">Xe tải 2 tấn</option></select></div>
             <div class="field"><label>Gán tài xế</label><select id="inp-driver"><option value="">-- Chọn tài xế --</option></select></div>
           </div>
-          <div class="field" style="margin-top:12px"><label>Ghi chú</label><textarea id="inp-note" placeholder="Ghi chú thêm..."></textarea></div>
+          <div class="field" style="margin-top:12px"><label>Ghi chú</label><textarea id="inp-note" placeholder="Ghi chú..."></textarea></div>
         </div>
       </div>
       <div class="card">
         <div class="card-header">
           <div class="card-title"><i class="ti ti-map-pins ni"></i>Điểm giao hàng</div>
           <div style="display:flex;gap:6px">
-            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('paste-modal').classList.add('open')"><i class="ti ti-table-import"></i> Paste Excel</button>
+            <button class="btn btn-secondary btn-sm" onclick="openM('paste-modal')"><i class="ti ti-table-import"></i> Paste Excel</button>
             <button class="btn btn-secondary btn-sm" onclick="addStop()"><i class="ti ti-plus"></i> Thêm điểm</button>
           </div>
         </div>
         <div class="card-body">
           <div style="margin-bottom:12px">
             <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;margin-bottom:6px">Điểm lấy hàng</div>
-            <div class="stop-row"><div class="stop-num pickup-num"><i class="ti ti-building-warehouse" style="font-size:11px"></i></div>
-              <div class="stop-fields"><input class="stop-input" id="pickup-name" placeholder="Tên kho / địa điểm lấy"><input class="stop-input" id="pickup-addr" placeholder="Địa chỉ lấy hàng"></div>
-            </div>
+            <div class="stop-row"><div class="stop-num pku"><i class="ti ti-building-warehouse" style="font-size:11px"></i></div><div class="stop-fields"><input class="sinput" id="pickup-name" placeholder="Tên kho / địa điểm lấy"><input class="sinput" id="pickup-addr" placeholder="Địa chỉ lấy hàng"></div></div>
           </div>
           <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;margin-bottom:6px">Các điểm giao</div>
           <div id="stops-list"></div>
         </div>
       </div>
     </div>
-    <div class="sticky-preview">
+    <div class="sticky-p">
       <div class="card">
         <div class="card-header"><div class="card-title"><i class="ti ti-eye ni"></i>Xem trước</div></div>
         <div class="card-body" id="order-preview" style="font-size:13px;color:var(--text3)">Điền thông tin để xem tóm tắt...</div>
@@ -341,15 +278,15 @@ tr:hover td{background:#fafbfc}
 <div class="page" id="page-drivers">
   <div class="page-header">
     <div class="page-title"><i class="ti ti-users ni"></i>Quản lý tài xế</div>
-    <button class="btn btn-primary" onclick="toast('Thêm tài xế trực tiếp vào sheet drivers trong Google Sheet nhé!','warn')"><i class="ti ti-external-link"></i> Thêm tài xế</button>
+    <button class="btn btn-primary" onclick="toast('Thêm tài xế trực tiếp vào sheet drivers trong Google Sheet nhé!','w')"><i class="ti ti-external-link"></i> Thêm tài xế</button>
   </div>
   <div class="card">
     <div class="card-header">
-      <div class="filter-bar" style="flex:1">
+      <div class="fbar" style="flex:1">
         <input type="text" id="d-search" placeholder="Tìm tên, mã tài xế..." oninput="renderDrivers()">
-        <select id="d-status" onchange="renderDrivers()"><option value="">Tất cả trạng thái</option><option value="active">Hoạt động</option><option value="off">Đã nghỉ</option><option value="locked">Bị khóa</option></select>
+        <select id="d-sf" onchange="renderDrivers()"><option value="">Tất cả</option><option value="active">Hoạt động</option><option value="off">Đã nghỉ</option><option value="locked">Bị khóa</option></select>
       </div>
-      <button class="btn-icon" onclick="loadDrivers()"><i class="ti ti-refresh"></i></button>
+      <button class="bico" onclick="loadDrivers()"><i class="ti ti-refresh"></i></button>
     </div>
     <div class="table-wrap"><table>
       <thead><tr><th>Mã TX</th><th>Tên tài xế</th><th>Số điện thoại</th><th>Biển số xe</th><th>Trạng thái</th></tr></thead>
@@ -362,54 +299,52 @@ tr:hover td{background:#fafbfc}
 <div class="page" id="page-vehicles">
   <div class="page-header">
     <div class="page-title"><i class="ti ti-truck ni"></i>Quản lý xe</div>
-    <button class="btn btn-primary" onclick="document.getElementById('vehicle-modal').classList.add('open')"><i class="ti ti-plus"></i> Thêm xe</button>
+    <button class="btn btn-primary" onclick="openM('vehicle-modal')"><i class="ti ti-plus"></i> Thêm xe</button>
   </div>
   <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
-    <div class="stat-card"><div class="stat-num text-green" id="v-active">0</div><div class="stat-label">Đang hoạt động</div></div>
-    <div class="stat-card"><div class="stat-num text-warn" id="v-maint">0</div><div class="stat-label">Bảo dưỡng</div></div>
-    <div class="stat-card"><div class="stat-num text-red" id="v-exp">0</div><div class="stat-label">Hết hạn đăng kiểm</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--brand)" id="v-active">0</div><div class="stat-label">Đang hoạt động</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--warn)" id="v-maint">0</div><div class="stat-label">Bảo dưỡng</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--danger)" id="v-exp">0</div><div class="stat-label">Hết hạn đăng kiểm</div></div>
     <div class="stat-card"><div class="stat-num" id="v-total">0</div><div class="stat-label">Tổng số xe</div></div>
   </div>
   <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab(this,'vtab-list')">Danh sách</button>
-    <button class="tab-btn" onclick="switchTab(this,'vtab-card')">Thẻ xe</button>
+    <button class="tab-btn active" onclick="swTab(this,'vtab-list')">Danh sách</button>
+    <button class="tab-btn" onclick="swTab(this,'vtab-card')">Thẻ xe</button>
   </div>
   <div class="tab-pane active" id="vtab-list">
     <div class="card">
       <div class="card-header">
-        <div class="filter-bar" style="flex:1">
+        <div class="fbar" style="flex:1">
           <input type="text" id="v-search" placeholder="Tìm biển số..." oninput="renderVehicles()">
-          <select id="v-type" onchange="renderVehicles()"><option value="">Tất cả loại</option><option value="van_1t">Van 1 tấn</option><option value="truck_2t">Xe tải 2 tấn</option></select>
-          <select id="v-status" onchange="renderVehicles()"><option value="">Tất cả trạng thái</option><option value="active">Hoạt động</option><option value="maintenance">Bảo dưỡng</option><option value="inactive">Không HĐ</option></select>
+          <select id="v-tf" onchange="renderVehicles()"><option value="">Tất cả loại</option><option value="van_1t">Van 1 tấn</option><option value="truck_2t">Tải 2 tấn</option></select>
+          <select id="v-sf" onchange="renderVehicles()"><option value="">Tất cả trạng thái</option><option value="active">Hoạt động</option><option value="maintenance">Bảo dưỡng</option><option value="inactive">Không HĐ</option></select>
         </div>
       </div>
       <div class="table-wrap"><table>
-        <thead><tr><th>Biển số</th><th>Loại xe</th><th>Năm SX</th><th>Tài xế phụ trách</th><th>Đăng kiểm đến</th><th>Bảo hiểm đến</th><th>Km</th><th>Trạng thái</th><th></th></tr></thead>
+        <thead><tr><th>Biển số</th><th>Loại xe</th><th>Năm SX</th><th>Tài xế</th><th>Đăng kiểm đến</th><th>Bảo hiểm đến</th><th>Km</th><th>Trạng thái</th><th></th></tr></thead>
         <tbody id="vehicle-tbody"><tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có dữ liệu xe</td></tr></tbody>
       </table></div>
     </div>
   </div>
-  <div class="tab-pane" id="vtab-card">
-    <div class="vcard-grid" id="vehicle-cards"><div style="text-align:center;padding:3rem;color:var(--text3)">Chưa có dữ liệu xe</div></div>
-  </div>
+  <div class="tab-pane" id="vtab-card"><div class="vcard-grid" id="vehicle-cards"><div style="text-align:center;padding:3rem;color:var(--text3)">Chưa có dữ liệu xe</div></div></div>
 </div>
 
 <!-- QUOTES -->
 <div class="page" id="page-quotes">
   <div class="page-header">
     <div class="page-title"><i class="ti ti-receipt ni"></i>Báo giá</div>
-    <button class="btn btn-primary" onclick="document.getElementById('quote-modal').classList.add('open')"><i class="ti ti-plus"></i> Tạo báo giá</button>
+    <button class="btn btn-primary" onclick="openQuoteModal()"><i class="ti ti-plus"></i> Tạo báo giá</button>
   </div>
   <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab(this,'qtab-out')">Báo giá cho khách</button>
-    <button class="tab-btn" onclick="switchTab(this,'qtab-in')">Báo giá từ vendor</button>
+    <button class="tab-btn active" onclick="swTab(this,'qtab-out')">Báo giá cho khách</button>
+    <button class="tab-btn" onclick="swTab(this,'qtab-in')">Báo giá từ vendor</button>
   </div>
   <div class="tab-pane active" id="qtab-out">
     <div class="card">
       <div class="card-header"><div class="card-title"><i class="ti ti-send ni"></i>Gửi cho khách hàng</div></div>
       <div class="table-wrap"><table>
-        <thead><tr><th>Mã BG</th><th>Khách hàng</th><th>Loại xe</th><th>Tuyến đường</th><th>Đơn giá</th><th>Ngày tạo</th><th>Hiệu lực đến</th><th>Trạng thái</th><th>File</th></tr></thead>
-        <tbody id="qout-tbody"><tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có báo giá</td></tr></tbody>
+        <thead><tr><th>Mã BG</th><th>Khách hàng</th><th>Loại xe</th><th>Tuyến đường</th><th>Đơn giá</th><th>Ngày tạo</th><th>Hiệu lực đến</th><th>Trạng thái</th><th>File</th><th></th></tr></thead>
+        <tbody id="qout-tbody"><tr><td colspan="10" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có báo giá</td></tr></tbody>
       </table></div>
     </div>
   </div>
@@ -417,8 +352,8 @@ tr:hover td{background:#fafbfc}
     <div class="card">
       <div class="card-header"><div class="card-title"><i class="ti ti-inbox ni"></i>Nhận từ vendor</div></div>
       <div class="table-wrap"><table>
-        <thead><tr><th>Mã BG</th><th>Vendor</th><th>Dịch vụ</th><th>Đơn giá</th><th>Hiệu lực đến</th><th>Trạng thái</th><th>File</th></tr></thead>
-        <tbody id="qin-tbody"><tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có báo giá</td></tr></tbody>
+        <thead><tr><th>Mã BG</th><th>Vendor</th><th>Dịch vụ</th><th>Đơn giá</th><th>Hiệu lực đến</th><th>Trạng thái</th><th>File</th><th></th></tr></thead>
+        <tbody id="qin-tbody"><tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có báo giá</td></tr></tbody>
       </table></div>
     </div>
   </div>
@@ -428,18 +363,18 @@ tr:hover td{background:#fafbfc}
 <div class="page" id="page-contracts">
   <div class="page-header">
     <div class="page-title"><i class="ti ti-file-text ni"></i>Hợp đồng</div>
-    <button class="btn btn-primary" onclick="document.getElementById('contract-modal').classList.add('open')"><i class="ti ti-plus"></i> Thêm hợp đồng</button>
+    <button class="btn btn-primary" onclick="openContractModal()"><i class="ti ti-plus"></i> Thêm hợp đồng</button>
   </div>
   <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab(this,'ctab-hard')">Bảng cứng</button>
-    <button class="tab-btn" onclick="switchTab(this,'ctab-soft')">Bảng mềm</button>
+    <button class="tab-btn active" onclick="swTab(this,'ctab-hard')">Bảng cứng</button>
+    <button class="tab-btn" onclick="swTab(this,'ctab-soft')">Bảng mềm</button>
   </div>
   <div class="tab-pane active" id="ctab-hard">
     <div class="card">
       <div class="card-header"><div class="card-title"><i class="ti ti-file-certificate ni"></i>Hợp đồng gốc (bảng cứng)</div></div>
       <div class="table-wrap"><table>
-        <thead><tr><th>Mã HĐ</th><th>Đối tác</th><th>Loại dịch vụ</th><th>Ngày ký</th><th>Hiệu lực đến</th><th>Giá trị</th><th>Trạng thái</th><th>File</th></tr></thead>
-        <tbody id="chard-tbody"><tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có hợp đồng</td></tr></tbody>
+        <thead><tr><th>Mã HĐ</th><th>Đối tác</th><th>Loại dịch vụ</th><th>Ngày ký</th><th>Hiệu lực đến</th><th>Giá trị</th><th>Trạng thái</th><th>File</th><th></th></tr></thead>
+        <tbody id="chard-tbody"><tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có hợp đồng</td></tr></tbody>
       </table></div>
     </div>
   </div>
@@ -447,8 +382,8 @@ tr:hover td{background:#fafbfc}
     <div class="card">
       <div class="card-header"><div class="card-title"><i class="ti ti-table ni"></i>Bảng mềm (linh hoạt)</div></div>
       <div class="table-wrap"><table>
-        <thead><tr><th>Mã</th><th>Đối tác</th><th>Tuyến / Dịch vụ</th><th>Van 1T (VNĐ)</th><th>Tải 2T (VNĐ)</th><th>Phụ phí</th><th>Hiệu lực đến</th></tr></thead>
-        <tbody id="csoft-tbody"><tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có dữ liệu</td></tr></tbody>
+        <thead><tr><th>Mã</th><th>Đối tác</th><th>Tuyến / Dịch vụ</th><th>Van 1T (VNĐ)</th><th>Tải 2T (VNĐ)</th><th>Phụ phí</th><th>Hiệu lực đến</th><th></th></tr></thead>
+        <tbody id="csoft-tbody"><tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có dữ liệu</td></tr></tbody>
       </table></div>
     </div>
   </div>
@@ -458,7 +393,7 @@ tr:hover td{background:#fafbfc}
 <div class="page" id="page-costs">
   <div class="page-header">
     <div class="page-title"><i class="ti ti-coin ni"></i>Chi phí vận hành</div>
-    <button class="btn btn-primary" onclick="document.getElementById('cost-modal').classList.add('open');initCostModal()"><i class="ti ti-plus"></i> Ghi chi phí</button>
+    <button class="btn btn-primary" onclick="openCostModal()"><i class="ti ti-plus"></i> Ghi chi phí</button>
   </div>
   <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
     <div class="stat-card"><div class="stat-icon si-warn"><i class="ti ti-gas-station"></i></div><div class="stat-num" id="c-fuel">0đ</div><div class="stat-label">Xăng dầu tháng này</div></div>
@@ -470,19 +405,9 @@ tr:hover td{background:#fafbfc}
     <div class="card-header">
       <div class="card-title"><i class="ti ti-list ni"></i>Lịch sử chi phí</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <select id="cf-month" onchange="renderCosts()" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;outline:none">
-          <option value="">Tất cả tháng</option>
-        </select>
-        <select id="cf-type" onchange="renderCosts()" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;outline:none">
-          <option value="">Tất cả loại</option>
-          <option value="fuel">⛽ Xăng dầu</option>
-          <option value="toll">🛣️ Cầu đường</option>
-          <option value="repair">🔧 Sửa chữa</option>
-          <option value="other">📦 Khác</option>
-        </select>
-        <select id="cf-vehicle" onchange="renderCosts()" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;outline:none">
-          <option value="">Tất cả xe</option>
-        </select>
+        <select id="cf-month" onchange="renderCosts()" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;outline:none"></select>
+        <select id="cf-type" onchange="renderCosts()" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;outline:none"><option value="">Tất cả loại</option><option value="fuel">⛽ Xăng dầu</option><option value="toll">🛣️ Cầu đường</option><option value="repair">🔧 Sửa chữa</option><option value="other">📦 Khác</option></select>
+        <select id="cf-vehicle" onchange="renderCosts()" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;outline:none"><option value="">Tất cả xe</option></select>
       </div>
     </div>
     <div class="table-wrap"><table>
@@ -500,15 +425,15 @@ tr:hover td{background:#fafbfc}
       <div class="card-header"><div class="card-title"><i class="ti ti-api ni"></i>Kết nối API</div></div>
       <div class="card-body">
         <div class="field" style="margin-bottom:12px"><label>Apps Script URL</label><input type="text" id="set-api"></div>
-        <button class="btn btn-primary btn-sm" onclick="saveSettings()"><i class="ti ti-check"></i> Lưu</button>
+        <button class="btn btn-primary btn-sm" onclick="toast('Đã lưu cài đặt')"><i class="ti ti-check"></i> Lưu</button>
       </div>
     </div>
     <div class="card">
       <div class="card-header"><div class="card-title"><i class="ti ti-info-circle ni"></i>Thông tin</div></div>
       <div class="card-body" style="display:flex;flex-direction:column;gap:10px;font-size:13px">
-        <div style="display:flex;justify-content:space-between"><span class="text-gray">Phiên bản</span><span>AURA v1.0</span></div>
-        <div style="display:flex;justify-content:space-between"><span class="text-gray">App tài xế</span><a href="https://haiho551635.github.io/bulky-scanner/aura-driver-app.html" target="_blank" style="color:var(--brand)">Mở ↗</a></div>
-        <div style="display:flex;justify-content:space-between"><span class="text-gray">GitHub</span><a href="https://github.com/haiho551635/bulky-scanner" target="_blank" style="color:var(--brand)">haiho551635 ↗</a></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Phiên bản</span><span>AURA v1.0</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">App tài xế</span><a href="https://haiho551635.github.io/bulky-scanner/aura-driver-app.html" target="_blank" style="color:var(--brand)">Mở ↗</a></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">GitHub</span><a href="https://github.com/haiho551635/bulky-scanner" target="_blank" style="color:var(--brand)">haiho551635 ↗</a></div>
       </div>
     </div>
   </div>
@@ -516,798 +441,347 @@ tr:hover td{background:#fafbfc}
 
 </div><!-- /main -->
 
-<!-- MODAL GÁN TÀI XẾ -->
+<!-- MODALS -->
 <div class="modal-bg" id="assign-modal">
-  <div class="modal">
-    <div class="modal-header"><div class="modal-title"><i class="ti ti-user-check" style="color:var(--brand)"></i> Gán tài xế</div><button class="modal-close" onclick="closeM('assign-modal')"><i class="ti ti-x"></i></button></div>
-    <div class="modal-body">
-      <div style="padding:10px 14px;background:var(--surface2);border-radius:var(--radius-sm);font-size:13px;margin-bottom:14px">Đơn: <strong class="mono text-green" id="assign-oid"></strong></div>
-      <div class="field"><label>Chọn tài xế</label><select id="assign-driver" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit"></select></div>
-    </div>
-    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeM('assign-modal')">Hủy</button><button class="btn btn-primary" onclick="confirmAssign()"><i class="ti ti-check"></i> Xác nhận</button></div>
-  </div>
+  <div class="modal"><div class="modal-header"><div class="modal-title"><i class="ti ti-user-check" style="color:var(--brand)"></i> Gán tài xế</div><button class="modal-close" onclick="closeM('assign-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-body"><div style="padding:10px 14px;background:var(--surface2);border-radius:var(--radius-sm);font-size:13px;margin-bottom:14px">Đơn: <strong style="font-family:'DM Mono',monospace;color:var(--brand)" id="assign-oid"></strong></div><div class="field"><label>Chọn tài xế</label><select id="assign-driver" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit"></select></div></div>
+  <div class="modal-footer"><button class="btn btn-secondary" onclick="closeM('assign-modal')">Hủy</button><button class="btn btn-primary" onclick="confirmAssign()"><i class="ti ti-check"></i> Xác nhận</button></div></div>
 </div>
 
-<!-- MODAL THÊM XE -->
-<div class="modal-bg" id="vehicle-modal">
-  <div class="modal">
-    <div class="modal-header"><div class="modal-title"><i class="ti ti-truck" style="color:var(--brand)"></i> Thêm / sửa xe</div><button class="modal-close" onclick="closeM('vehicle-modal')"><i class="ti ti-x"></i></button></div>
-    <div class="modal-body">
-      <div class="form-grid fg2">
-        <div class="field"><label>Biển số *</label><input id="vm-plate" placeholder="51A-12345" style="text-transform:uppercase"></div>
-        <div class="field"><label>Loại xe *</label><select id="vm-type"><option value="van_1t">Van 1 tấn</option><option value="truck_2t">Xe tải 2 tấn</option></select></div>
-        <div class="field"><label>Năm sản xuất</label><input id="vm-year" type="number" placeholder="2020"></div>
-        <div class="field"><label>Màu xe</label><input id="vm-color" placeholder="Trắng"></div>
-        <div class="field"><label>Hạn đăng kiểm</label><input id="vm-inspect" type="date"></div>
-        <div class="field"><label>Hạn bảo hiểm</label><input id="vm-insure" type="date"></div>
-        <div class="field"><label>Km hiện tại</label><input id="vm-km" type="number" placeholder="50000"></div>
-        <div class="field"><label>Tài xế phụ trách</label><select id="vm-driver"><option value="">-- Chưa gán --</option></select></div>
-        <div class="field"><label>Trạng thái</label><select id="vm-status"><option value="active">Hoạt động</option><option value="maintenance">Bảo dưỡng</option><option value="inactive">Không hoạt động</option></select></div>
-        <div class="field"><label>Ghi chú</label><input id="vm-note" placeholder="Ghi chú thêm"></div>
-      </div>
-    </div>
-    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeM('vehicle-modal')">Hủy</button><button class="btn btn-primary" onclick="saveVehicle()"><i class="ti ti-check"></i> Lưu xe</button></div>
-  </div>
-</div>
-
-<!-- MODAL BÁO GIÁ -->
-<div class="modal-bg" id="quote-modal">
-  <div class="modal modal-lg">
-    <div class="modal-header"><div class="modal-title"><i class="ti ti-receipt" style="color:var(--brand)"></i> Tạo báo giá</div><button class="modal-close" onclick="closeM('quote-modal')"><i class="ti ti-x"></i></button></div>
-    <div class="modal-body">
-      <div class="form-grid fg2" style="margin-bottom:12px">
-        <div class="field"><label>Loại báo giá</label><select id="qm-type"><option value="out">Báo giá cho khách</option><option value="in">Báo giá từ vendor</option></select></div>
-        <div class="field"><label>Tên khách / Vendor *</label><input id="qm-partner" placeholder="Tên đối tác"></div>
-        <div class="field"><label>Loại xe</label><select id="qm-vtype"><option value="van_1t">Van 1 tấn</option><option value="truck_2t">Xe tải 2 tấn</option><option value="both">Cả hai</option></select></div>
-        <div class="field"><label>Tuyến / Dịch vụ</label><input id="qm-route" placeholder="HCM - Bình Dương"></div>
-        <div class="field"><label>Đơn giá (VNĐ)</label><input id="qm-price" type="number" placeholder="500000"></div>
-        <div class="field"><label>Hiệu lực đến</label><input id="qm-valid" type="date"></div>
-      </div>
-      <div class="field" style="margin-bottom:12px"><label>Ghi chú</label><textarea id="qm-note" placeholder="Điều khoản, ghi chú..."></textarea></div>
-      <div class="upload-zone" id="qm-upload-zone" onclick="document.getElementById('qm-file').click()">
-        <i class="ti ti-cloud-upload ni" id="qm-upload-icon"></i>
-        <strong id="qm-upload-label">Upload file báo giá</strong>
-        <p style="font-size:12px;margin-top:4px" id="qm-upload-hint">PDF, Word, Excel — bấm để chọn file</p>
-      </div>
-      <input type="file" id="qm-file" style="display:none" accept=".pdf,.doc,.docx,.xls,.xlsx" onchange="handleFileUpload(this,'qm')">
-    </div>
-    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeM('quote-modal')">Hủy</button><button class="btn btn-primary" onclick="saveQuote()"><i class="ti ti-check"></i> Lưu báo giá</button></div>
-  </div>
-</div>
-
-<!-- MODAL HỢP ĐỒNG -->
-<div class="modal-bg" id="contract-modal">
-  <div class="modal modal-lg">
-    <div class="modal-header"><div class="modal-title"><i class="ti ti-file-text" style="color:var(--brand)"></i> Thêm hợp đồng</div><button class="modal-close" onclick="closeM('contract-modal')"><i class="ti ti-x"></i></button></div>
-    <div class="modal-body">
-      <div class="form-grid fg2" style="margin-bottom:12px">
-        <div class="field"><label>Loại hợp đồng</label><select id="cm-type"><option value="hard">Bảng cứng</option><option value="soft">Bảng mềm</option></select></div>
-        <div class="field"><label>Đối tác *</label><input id="cm-partner" placeholder="Tên đối tác"></div>
-        <div class="field"><label>Loại dịch vụ</label><select id="cm-service"><option value="transport">Vận chuyển</option><option value="lease">Thuê xe</option><option value="maintenance">Bảo dưỡng</option><option value="other">Khác</option></select></div>
-        <div class="field"><label>Giá trị HĐ (VNĐ)</label><input id="cm-value" type="number" placeholder="10000000"></div>
-        <div class="field"><label>Ngày ký</label><input id="cm-sign" type="date"></div>
-        <div class="field"><label>Hiệu lực đến</label><input id="cm-expire" type="date"></div>
-        <div class="field"><label>Đơn giá Van 1T (VNĐ)</label><input id="cm-van" type="number" placeholder="Giá/chuyến"></div>
-        <div class="field"><label>Đơn giá Tải 2T (VNĐ)</label><input id="cm-truck" type="number" placeholder="Giá/chuyến"></div>
-      </div>
-      <div class="field" style="margin-bottom:12px"><label>Ghi chú</label><textarea id="cm-note" placeholder="Điều khoản..."></textarea></div>
-      <div class="upload-zone" id="cm-upload-zone" onclick="document.getElementById('cm-file').click()">
-        <i class="ti ti-cloud-upload ni" id="cm-upload-icon"></i>
-        <strong id="cm-upload-label">Upload file hợp đồng</strong>
-        <p style="font-size:12px;margin-top:4px" id="cm-upload-hint">PDF, Word — bấm để chọn file</p>
-      </div>
-      <input type="file" id="cm-file" style="display:none" accept=".pdf,.doc,.docx" onchange="handleFileUpload(this,'cm')">
-    </div>
-    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeM('contract-modal')">Hủy</button><button class="btn btn-primary" onclick="saveContract()"><i class="ti ti-check"></i> Lưu hợp đồng</button></div>
-  </div>
-</div>
-
-<!-- MODAL CHI PHÍ -->
-<div class="modal-bg" id="cost-modal">
-  <div class="modal">
-    <div class="modal-header"><div class="modal-title"><i class="ti ti-coin" style="color:var(--brand)"></i> Ghi chi phí</div><button class="modal-close" onclick="closeM('cost-modal')"><i class="ti ti-x"></i></button></div>
-    <div class="modal-body">
-      <div class="form-grid fg2">
-        <div class="field"><label>Ngày *</label><input id="costm-date" type="date"></div>
-        <div class="field"><label>Loại chi phí *</label><select id="costm-type"><option value="fuel">⛽ Xăng dầu</option><option value="toll">🛣️ Cầu đường</option><option value="repair">🔧 Sửa chữa</option><option value="other">📦 Khác</option></select></div>
-        <div class="field"><label>Xe</label><select id="costm-vehicle"><option value="">-- Chọn xe --</option></select></div>
-        <div class="field"><label>Tài xế</label><select id="costm-driver"><option value="">-- Chọn tài xế --</option></select></div>
-        <div class="field"><label>Số tiền (VNĐ) *</label><input id="costm-amount" type="number" placeholder="500000"></div>
-        <div class="field"><label>Ghi chú</label><input id="costm-note" placeholder="Mô tả chi phí"></div>
-      </div>
-    </div>
-    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeM('cost-modal')">Hủy</button><button class="btn btn-primary" onclick="saveCost()"><i class="ti ti-check"></i> Lưu</button></div>
-  </div>
-</div>
-
-<!-- MODAL PASTE -->
-<div class="modal-bg" id="paste-modal">
-  <div class="modal">
-    <div class="modal-header"><div class="modal-title"><i class="ti ti-table-import" style="color:var(--info)"></i> Paste từ Excel</div><button class="modal-close" onclick="closeM('paste-modal')"><i class="ti ti-x"></i></button></div>
-    <div class="modal-body">
-      <div class="field"><label>Dán dữ liệu vào đây</label><textarea id="paste-data" rows="8" placeholder="Copy từ Excel rồi dán vào đây&#10;Mỗi dòng 1 điểm giao&#10;Định dạng: Tên khách [Tab] Địa chỉ&#10;&#10;Ví dụ:&#10;Nguyễn Văn A	45 Nguyễn Huệ Q.1&#10;Trần Thị B	88 Lê Lợi Q.3" style="font-family:'DM Mono',monospace;font-size:12px"></textarea></div>
-      <p style="font-size:12px;color:var(--text3);margin-top:8px">2 cột: Tên khách — Địa chỉ, phân cách bằng Tab hoặc |</p>
-    </div>
-    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeM('paste-modal')">Hủy</button><button class="btn btn-primary" onclick="parsePaste()"><i class="ti ti-check"></i> Nhập dữ liệu</button></div>
-  </div>
-</div>
-
-<script>
-// ==================== CONFIG ====================
-const API_URL = 'https://script.google.com/macros/s/AKfycbxwuqIuNnPbL5PAoOF3opMT2gltYG6a1NKHY2ovqHj4t0XbHQmNOtwn2EcAGRe4wnvMaw/exec';
-
-// ==================== STATE ====================
-let db = { orders:[], drivers:[], vehicles:[], quotes:[], contracts:[], costs:[] };
-let assignOid = null, stopCount = 0;
-
-// ==================== NAVIGATION ====================
-function goPage(name) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  const pg = document.getElementById('page-' + name);
-  const nav = document.getElementById('nav-' + name);
-  if (pg) pg.classList.add('active');
-  if (nav) nav.classList.add('active');
-}
-
-// ==================== UTILS ====================
-function showLoad(t) { document.getElementById('load-txt').textContent = t || 'Đang tải...'; document.getElementById('loading').classList.add('show'); }
-function hideLoad() { document.getElementById('loading').classList.remove('show'); }
-function toast(msg, type) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'toast show t-' + (type === 'error' ? 'red' : type === 'warn' ? 'warn' : 'green');
-  setTimeout(() => el.classList.remove('show'), 3000);
-}
-function closeM(id) { document.getElementById(id).classList.remove('open'); }
-function switchTab(btn, paneId) {
-  const parent = btn.closest('.page') || document.body;
-  parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  parent.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-  btn.classList.add('active');
-  const pane = document.getElementById(paneId);
-  if (pane) pane.classList.add('active');
-}
-function fmtMoney(n) { if (!n) return '—'; return Number(n).toLocaleString('vi-VN') + 'đ'; }
-function fmtDate(s) {
-  if (!s) return '—';
-  try { const d = new Date(s); if (isNaN(d)) return s; return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }); }
-  catch (e) { return s; }
-}
-function isExpired(d) { return d && new Date(d) < new Date(); }
-function isExpiringSoon(d) { if (!d) return false; const dt = new Date(d), now = new Date(); return dt > now && (dt - now) < 30 * 86400000; }
-async function apiGet(p) { const r = await fetch(API_URL + '?' + new URLSearchParams(p)); return r.json(); }
-async function apiPost(b) { const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify(b) }); return r.json(); }
-
-// ==================== BADGES ====================
-function sBadge(s) {
-  const m = { pending: '<span class="badge b-warn"><span class="bdot"></span>Chờ giao</span>', inprogress: '<span class="badge b-blue"><span class="bdot"></span>Đang giao</span>', done: '<span class="badge b-green"><span class="bdot"></span>Hoàn thành</span>' };
-  return m[s] || '<span class="badge b-gray">—</span>';
-}
-function vBadge(s) {
-  const m = { active: '<span class="badge b-green">Hoạt động</span>', maintenance: '<span class="badge b-warn">Bảo dưỡng</span>', inactive: '<span class="badge b-gray">Không HĐ</span>' };
-  return m[s] || '<span class="badge b-gray">—</span>';
-}
-function dBadge(s) {
-  const m = { active: '<span class="badge b-green">Hoạt động</span>', off: '<span class="badge b-gray">Đã nghỉ</span>', locked: '<span class="badge b-red">Bị khóa</span>' };
-  return m[s] || '<span class="badge b-gray">—</span>';
-}
-
-// ==================== LOAD DATA ====================
-async function loadAll() {
-  showLoad('Đang tải dữ liệu...');
-  try { await Promise.all([loadOrders(), loadDrivers()]); } catch (e) { console.log('API error:', e); }
-  hideLoad();
-  renderDash();
-}
-async function loadOrders() {
-  try {
-    const r = await apiGet({ action: 'getAdminOrders' });
-    if (r.success) { db.orders = r.orders || []; renderOrders(); updateOrderStats(); updateBadge(); }
-  } catch (e) { console.log('Orders error:', e); }
-}
-async function loadDrivers() {
-  try {
-    const r = await apiGet({ action: 'getDrivers' });
-    if (r.success) { db.drivers = r.drivers || []; renderDrivers(); fillDriverSelects(); }
-  } catch (e) { console.log('Drivers error:', e); }
-}
-function updateBadge() {
-  const n = db.orders.filter(o => o.status === 'pending').length;
-  const b = document.getElementById('badge-orders');
-  b.textContent = n; b.style.display = n > 0 ? 'block' : 'none';
-}
-
-// ==================== DASHBOARD ====================
-function renderDash() {
-  document.getElementById('dash-date').textContent = new Date().toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
-  document.getElementById('d-orders').textContent = db.orders.length || '0';
-  document.getElementById('d-pending').textContent = db.orders.filter(o => o.status === 'pending').length || '0';
-  document.getElementById('d-vehicles').textContent = db.vehicles.filter(v => v.status === 'active').length || '0';
-  document.getElementById('d-expire').textContent = db.vehicles.filter(v => isExpiringSoon(v.inspection_date) || isExpired(v.inspection_date)).length || '0';
-  const recent = db.orders.slice(-5).reverse();
-  document.getElementById('dash-orders').innerHTML = recent.length
-    ? recent.map(o => `<tr><td class="td-bold td-mono">${o.order_id || '—'}</td><td style="font-size:12px">${o.driver_name || '<span class="text-gray">Chưa gán</span>'}</td><td>${sBadge(o.status)}</td></tr>`).join('')
-    : '<tr><td colspan="3" style="text-align:center;padding:1.5rem;color:var(--text3)">Chưa có đơn hàng</td></tr>';
-  document.getElementById('dash-vehicles').innerHTML = db.vehicles.length
-    ? db.vehicles.slice(0, 5).map(v => `<tr><td class="td-bold mono">${v.plate || '—'}</td><td style="font-size:12px">${v.type === 'van_1t' ? 'Van 1T' : 'Tải 2T'}</td><td>${vBadge(v.status)}</td></tr>`).join('')
-    : '<tr><td colspan="3" style="text-align:center;padding:1.5rem;color:var(--text3)">Chưa có dữ liệu xe</td></tr>';
-}
-
-// ==================== ORDERS ====================
-function updateOrderStats() {
-  document.getElementById('o-total').textContent = db.orders.length;
-  document.getElementById('o-pending').textContent = db.orders.filter(o => o.status === 'pending').length;
-  document.getElementById('o-inprogress').textContent = db.orders.filter(o => o.status === 'inprogress').length;
-  document.getElementById('o-done').textContent = db.orders.filter(o => o.status === 'done').length;
-}
-function renderOrders() {
-  const search = (document.getElementById('o-search').value || '').toLowerCase();
-  const sf = document.getElementById('o-status').value;
-  const list = db.orders.filter(o => {
-    const ms = !search || (o.order_id || '').toLowerCase().includes(search) || (o.driver_name || '').toLowerCase().includes(search);
-    const mf = !sf || o.status === sf;
-    return ms && mf;
-  });
-  const tbody = document.getElementById('order-tbody');
-  if (!list.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text3)">Không có đơn hàng</td></tr>'; return; }
-  tbody.innerHTML = list.map(o => {
-    const id = o.order_id || o.id || '—';
-    const drops = (o.stops || []).filter(s => s.type === 'drop').length;
-    const isDone = o.status === 'done';
-    const action = isDone ? '<span class="badge b-green">✓ Xong</span>' : `<button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openAssign('${id}')"><i class="ti ti-user-plus"></i> Gán TX</button>`;
-    return `<tr style="cursor:pointer" onclick="viewOrder('${id}')">
-      <td class="td-bold td-mono">${id}</td>
-      <td style="font-size:12px;color:var(--text3)">${fmtDate(o.date)}</td>
-      <td style="font-size:12px">${drops} điểm</td>
-      <td>${o.driver_name ? `<strong style="font-size:13px">${o.driver_name}</strong>` : '<span class="text-gray" style="font-size:12px">Chưa gán</span>'}</td>
-      <td>${sBadge(o.status)}</td>
-      <td style="font-size:12px;color:var(--text3)">${o.note || '—'}</td>
-      <td>${action}</td>
-    </tr>`;
-  }).join('');
-}
-function openAssign(oid) {
-  assignOid = oid;
-  document.getElementById('assign-oid').textContent = oid;
-  const o = db.orders.find(x => (x.order_id || x.id) === oid);
-  fillDriverSelects();
-  if (o && o.driver_code) document.getElementById('assign-driver').value = o.driver_code;
-  document.getElementById('assign-modal').classList.add('open');
-}
-async function confirmAssign() {
-  const code = document.getElementById('assign-driver').value;
-  if (!code) { toast('Vui lòng chọn tài xế', 'error'); return; }
-  const d = db.drivers.find(x => (x.driver_code || x.code) === code);
-  showLoad('Đang gán tài xế...');
-  try {
-    const r = await apiPost({ action: 'assignDriver', order_id: assignOid, driver_code: code, driver_name: d ? (d.driver_name || d.name || '') : '' });
-    hideLoad();
-    if (r.success) { toast('Gán tài xế thành công!'); closeM('assign-modal'); await loadOrders(); }
-    else toast(r.message || 'Lỗi gán tài xế', 'error');
-  } catch (e) { hideLoad(); toast('Lỗi kết nối', 'error'); }
-}
-
-// ==================== DRIVERS ====================
-function fillDriverSelects() {
-  const active = db.drivers.filter(d => String(d.status || '').trim() === 'active');
-  const opts = '<option value="">-- Chọn tài xế --</option>' + active.map(d => {
-    const code = d.driver_code || d.code || ''; const name = d.driver_name || d.name || '';
-    return `<option value="${code}">${name} (${code})</option>`;
-  }).join('');
-  ['inp-driver', 'assign-driver', 'costm-driver'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = opts; });
-  const vd = document.getElementById('vm-driver');
-  if (vd) vd.innerHTML = '<option value="">-- Chưa gán --</option>' + active.map(d => `<option value="${d.driver_code || d.code}">${d.driver_name || d.name}</option>`).join('');
-}
-function renderDrivers() {
-  const search = (document.getElementById('d-search').value || '').toLowerCase();
-  const sf = document.getElementById('d-status').value;
-  const list = db.drivers.filter(d => {
-    const code = d.driver_code || d.code || ''; const name = d.driver_name || d.name || '';
-    const ms = !search || code.toLowerCase().includes(search) || name.toLowerCase().includes(search);
-    const mf = !sf || String(d.status || '').trim() === sf;
-    return ms && mf;
-  });
-  const tbody = document.getElementById('driver-tbody');
-  if (!list.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text3)">Không có tài xế</td></tr>'; return; }
-  tbody.innerHTML = list.map(d => {
-    const code = d.driver_code || d.code || '—'; const name = d.driver_name || d.name || '—';
-    return `<tr>
-      <td class="td-bold mono">${code}</td>
-      <td class="td-bold">${name}</td>
-      <td style="font-size:12px">${d.phone || '—'}</td>
-      <td class="mono" style="font-size:12px">${d.license_plate || '—'}</td>
-      <td>${dBadge(String(d.status || '').trim())}</td>
-    </tr>`;
-  }).join('');
-}
-
-// ==================== VEHICLES ====================
-function renderVehicles() {
-  const search = (document.getElementById('v-search').value || '').toLowerCase();
-  const tf = document.getElementById('v-type').value;
-  const sf = document.getElementById('v-status').value;
-  const list = db.vehicles.filter(v => {
-    const ms = !search || (v.plate || '').toLowerCase().includes(search);
-    return ms && (!tf || v.type === tf) && (!sf || v.status === sf);
-  });
-  updateVehicleStats();
-  const tbody = document.getElementById('vehicle-tbody');
-  if (!list.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có dữ liệu xe</td></tr>'; document.getElementById('vehicle-cards').innerHTML = '<div style="text-align:center;padding:3rem;color:var(--text3)">Chưa có dữ liệu xe</div>'; return; }
-  tbody.innerHTML = list.map(v => {
-    const expWarn = isExpired(v.inspection_date) ? 'text-red' : isExpiringSoon(v.inspection_date) ? 'text-warn' : '';
-    return `<tr>
-      <td class="td-bold mono">${v.plate || '—'}</td>
-      <td style="font-size:12px">${v.type === 'van_1t' ? '🚐 Van 1T' : '🚛 Tải 2T'}</td>
-      <td style="font-size:12px">${v.year || '—'}</td>
-      <td style="font-size:12px">${v.driver || '—'}</td>
-      <td class="${expWarn}" style="font-size:12px">${fmtDate(v.inspection_date)}</td>
-      <td style="font-size:12px">${fmtDate(v.insurance_date)}</td>
-      <td class="mono" style="font-size:12px">${v.km ? Number(v.km).toLocaleString() + ' km' : '—'}</td>
-      <td>${vBadge(v.status)}</td>
-      <td><button class="btn-icon" onclick="editVehicle('${v.plate}')"><i class="ti ti-edit"></i></button></td>
-    </tr>`;
-  }).join('');
-  document.getElementById('vehicle-cards').innerHTML = list.map(v => `
-    <div class="vcard">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start">
-        <div><div class="vcard-plate">${v.plate || '—'}</div><div class="vcard-type">${v.type === 'van_1t' ? '🚐 Van 1 tấn' : '🚛 Xe tải 2 tấn'}</div></div>
-        ${vBadge(v.status)}
-      </div>
-      <div class="km-bar"><div class="km-fill" style="width:${Math.min((v.km || 0) / 300000 * 100, 100)}%"></div></div>
-      <div style="font-size:11px;color:var(--text3);margin-top:4px">${v.km ? Number(v.km).toLocaleString() + ' km' : 'Chưa cập nhật km'}</div>
-      <div class="vcard-info">
-        <div><span class="vcard-info-label">Đăng kiểm</span><span class="vcard-info-val ${isExpired(v.inspection_date) ? 'text-red' : isExpiringSoon(v.inspection_date) ? 'text-warn' : ''}">${fmtDate(v.inspection_date)}</span></div>
-        <div><span class="vcard-info-label">Bảo hiểm</span><span class="vcard-info-val">${fmtDate(v.insurance_date)}</span></div>
-        <div><span class="vcard-info-label">Năm SX</span><span class="vcard-info-val">${v.year || '—'}</span></div>
-        <div><span class="vcard-info-label">Tài xế</span><span class="vcard-info-val">${v.driver || 'Chưa gán'}</span></div>
-      </div>
-    </div>`).join('');
-}
-function updateVehicleStats() {
-  document.getElementById('v-total').textContent = db.vehicles.length;
-  document.getElementById('v-active').textContent = db.vehicles.filter(v => v.status === 'active').length;
-  document.getElementById('v-maint').textContent = db.vehicles.filter(v => v.status === 'maintenance').length;
-  document.getElementById('v-exp').textContent = db.vehicles.filter(v => isExpired(v.inspection_date)).length;
-}
-function saveVehicle() {
-  const v = { plate: (document.getElementById('vm-plate').value || '').toUpperCase().trim(), type: document.getElementById('vm-type').value, year: document.getElementById('vm-year').value, color: document.getElementById('vm-color').value, inspection_date: document.getElementById('vm-inspect').value, insurance_date: document.getElementById('vm-insure').value, km: document.getElementById('vm-km').value, driver: document.getElementById('vm-driver').value, status: document.getElementById('vm-status').value, note: document.getElementById('vm-note').value };
-  if (!v.plate) { toast('Vui lòng nhập biển số xe', 'error'); return; }
-  const idx = db.vehicles.findIndex(x => x.plate === v.plate);
-  if (idx >= 0) db.vehicles[idx] = v; else db.vehicles.push(v);
-  renderVehicles(); updateVehicleStats(); closeM('vehicle-modal'); toast('Đã lưu xe ' + v.plate);
-}
-function editVehicle(plate) {
-  const v = db.vehicles.find(x => x.plate === plate); if (!v) return;
-  document.getElementById('vm-plate').value = v.plate || '';
-  document.getElementById('vm-type').value = v.type || 'van_1t';
-  document.getElementById('vm-year').value = v.year || '';
-  document.getElementById('vm-color').value = v.color || '';
-  document.getElementById('vm-inspect').value = v.inspection_date || '';
-  document.getElementById('vm-insure').value = v.insurance_date || '';
-  document.getElementById('vm-km').value = v.km || '';
-  document.getElementById('vm-status').value = v.status || 'active';
-  document.getElementById('vm-note').value = v.note || '';
-  fillDriverSelects();
-  document.getElementById('vehicle-modal').classList.add('open');
-}
-
-// ==================== QUOTES ====================
-function saveQuote() {
-  if (!document.getElementById('qm-partner').value) { toast('Vui lòng nhập tên đối tác', 'error'); return; }
-  db.quotes.push({ id: 'BG-' + Date.now(), type: document.getElementById('qm-type').value, partner: document.getElementById('qm-partner').value, vtype: document.getElementById('qm-vtype').value, route: document.getElementById('qm-route').value, price: document.getElementById('qm-price').value, valid: document.getElementById('qm-valid').value, note: document.getElementById('qm-note').value, date: new Date().toISOString(), status: 'active' });
-  renderQuotes(); closeM('quote-modal'); toast('Đã lưu báo giá');
-}
-function renderQuotes() {
-  const out = db.quotes.filter(q => q.type === 'out');
-  const inp = db.quotes.filter(q => q.type === 'in');
-  const vtypeLabel = t => t === 'van_1t' ? 'Van 1T' : t === 'truck_2t' ? 'Tải 2T' : 'Cả hai';
-  document.getElementById('qout-tbody').innerHTML = out.length ? out.map((q,qi) => {
-    const realIdx = db.quotes.indexOf(q);
-    return `<tr><td class="td-bold mono">${q.id}</td><td class="td-bold">${q.partner}</td><td style="font-size:12px">${vtypeLabel(q.vtype)}</td><td style="font-size:12px">${q.route || '—'}</td><td class="mono" style="font-size:12px">${fmtMoney(q.price)}</td><td style="font-size:12px">${fmtDate(q.date)}</td><td style="font-size:12px">${fmtDate(q.valid)}</td><td><span class="badge b-green">Hiệu lực</span></td><td>—</td><td style="display:flex;gap:4px"><button class="btn-icon" onclick="editQuote(${qi},'out')" title="Sửa"><i class="ti ti-edit"></i></button><button class="btn-icon" style="color:var(--danger)" onclick="deleteQuote(${realIdx})" title="Xóa"><i class="ti ti-trash"></i></button></td></tr>`;
-  }).join('') : '<tr><td colspan="10" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có báo giá</td></tr>';
-  document.getElementById('qin-tbody').innerHTML = inp.length ? inp.map((q,qi) => {
-    const realIdx = db.quotes.indexOf(q);
-    return `<tr><td class="td-bold mono">${q.id}</td><td class="td-bold">${q.partner}</td><td style="font-size:12px">${q.route || '—'}</td><td class="mono" style="font-size:12px">${fmtMoney(q.price)}</td><td style="font-size:12px">${fmtDate(q.valid)}</td><td><span class="badge b-green">Hiệu lực</span></td><td>—</td><td style="display:flex;gap:4px"><button class="btn-icon" onclick="editQuote(${qi},'in')" title="Sửa"><i class="ti ti-edit"></i></button><button class="btn-icon" style="color:var(--danger)" onclick="deleteQuote(${realIdx})" title="Xóa"><i class="ti ti-trash"></i></button></td></tr>`;
-  }).join('') : '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có báo giá</td></tr>';
-}
-
-// ==================== CONTRACTS ====================
-function saveContract() {
-  if (!document.getElementById('cm-partner').value) { toast('Vui lòng nhập tên đối tác', 'error'); return; }
-  const svc = { transport: 'Vận chuyển', lease: 'Thuê xe', maintenance: 'Bảo dưỡng', other: 'Khác' };
-  db.contracts.push({ id: 'HD-' + Date.now(), type: document.getElementById('cm-type').value, partner: document.getElementById('cm-partner').value, service: svc[document.getElementById('cm-service').value] || '', value: document.getElementById('cm-value').value, sign: document.getElementById('cm-sign').value, expire: document.getElementById('cm-expire').value, van: document.getElementById('cm-van').value, truck: document.getElementById('cm-truck').value, note: document.getElementById('cm-note').value });
-  renderContracts(); closeM('contract-modal'); toast('Đã lưu hợp đồng');
-}
-function renderContracts() {
-  const hard = db.contracts.filter(c => c.type === 'hard');
-  const soft = db.contracts.filter(c => c.type === 'soft');
-  const expBadge = c => isExpired(c.expire) ? '<span class="badge b-red">Hết hạn</span>' : isExpiringSoon(c.expire) ? '<span class="badge b-warn">Sắp hết</span>' : '<span class="badge b-green">Hiệu lực</span>';
-  document.getElementById('chard-tbody').innerHTML = hard.length ? hard.map((c,ci) => {
-    const realIdx = db.contracts.indexOf(c);
-    return `<tr><td class="td-bold mono">${c.id}</td><td class="td-bold">${c.partner}</td><td style="font-size:12px">${c.service}</td><td style="font-size:12px">${fmtDate(c.sign)}</td><td style="font-size:12px">${fmtDate(c.expire)}</td><td class="mono" style="font-size:12px">${fmtMoney(c.value)}</td><td>${expBadge(c)}</td><td>—</td><td style="display:flex;gap:4px"><button class="btn-icon" onclick="editContract(${realIdx})" title="Sửa"><i class="ti ti-edit"></i></button><button class="btn-icon" style="color:var(--danger)" onclick="deleteContract(${realIdx})" title="Xóa"><i class="ti ti-trash"></i></button></td></tr>`;
-  }).join('') : '<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có hợp đồng</td></tr>';
-  document.getElementById('csoft-tbody').innerHTML = soft.length ? soft.map((c,ci) => {
-    const realIdx = db.contracts.indexOf(c);
-    return `<tr><td class="td-bold mono">${c.id}</td><td class="td-bold">${c.partner}</td><td style="font-size:12px">${c.service}</td><td class="mono" style="font-size:12px">${fmtMoney(c.van)}</td><td class="mono" style="font-size:12px">${fmtMoney(c.truck)}</td><td>—</td><td style="font-size:12px">${fmtDate(c.expire)}</td><td style="display:flex;gap:4px"><button class="btn-icon" onclick="editContract(${realIdx})" title="Sửa"><i class="ti ti-edit"></i></button><button class="btn-icon" style="color:var(--danger)" onclick="deleteContract(${realIdx})" title="Xóa"><i class="ti ti-trash"></i></button></td></tr>`;
-  }).join('') : '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có dữ liệu</td></tr>';
-}
-
-// ==================== COSTS ====================
-function initCostModal() {
-  document.getElementById('costm-date').value = new Date().toISOString().split('T')[0];
-  const cv = document.getElementById('costm-vehicle');
-  if (cv) cv.innerHTML = '<option value="">-- Chọn xe --</option>' + db.vehicles.map(v => `<option value="${v.plate}">${v.plate}</option>`).join('');
-  fillDriverSelects();
-}
-function saveCost() {
-  if (!document.getElementById('costm-amount').value) { toast('Vui lòng nhập số tiền', 'error'); return; }
-  const typeLabel = { fuel: '⛽ Xăng dầu', toll: '🛣️ Cầu đường', repair: '🔧 Sửa chữa', other: '📦 Khác' };
-  db.costs.push({ date: document.getElementById('costm-date').value, type: document.getElementById('costm-type').value, typeLabel: typeLabel[document.getElementById('costm-type').value] || '', vehicle: document.getElementById('costm-vehicle').value, driver: document.getElementById('costm-driver').value, amount: document.getElementById('costm-amount').value, note: document.getElementById('costm-note').value });
-  renderCosts(); updateCostStats(); closeM('cost-modal'); toast('Đã lưu chi phí');
-}
-function renderCosts() {
-  const tbody = document.getElementById('cost-tbody');
-  tbody.innerHTML = db.costs.length ? db.costs.slice().reverse().map(c => `<tr><td style="font-size:12px">${fmtDate(c.date)}</td><td><span class="badge b-gray">${c.typeLabel || c.type}</span></td><td class="mono" style="font-size:12px">${c.vehicle || '—'}</td><td style="font-size:12px">${c.driver || '—'}</td><td class="mono text-red" style="font-weight:600">${fmtMoney(c.amount)}</td><td style="font-size:12px;color:var(--text3)">${c.note || '—'}</td></tr>`).join('') : '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có dữ liệu</td></tr>';
-}
-function updateCostStats() {
-  const now = new Date();
-  const thisMonth = c => { const d = new Date(c.date); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); };
-  const sum = (type) => db.costs.filter(c => c.type === type && thisMonth(c)).reduce((a, c) => a + Number(c.amount || 0), 0);
-  document.getElementById('c-fuel').textContent = fmtMoney(sum('fuel')) || '0đ';
-  document.getElementById('c-toll').textContent = fmtMoney(sum('toll')) || '0đ';
-  document.getElementById('c-repair').textContent = fmtMoney(sum('repair')) || '0đ';
-  document.getElementById('c-total').textContent = fmtMoney(db.costs.filter(thisMonth).reduce((a, c) => a + Number(c.amount || 0), 0)) || '0đ';
-}
-
-// ==================== CREATE ORDER ====================
-function genId() { const c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; let s = 'AURA-'; for (let i = 0; i < 6; i++) s += c[Math.floor(Math.random() * c.length)]; return s; }
-function refreshOrderId() { document.getElementById('inp-orderid').value = genId(); }
-function addStop() {
-  stopCount++;
-  const si = stopCount;
-  const num = document.querySelectorAll('#stops-list .stop-row').length + 1;
-  const div = document.createElement('div');
-  div.className = 'stop-row'; div.id = 'sr-' + si;
-  div.innerHTML = `<div class="stop-num">${num}</div><div class="stop-fields"><input class="stop-input" id="sn-${si}" placeholder="Tên khách hàng"><input class="stop-input" id="sa-${si}" placeholder="Địa chỉ giao hàng"></div><button class="btn-remove" onclick="removeStop(${si})"><i class="ti ti-x"></i></button>`;
-  document.getElementById('stops-list').appendChild(div);
-  updatePreview();
-}
-function removeStop(si) { const el = document.getElementById('sr-' + si); if (el) el.remove(); renum(); updatePreview(); }
-function renum() { document.querySelectorAll('#stops-list .stop-row').forEach((r, i) => { const n = r.querySelector('.stop-num'); if (n) n.textContent = i + 1; }); }
-function parsePaste() {
-  const raw = document.getElementById('paste-data').value.trim();
-  if (!raw) { toast('Chưa có dữ liệu', 'error'); return; }
-  const lines = raw.split('\n').filter(l => l.trim()); let added = 0;
-  lines.forEach(line => {
-    const p = line.includes('\t') ? line.split('\t') : line.split('|');
-    if (p.length >= 2) {
-      stopCount++;
-      const si = stopCount;
-      const num = document.querySelectorAll('#stops-list .stop-row').length + 1;
-      const div = document.createElement('div');
-      div.className = 'stop-row'; div.id = 'sr-' + si;
-      div.innerHTML = `<div class="stop-num">${num}</div><div class="stop-fields"><input class="stop-input" id="sn-${si}" value="${p[0].trim()}"><input class="stop-input" id="sa-${si}" value="${p[1].trim()}"></div><button class="btn-remove" onclick="removeStop(${si})"><i class="ti ti-x"></i></button>`;
-      document.getElementById('stops-list').appendChild(div);
-      added++;
-    }
-  });
-  document.getElementById('paste-data').value = '';
-  closeM('paste-modal'); toast(`Đã thêm ${added} điểm giao`); updatePreview();
-}
-function updatePreview() {
-  const id = document.getElementById('inp-orderid').value;
-  const date = document.getElementById('inp-date').value;
-  const dEl = document.getElementById('inp-driver');
-  const dName = dEl ? dEl.options[dEl.selectedIndex]?.text : '';
-  const drops = document.querySelectorAll('#stops-list .stop-row').length;
-  document.getElementById('order-preview').innerHTML = `
-    <div style="display:flex;flex-direction:column;gap:10px">
-      <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text3)">Mã đơn</span><strong class="mono text-green" style="font-size:12px">${id || '—'}</strong></div>
-      <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text3)">Ngày giao</span><span>${date ? fmtDate(date) : '—'}</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text3)">Tài xế</span><span>${dName && !dName.includes('Chọn') ? dName : 'Chưa gán'}</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text3)">Số điểm giao</span><span><strong>${drops}</strong> điểm</span></div>
-    </div>`;
-}
-async function submitOrder() {
-  const orderId = document.getElementById('inp-orderid').value.trim();
-  const date = document.getElementById('inp-date').value;
-  const driverCode = document.getElementById('inp-driver').value;
-  const note = document.getElementById('inp-note').value.trim();
-  const pName = document.getElementById('pickup-name').value.trim();
-  const pAddr = document.getElementById('pickup-addr').value.trim();
-  if (!orderId) { toast('Lỗi sinh mã đơn', 'error'); return; }
-  if (!pName || !pAddr) { toast('Vui lòng nhập điểm lấy hàng', 'error'); return; }
-  const stops = [{ type: 'pickup', name: pName, addr: pAddr, status: 'pending' }];
-  const rows = document.querySelectorAll('#stops-list .stop-row'); let ok = true;
-  rows.forEach(r => { const si = r.id.replace('sr-', ''); const n = document.getElementById('sn-' + si)?.value.trim(); const a = document.getElementById('sa-' + si)?.value.trim(); if (!n || !a) { ok = false; return; } stops.push({ type: 'drop', name: n, addr: a, status: 'pending' }); });
-  if (!ok) { toast('Điền đầy đủ tên và địa chỉ các điểm giao', 'error'); return; }
-  if (stops.length < 2) { toast('Cần ít nhất 1 điểm giao', 'error'); return; }
-  const d = db.drivers.find(x => (x.driver_code || x.code) === driverCode);
-  showLoad('Đang tạo đơn...');
-  try {
-    const r = await apiPost({ action: 'createOrder', order_id: orderId, date, driver_code: driverCode || '', driver_name: d ? (d.driver_name || d.name || '') : '', note, stops });
-    hideLoad();
-    if (r.success) { toast('Tạo đơn ' + orderId + ' thành công!'); resetForm(); await loadOrders(); goPage('orders'); }
-    else toast(r.message || 'Lỗi tạo đơn', 'error');
-  } catch (e) { hideLoad(); toast('Lỗi kết nối', 'error'); }
-}
-function resetForm() {
-  document.getElementById('inp-orderid').value = genId();
-  ['inp-note', 'pickup-name', 'pickup-addr'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('stops-list').innerHTML = '';
-  stopCount = 0; addStop(); updatePreview();
-}
-
-// ==================== SETTINGS ====================
-function saveSettings() { const url = document.getElementById('set-api').value.trim(); if (url) { toast('Đã lưu cài đặt'); } }
-
-
-
-// ==================== DELETE ====================
-function deleteContract(idx) {
-  const c = db.contracts[idx];
-  if (!c) return;
-  if (!confirm('Xóa hợp đồng ' + c.id + ' của ' + c.partner + '?\nHành động này không thể hoàn tác!')) return;
-  db.contracts.splice(idx, 1);
-  renderContracts();
-  toast('Đã xóa hợp đồng ' + c.id);
-}
-
-function deleteQuote(idx) {
-  const q = db.quotes[idx];
-  if (!q) return;
-  if (!confirm('Xóa báo giá ' + q.id + ' của ' + q.partner + '?\nHành động này không thể hoàn tác!')) return;
-  db.quotes.splice(idx, 1);
-  renderQuotes();
-  toast('Đã xóa báo giá ' + q.id);
-}
-
-// ==================== FILE UPLOAD HANDLER ====================
-let uploadedFiles = { cm: null, qm: null };
-
-function handleFileUpload(input, prefix) {
-  const file = input.files[0];
-  if (!file) return;
-  uploadedFiles[prefix] = file;
-  const zone = document.getElementById(prefix + '-upload-zone');
-  const icon = document.getElementById(prefix + '-upload-icon');
-  const label = document.getElementById(prefix + '-upload-label');
-  const hint = document.getElementById(prefix + '-upload-hint');
-  // Hiển thị file đã chọn
-  const ext = file.name.split('.').pop().toLowerCase();
-  const extIcon = ext === 'pdf' ? 'ti-file-type-pdf' : ext.includes('doc') ? 'ti-file-type-doc' : 'ti-file-spreadsheet';
-  zone.style.background = 'var(--brand-light)';
-  zone.style.borderColor = 'var(--brand)';
-  icon.className = 'ti ' + extIcon + ' ni';
-  icon.style.color = 'var(--brand)';
-  label.textContent = file.name;
-  label.style.color = 'var(--brand)';
-  hint.innerHTML = formatFileSize(file.size) + ' — <span style="color:var(--brand);text-decoration:underline;cursor:pointer" onclick="clearFile('' + prefix + '')">Xóa file</span>';
-  toast('Đã chọn file: ' + file.name);
-}
-
-function clearFile(prefix) {
-  uploadedFiles[prefix] = null;
-  document.getElementById(prefix + '-file').value = '';
-  const zone = document.getElementById(prefix + '-upload-zone');
-  const icon = document.getElementById(prefix + '-upload-icon');
-  const label = document.getElementById(prefix + '-upload-label');
-  const hint = document.getElementById(prefix + '-upload-hint');
-  zone.style.background = '';
-  zone.style.borderColor = '';
-  icon.className = 'ti ti-cloud-upload ni';
-  icon.style.color = '';
-  label.textContent = prefix === 'cm' ? 'Upload file hợp đồng' : 'Upload file báo giá';
-  label.style.color = '';
-  hint.textContent = 'PDF, Word — bấm để chọn file';
-}
-
-function formatFileSize(bytes) {
-  if (bytes < 1024) return bytes + ' B';
-  if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-  return (bytes / 1048576).toFixed(1) + ' MB';
-}
-
-function resetUploadZone(prefix) {
-  clearFile(prefix);
-}
-
-// ==================== INIT ====================
-window.onload = function() {
-  // Set today date
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('inp-date').value = today;
-  document.getElementById('inp-orderid').value = genId();
-  document.getElementById('set-api').value = API_URL;
-
-  // Render dashboard ngay
-  renderDash();
-  addStop();
-  updatePreview();
-  updateCostStats();
-
-  // Load API không block UI
-  setTimeout(function() {
-    loadAll().catch(function(e) { console.log('API not available (local mode):', e); });
-  }, 100);
-};
-</script>
-
-<!-- MODAL CHI TIẾT ĐƠN HÀNG -->
 <div class="modal-bg" id="order-detail-modal">
-  <div class="modal" style="max-width:640px">
-    <div class="modal-header">
-      <div class="modal-title"><i class="ti ti-clipboard-list" style="color:var(--brand)"></i> Chi tiết đơn hàng — <span class="mono text-green" id="od-id"></span></div>
-      <button class="modal-close" onclick="closeM('order-detail-modal')"><i class="ti ti-x"></i></button>
+  <div class="modal modal-lg"><div class="modal-header"><div class="modal-title"><i class="ti ti-clipboard-list" style="color:var(--brand)"></i> Chi tiết đơn — <span style="font-family:'DM Mono',monospace;color:var(--brand)" id="od-id"></span></div><button class="modal-close" onclick="closeM('order-detail-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-body">
+    <div class="info-grid">
+      <div class="info-box"><div class="info-box-label">Ngày giao</div><div class="info-box-val" id="od-date"></div></div>
+      <div class="info-box"><div class="info-box-label">Tài xế</div><div class="info-box-val" id="od-driver"></div></div>
+      <div class="info-box"><div class="info-box-label">Trạng thái</div><div id="od-status"></div></div>
+      <div class="info-box"><div class="info-box-label">Ghi chú</div><div style="font-size:13px" id="od-note"></div></div>
     </div>
-    <div class="modal-body">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem">
-        <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:4px">NGÀY GIAO</div>
-          <div style="font-weight:600" id="od-date"></div>
-        </div>
-        <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:4px">TÀI XẾ</div>
-          <div style="font-weight:600" id="od-driver"></div>
-        </div>
-        <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:4px">TRẠNG THÁI</div>
-          <div id="od-status"></div>
-        </div>
-        <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:4px">GHI CHÚ</div>
-          <div style="font-size:13px" id="od-note"></div>
-        </div>
-      </div>
-      <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;margin-bottom:8px">Các điểm giao hàng</div>
-      <div class="table-wrap">
-        <table><thead><tr><th>Loại</th><th>Tên điểm</th><th>Địa chỉ</th><th>Kết quả</th></tr></thead>
-        <tbody id="od-stops"></tbody></table>
-      </div>
-    </div>
-    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeM('order-detail-modal')">Đóng</button></div>
+    <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;margin-bottom:8px">Các điểm giao hàng</div>
+    <div class="table-wrap"><table><thead><tr><th>Loại</th><th>Tên điểm</th><th>Địa chỉ</th><th>Kết quả</th></tr></thead><tbody id="od-stops"></tbody></table></div>
   </div>
+  <div class="modal-footer"><button class="btn btn-secondary" onclick="closeM('order-detail-modal')">Đóng</button></div></div>
+</div>
+
+<div class="modal-bg" id="vehicle-modal">
+  <div class="modal"><div class="modal-header"><div class="modal-title"><i class="ti ti-truck" style="color:var(--brand)"></i> Thêm / sửa xe</div><button class="modal-close" onclick="closeM('vehicle-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-body"><div class="form-grid fg2">
+    <div class="field"><label>Biển số *</label><input id="vm-plate" placeholder="51A-12345" style="text-transform:uppercase"></div>
+    <div class="field"><label>Loại xe *</label><select id="vm-type"><option value="van_1t">Van 1 tấn</option><option value="truck_2t">Xe tải 2 tấn</option></select></div>
+    <div class="field"><label>Năm sản xuất</label><input id="vm-year" type="number" placeholder="2020"></div>
+    <div class="field"><label>Màu xe</label><input id="vm-color" placeholder="Trắng"></div>
+    <div class="field"><label>Hạn đăng kiểm</label><input id="vm-inspect" type="date"></div>
+    <div class="field"><label>Hạn bảo hiểm</label><input id="vm-insure" type="date"></div>
+    <div class="field"><label>Km hiện tại</label><input id="vm-km" type="number" placeholder="50000"></div>
+    <div class="field"><label>Tài xế phụ trách</label><select id="vm-driver"><option value="">-- Chưa gán --</option></select></div>
+    <div class="field"><label>Trạng thái</label><select id="vm-status"><option value="active">Hoạt động</option><option value="maintenance">Bảo dưỡng</option><option value="inactive">Không hoạt động</option></select></div>
+    <div class="field"><label>Ghi chú</label><input id="vm-note" placeholder="Ghi chú thêm"></div>
+  </div></div>
+  <div class="modal-footer"><button class="btn btn-secondary" onclick="closeM('vehicle-modal')">Hủy</button><button class="btn btn-primary" onclick="saveVehicle()"><i class="ti ti-check"></i> Lưu xe</button></div></div>
+</div>
+
+<div class="modal-bg" id="quote-modal">
+  <div class="modal modal-lg"><div class="modal-header"><div class="modal-title"><i class="ti ti-receipt" style="color:var(--brand)"></i> <span id="qm-title">Tạo báo giá</span></div><button class="modal-close" onclick="closeM('quote-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-body">
+    <div class="form-grid fg2" style="margin-bottom:12px">
+      <div class="field"><label>Loại báo giá</label><select id="qm-type"><option value="out">Báo giá cho khách</option><option value="in">Báo giá từ vendor</option></select></div>
+      <div class="field"><label>Tên khách / Vendor *</label><input id="qm-partner" placeholder="Tên đối tác"></div>
+      <div class="field"><label>Loại xe</label><select id="qm-vtype"><option value="van_1t">Van 1 tấn</option><option value="truck_2t">Xe tải 2 tấn</option><option value="both">Cả hai</option></select></div>
+      <div class="field"><label>Tuyến / Dịch vụ</label><input id="qm-route" placeholder="HCM - Bình Dương"></div>
+      <div class="field"><label>Đơn giá (VNĐ)</label><input id="qm-price" type="number" placeholder="500000"></div>
+      <div class="field"><label>Hiệu lực đến</label><input id="qm-valid" type="date"></div>
+    </div>
+    <div class="field" style="margin-bottom:12px"><label>Ghi chú</label><textarea id="qm-note" placeholder="Điều khoản, ghi chú..."></textarea></div>
+    <div class="upzone" id="qm-upzone" onclick="document.getElementById('qm-file').click()"><i class="ti ti-cloud-upload ni"></i><strong id="qm-uplabel">Upload file báo giá</strong><p id="qm-uphint">PDF, Word, Excel — bấm để chọn</p></div>
+    <input type="file" id="qm-file" style="display:none" accept=".pdf,.doc,.docx,.xls,.xlsx" onchange="handleUp(this,'qm')">
+  </div>
+  <div class="modal-footer"><button class="btn btn-secondary" onclick="closeM('quote-modal')">Hủy</button><button class="btn btn-primary" onclick="saveQuote()"><i class="ti ti-check"></i> Lưu báo giá</button></div></div>
+</div>
+
+<div class="modal-bg" id="contract-modal">
+  <div class="modal modal-lg"><div class="modal-header"><div class="modal-title"><i class="ti ti-file-text" style="color:var(--brand)"></i> <span id="cm-title">Thêm hợp đồng</span></div><button class="modal-close" onclick="closeM('contract-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-body">
+    <div class="form-grid fg2" style="margin-bottom:12px">
+      <div class="field"><label>Loại hợp đồng</label><select id="cm-type"><option value="hard">Bảng cứng</option><option value="soft">Bảng mềm</option></select></div>
+      <div class="field"><label>Đối tác *</label><input id="cm-partner" placeholder="Tên đối tác"></div>
+      <div class="field"><label>Loại dịch vụ</label><select id="cm-service"><option value="transport">Vận chuyển</option><option value="lease">Thuê xe</option><option value="maintenance">Bảo dưỡng</option><option value="other">Khác</option></select></div>
+      <div class="field"><label>Giá trị HĐ (VNĐ)</label><input id="cm-value" type="number" placeholder="10000000"></div>
+      <div class="field"><label>Ngày ký</label><input id="cm-sign" type="date"></div>
+      <div class="field"><label>Hiệu lực đến</label><input id="cm-expire" type="date"></div>
+      <div class="field"><label>Đơn giá Van 1T (VNĐ)</label><input id="cm-van" type="number" placeholder="Giá/chuyến"></div>
+      <div class="field"><label>Đơn giá Tải 2T (VNĐ)</label><input id="cm-truck" type="number" placeholder="Giá/chuyến"></div>
+    </div>
+    <div class="field" style="margin-bottom:12px"><label>Ghi chú</label><textarea id="cm-note" placeholder="Điều khoản..."></textarea></div>
+    <div class="upzone" id="cm-upzone" onclick="document.getElementById('cm-file').click()"><i class="ti ti-cloud-upload ni"></i><strong id="cm-uplabel">Upload file hợp đồng</strong><p id="cm-uphint">PDF, Word — bấm để chọn</p></div>
+    <input type="file" id="cm-file" style="display:none" accept=".pdf,.doc,.docx" onchange="handleUp(this,'cm')">
+  </div>
+  <div class="modal-footer"><button class="btn btn-secondary" onclick="closeM('contract-modal')">Hủy</button><button class="btn btn-primary" onclick="saveContract()"><i class="ti ti-check"></i> Lưu hợp đồng</button></div></div>
+</div>
+
+<div class="modal-bg" id="cost-modal">
+  <div class="modal"><div class="modal-header"><div class="modal-title"><i class="ti ti-coin" style="color:var(--brand)"></i> Ghi chi phí</div><button class="modal-close" onclick="closeM('cost-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-body"><div class="form-grid fg2">
+    <div class="field"><label>Ngày *</label><input id="costm-date" type="date"></div>
+    <div class="field"><label>Loại chi phí *</label><select id="costm-type"><option value="fuel">⛽ Xăng dầu</option><option value="toll">🛣️ Cầu đường</option><option value="repair">🔧 Sửa chữa</option><option value="other">📦 Khác</option></select></div>
+    <div class="field"><label>Xe</label><select id="costm-vehicle"><option value="">-- Chọn xe --</option></select></div>
+    <div class="field"><label>Tài xế</label><select id="costm-driver"><option value="">-- Chọn tài xế --</option></select></div>
+    <div class="field"><label>Số tiền (VNĐ) *</label><input id="costm-amount" type="number" placeholder="500000"></div>
+    <div class="field"><label>Ghi chú</label><input id="costm-note" placeholder="Mô tả chi phí"></div>
+  </div></div>
+  <div class="modal-footer"><button class="btn btn-secondary" onclick="closeM('cost-modal')">Hủy</button><button class="btn btn-primary" onclick="saveCost()"><i class="ti ti-check"></i> Lưu</button></div></div>
+</div>
+
+<div class="modal-bg" id="paste-modal">
+  <div class="modal"><div class="modal-header"><div class="modal-title"><i class="ti ti-table-import" style="color:var(--info)"></i> Paste từ Excel</div><button class="modal-close" onclick="closeM('paste-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-body">
+    <div class="field"><label>Dán dữ liệu vào đây</label><textarea id="paste-data" rows="8" placeholder="Copy từ Excel rồi dán vào đây&#10;Mỗi dòng 1 điểm giao&#10;Định dạng: Tên khách [Tab] Địa chỉ&#10;&#10;Ví dụ:&#10;Nguyễn Văn A	45 Nguyễn Huệ Q.1&#10;Trần Thị B	88 Lê Lợi Q.3" style="font-family:'DM Mono',monospace;font-size:12px"></textarea></div>
+    <p style="font-size:12px;color:var(--text3);margin-top:8px">2 cột: Tên khách — Địa chỉ, phân cách Tab hoặc |</p>
+  </div>
+  <div class="modal-footer"><button class="btn btn-secondary" onclick="closeM('paste-modal')">Hủy</button><button class="btn btn-primary" onclick="parsePaste()"><i class="ti ti-check"></i> Nhập dữ liệu</button></div></div>
 </div>
 
 <script>
+const API = 'https://script.google.com/macros/s/AKfycbxwuqIuNnPbL5PAoOF3opMT2gltYG6a1NKHY2ovqHj4t0XbHQmNOtwn2EcAGRe4wnvMaw/exec';
+var db = {orders:[],drivers:[],vehicles:[],quotes:[],contracts:[],costs:[]};
+var assignOid=null, stopCount=0, editQIdx=null, editCIdx=null, upFiles={qm:null,cm:null};
 
-// ==================== VIEW ORDER DETAIL ====================
-function viewOrder(oid) {
-  const o = db.orders.find(x => (x.order_id || x.id) === oid);
-  if (!o) return;
-  const stops = o.stops || [];
-  const stopRows = stops.map((s, i) => {
-    const isPickup = s.type === 'pickup';
-    const icon = isPickup ? '🏭' : '📍';
-    const label = isPickup ? 'Lấy hàng' : `Điểm ${i}`;
-    const stBadge = s.status === 'done' ? '<span class="badge b-green">✓ Hoàn thành</span>' : s.status === 'fail' ? `<span class="badge b-red">✗ Thất bại${s.reason ? ' — ' + s.reason : ''}</span>` : '<span class="badge b-gray">Chờ</span>';
-    return `<tr><td style="font-size:12px">${icon} ${label}</td><td style="font-weight:500">${s.name || '—'}</td><td style="font-size:12px;color:var(--text3)">${s.addr || '—'}</td><td>${stBadge}</td></tr>`;
-  }).join('');
-  document.getElementById('od-id').textContent = oid;
-  document.getElementById('od-date').textContent = fmtDate(o.date);
-  document.getElementById('od-driver').textContent = o.driver_name || 'Chưa gán';
-  document.getElementById('od-status').innerHTML = sBadge(o.status);
-  document.getElementById('od-note').textContent = o.note || '—';
-  document.getElementById('od-stops').innerHTML = stopRows || '<tr><td colspan="4" style="text-align:center;color:var(--text3)">Không có dữ liệu</td></tr>';
-  document.getElementById('order-detail-modal').classList.add('open');
+// NAV
+function goPage(name){
+  var pages=document.querySelectorAll('.page');
+  for(var i=0;i<pages.length;i++) pages[i].classList.remove('active');
+  var navs=document.querySelectorAll('.nav-item');
+  for(var i=0;i<navs.length;i++) navs[i].classList.remove('active');
+  var pg=document.getElementById('page-'+name);
+  var nv=document.getElementById('nav-'+name);
+  if(pg) pg.classList.add('active');
+  if(nv) nv.classList.add('active');
 }
 
-// ==================== EXPORT EXCEL ====================
-function exportOrdersExcel() {
-  if (!db.orders.length) { toast('Không có đơn hàng để xuất', 'warn'); return; }
-  const headers = ['Mã đơn', 'Ngày giao', 'Tài xế', 'Mã tài xế', 'Số điểm giao', 'Trạng thái', 'Ghi chú'];
-  const statusMap = { pending: 'Chờ giao', inprogress: 'Đang giao', done: 'Hoàn thành' };
-  const rows = db.orders.map(o => [
-    o.order_id || o.id || '',
-    o.date || '',
-    o.driver_name || '',
-    o.driver_code || '',
-    (o.stops || []).filter(s => s.type === 'drop').length,
-    statusMap[o.status] || o.status || '',
-    o.note || ''
-  ]);
-  let csv = headers.join(',') + '\n';
-  rows.forEach(r => { csv += r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',') + '\n'; });
-  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'AURA_DonHang_' + new Date().toLocaleDateString('vi-VN').replace(/\//g, '-') + '.csv';
-  a.click(); URL.revokeObjectURL(url);
+// MODAL
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+
+// TAB
+function swTab(btn,paneId){
+  var par=btn.closest('.page')||document.body;
+  var btns=par.querySelectorAll('.tab-btn');
+  for(var i=0;i<btns.length;i++) btns[i].classList.remove('active');
+  var panes=par.querySelectorAll('.tab-pane');
+  for(var i=0;i<panes.length;i++) panes[i].classList.remove('active');
+  btn.classList.add('active');
+  var pane=document.getElementById(paneId);
+  if(pane) pane.classList.add('active');
+}
+
+// UTILS
+function showL(t){document.getElementById('load-txt').textContent=t||'Đang tải...';document.getElementById('loading').classList.add('show');}
+function hideL(){document.getElementById('loading').classList.remove('show');}
+function toast(msg,type){
+  var el=document.getElementById('toast');
+  el.textContent=msg;
+  el.className='toast show '+(type==='r'?'t-r':type==='w'?'t-w':'t-g');
+  setTimeout(function(){el.classList.remove('show');},3000);
+}
+function fmtM(n){if(!n)return '—';return Number(n).toLocaleString('vi-VN')+'đ';}
+function fmtD(s){if(!s)return '—';try{var d=new Date(s);if(isNaN(d))return s;return d.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'});}catch(e){return s;}}
+function isExp(d){return d&&new Date(d)<new Date();}
+function isSoon(d){if(!d)return false;var dt=new Date(d),now=new Date();return dt>now&&(dt-now)<30*86400000;}
+function apiGet(p){return fetch(API+'?'+new URLSearchParams(p)).then(function(r){return r.json();});}
+function apiPost(b){return fetch(API,{method:'POST',body:JSON.stringify(b)}).then(function(r){return r.json();});}
+
+// BADGES
+function sBadge(s){var m={pending:'<span class="badge b-warn"><span class="bdot"></span>Chờ giao</span>',inprogress:'<span class="badge b-blue"><span class="bdot"></span>Đang giao</span>',done:'<span class="badge b-green"><span class="bdot"></span>Hoàn thành</span>'};return m[s]||'<span class="badge b-gray">—</span>';}
+function vBadge(s){var m={active:'<span class="badge b-green">Hoạt động</span>',maintenance:'<span class="badge b-warn">Bảo dưỡng</span>',inactive:'<span class="badge b-gray">Không HĐ</span>'};return m[s]||'<span class="badge b-gray">—</span>';}
+function dBadge(s){var m={active:'<span class="badge b-green">Hoạt động</span>',off:'<span class="badge b-gray">Đã nghỉ</span>',locked:'<span class="badge b-red">Bị khóa</span>'};return m[s]||'<span class="badge b-gray">—</span>';}
+function expBadge(c){return isExp(c.expire)?'<span class="badge b-red">Hết hạn</span>':isSoon(c.expire)?'<span class="badge b-warn">Sắp hết</span>':'<span class="badge b-green">Hiệu lực</span>';}
+
+// LOAD
+function loadAll(){
+  showL('Đang tải...');
+  return Promise.all([loadOrders(),loadDrivers()]).catch(function(e){console.log(e);}).then(function(){hideL();renderDash();});
+}
+function loadOrders(){
+  return apiGet({action:'getAdminOrders'}).then(function(r){
+    if(r.success){db.orders=r.orders||[];renderOrders();updateOStats();updateBadge();}
+  }).catch(function(e){console.log('orders err',e);});
+}
+function loadDrivers(){
+  return apiGet({action:'getDrivers'}).then(function(r){
+    if(r.success){db.drivers=r.drivers||[];renderDrivers();fillDrvSels();}
+  }).catch(function(e){console.log('drivers err',e);});
+}
+function updateBadge(){var n=db.orders.filter(function(o){return o.status==='pending';}).length;var b=document.getElementById('badge-orders');b.textContent=n;b.style.display=n>0?'inline-flex':'none';}
+
+// DASH
+function renderDash(){
+  document.getElementById('dash-date').textContent=new Date().toLocaleDateString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
+  document.getElementById('d-orders').textContent=db.orders.length;
+  document.getElementById('d-pending').textContent=db.orders.filter(function(o){return o.status==='pending';}).length;
+  document.getElementById('d-vehicles').textContent=db.vehicles.filter(function(v){return v.status==='active';}).length;
+  document.getElementById('d-expire').textContent=db.vehicles.filter(function(v){return isSoon(v.inspection_date)||isExp(v.inspection_date);}).length;
+  var recent=db.orders.slice(-5).reverse();
+  document.getElementById('dash-orders').innerHTML=recent.length?recent.map(function(o){return '<tr><td class="td-b td-m">'+( o.order_id||'—')+'</td><td style="font-size:12px">'+(o.driver_name||'<span style="color:var(--text3)">Chưa gán</span>')+'</td><td>'+sBadge(o.status)+'</td></tr>';}).join(''):'<tr><td colspan="3" style="text-align:center;padding:1.5rem;color:var(--text3)">Chưa có đơn hàng</td></tr>';
+  document.getElementById('dash-vehicles').innerHTML=db.vehicles.length?db.vehicles.slice(0,5).map(function(v){return '<tr><td class="td-b" style="font-family:\'DM Mono\',monospace">'+(v.plate||'—')+'</td><td style="font-size:12px">'+(v.type==='van_1t'?'Van 1T':'Tải 2T')+'</td><td>'+vBadge(v.status)+'</td></tr>';}).join(''):'<tr><td colspan="3" style="text-align:center;padding:1.5rem;color:var(--text3)">Chưa có dữ liệu xe</td></tr>';
+}
+
+// ORDERS
+function updateOStats(){
+  document.getElementById('o-total').textContent=db.orders.length;
+  document.getElementById('o-pending').textContent=db.orders.filter(function(o){return o.status==='pending';}).length;
+  document.getElementById('o-prog').textContent=db.orders.filter(function(o){return o.status==='inprogress';}).length;
+  document.getElementById('o-done').textContent=db.orders.filter(function(o){return o.status==='done';}).length;
+}
+function renderOrders(){
+  var search=(document.getElementById('o-search').value||'').toLowerCase();
+  var sf=document.getElementById('o-sf').value;
+  var list=db.orders.filter(function(o){
+    var ms=!search||(o.order_id||'').toLowerCase().indexOf(search)>=0||(o.driver_name||'').toLowerCase().indexOf(search)>=0;
+    var mf=!sf||o.status===sf;
+    return ms&&mf;
+  });
+  var tbody=document.getElementById('order-tbody');
+  if(!list.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text3)">Không có đơn hàng</td></tr>';return;}
+  tbody.innerHTML=list.map(function(o){
+    var id=o.order_id||o.id||'—';
+    var drops=(o.stops||[]).filter(function(s){return s.type==='drop';}).length;
+    var isDone=o.status==='done';
+    var action=isDone?'<span class="badge b-green">✓ Xong</span>':'<button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openAssign(\''+id+'\')"><i class="ti ti-user-plus"></i> Gán TX</button>';
+    return '<tr style="cursor:pointer" onclick="viewOrder(\''+id+'\')"><td class="td-b td-m">'+id+'</td><td style="font-size:12px;color:var(--text3)">'+fmtD(o.date)+'</td><td style="font-size:12px">'+drops+' điểm</td><td>'+(o.driver_name?'<strong style="font-size:13px">'+o.driver_name+'</strong>':'<span style="color:var(--text3);font-size:12px">Chưa gán</span>')+'</td><td>'+sBadge(o.status)+'</td><td style="font-size:12px;color:var(--text3)">'+(o.note||'—')+'</td><td>'+action+'</td></tr>';
+  }).join('');
+}
+function viewOrder(oid){
+  var o=db.orders.find(function(x){return (x.order_id||x.id)===oid;});
+  if(!o)return;
+  document.getElementById('od-id').textContent=oid;
+  document.getElementById('od-date').textContent=fmtD(o.date);
+  document.getElementById('od-driver').textContent=o.driver_name||'Chưa gán';
+  document.getElementById('od-status').innerHTML=sBadge(o.status);
+  document.getElementById('od-note').textContent=o.note||'—';
+  var stops=o.stops||[];
+  document.getElementById('od-stops').innerHTML=stops.map(function(s,i){
+    var isP=s.type==='pickup';
+    var lbl=isP?'🏭 Lấy hàng':'📍 Điểm '+(i);
+    var stb=s.status==='done'?'<span class="badge b-green">✓ Hoàn thành</span>':s.status==='fail'?'<span class="badge b-red">✗ Thất bại'+(s.reason?' — '+s.reason:'')+'</span>':'<span class="badge b-gray">Chờ</span>';
+    return '<tr><td style="font-size:12px">'+lbl+'</td><td style="font-weight:500">'+(s.name||'—')+'</td><td style="font-size:12px;color:var(--text3)">'+(s.addr||'—')+'</td><td>'+stb+'</td></tr>';
+  }).join('')||'<tr><td colspan="4" style="text-align:center;color:var(--text3)">Không có dữ liệu</td></tr>';
+  openM('order-detail-modal');
+}
+function openAssign(oid){
+  assignOid=oid;
+  document.getElementById('assign-oid').textContent=oid;
+  fillDrvSels();
+  var o=db.orders.find(function(x){return (x.order_id||x.id)===oid;});
+  if(o&&o.driver_code) document.getElementById('assign-driver').value=o.driver_code;
+  openM('assign-modal');
+}
+function confirmAssign(){
+  var code=document.getElementById('assign-driver').value;
+  if(!code){toast('Vui lòng chọn tài xế','r');return;}
+  var d=db.drivers.find(function(x){return (x.driver_code||x.code)===code;});
+  showL('Đang gán tài xế...');
+  apiPost({action:'assignDriver',order_id:assignOid,driver_code:code,driver_name:d?(d.driver_name||d.name||''):''}).then(function(r){
+    hideL();
+    if(r.success){toast('Gán tài xế thành công!');closeM('assign-modal');loadOrders();}
+    else toast(r.message||'Lỗi','r');
+  }).catch(function(){hideL();toast('Lỗi kết nối','r');});
+}
+function exportExcel(){
+  if(!db.orders.length){toast('Không có đơn hàng','w');return;}
+  var sm={pending:'Chờ giao',inprogress:'Đang giao',done:'Hoàn thành'};
+  var headers=['Mã đơn','Ngày giao','Tài xế','Mã tài xế','Số điểm giao','Trạng thái','Ghi chú'];
+  var csv=headers.join(',')+'\n';
+  db.orders.forEach(function(o){
+    var row=[o.order_id||o.id||'',o.date||'',o.driver_name||'',o.driver_code||'',(o.stops||[]).filter(function(s){return s.type==='drop';}).length,sm[o.status]||o.status||'',o.note||''];
+    csv+=row.map(function(v){return '"'+String(v).replace(/"/g,'""')+'"';}).join(',')+'\n';
+  });
+  var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;a.download='AURA_DonHang_'+new Date().toLocaleDateString('vi-VN').replace(/\//g,'-')+'.csv';a.click();URL.revokeObjectURL(url);
   toast('Đã xuất file Excel!');
 }
 
-// ==================== EDIT QUOTE ====================
-let editQuoteIdx = null, editQuoteType = null;
-function editQuote(idx, type) {
-  const list = type === 'out' ? db.quotes.filter(q => q.type === 'out') : db.quotes.filter(q => q.type === 'in');
-  const q = list[idx];
-  if (!q) return;
-  editQuoteIdx = db.quotes.indexOf(q); editQuoteType = type;
-  document.getElementById('qm-type').value = q.type === 'out' ? 'out' : 'in';
-  document.getElementById('qm-partner').value = q.partner || '';
-  document.getElementById('qm-vtype').value = q.vtype || '';
-  document.getElementById('qm-route').value = q.route || '';
-  document.getElementById('qm-price').value = q.price || '';
-  document.getElementById('qm-valid').value = q.valid || '';
-  document.getElementById('qm-note').value = q.note || '';
-  document.getElementById('quote-modal').classList.add('open');
+// DRIVERS
+function fillDrvSels(){
+  var active=db.drivers.filter(function(d){return String(d.status||'').trim()==='active';});
+  var opts='<option value="">-- Chọn tài xế --</option>'+active.map(function(d){var c=d.driver_code||d.code||'';var n=d.driver_name||d.name||'';return '<option value="'+c+'">'+n+' ('+c+')</option>';}).join('');
+  ['inp-driver','assign-driver','costm-driver'].forEach(function(id){var el=document.getElementById(id);if(el)el.innerHTML=opts;});
+  var vd=document.getElementById('vm-driver');
+  if(vd) vd.innerHTML='<option value="">-- Chưa gán --</option>'+active.map(function(d){return '<option value="'+(d.driver_code||d.code||'')+'">'+(d.driver_name||d.name||'')+'</option>';}).join('');
+}
+function renderDrivers(){
+  var search=(document.getElementById('d-search').value||'').toLowerCase();
+  var sf=document.getElementById('d-sf').value;
+  var list=db.drivers.filter(function(d){
+    var c=d.driver_code||d.code||'';var n=d.driver_name||d.name||'';
+    var ms=!search||c.toLowerCase().indexOf(search)>=0||n.toLowerCase().indexOf(search)>=0;
+    var mf=!sf||String(d.status||'').trim()===sf;
+    return ms&&mf;
+  });
+  var tbody=document.getElementById('driver-tbody');
+  if(!list.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text3)">Không có tài xế</td></tr>';return;}
+  tbody.innerHTML=list.map(function(d){
+    var c=d.driver_code||d.code||'—';var n=d.driver_name||d.name||'—';
+    return '<tr><td class="td-b td-m">'+c+'</td><td class="td-b">'+n+'</td><td style="font-size:12px">'+(d.phone||'—')+'</td><td style="font-family:\'DM Mono\',monospace;font-size:12px">'+(d.license_plate||'—')+'</td><td>'+dBadge(String(d.status||'').trim())+'</td></tr>';
+  }).join('');
 }
 
-// ==================== EDIT CONTRACT ====================
-let editContractIdx = null;
-function editContract(idx) {
-  const c = db.contracts[idx];
-  if (!c) return;
-  editContractIdx = idx;
-  document.getElementById('cm-type').value = c.type || 'hard';
-  document.getElementById('cm-partner').value = c.partner || '';
-  const svcMap = { 'Vận chuyển': 'transport', 'Thuê xe': 'lease', 'Bảo dưỡng': 'maintenance', 'Khác': 'other' };
-  document.getElementById('cm-service').value = svcMap[c.service] || 'transport';
-  document.getElementById('cm-value').value = c.value || '';
-  document.getElementById('cm-sign').value = c.sign || '';
-  document.getElementById('cm-expire').value = c.expire || '';
-  document.getElementById('cm-van').value = c.van || '';
-  document.getElementById('cm-truck').value = c.truck || '';
-  document.getElementById('cm-note').value = c.note || '';
-  document.getElementById('contract-modal').classList.add('open');
+// VEHICLES
+function renderVehicles(){
+  var s=(document.getElementById('v-search').value||'').toLowerCase();
+  var tf=document.getElementById('v-tf').value;
+  var sf=document.getElementById('v-sf').value;
+  var list=db.vehicles.filter(function(v){return (!s||(v.plate||'').toLowerCase().indexOf(s)>=0)&&(!tf||v.type===tf)&&(!sf||v.status===sf);});
+  document.getElementById('v-total').textContent=db.vehicles.length;
+  document.getElementById('v-active').textContent=db.vehicles.filter(function(v){return v.status==='active';}).length;
+  document.getElementById('v-maint').textContent=db.vehicles.filter(function(v){return v.status==='maintenance';}).length;
+  document.getElementById('v-exp').textContent=db.vehicles.filter(function(v){return isExp(v.inspection_date);}).length;
+  var tbody=document.getElementById('vehicle-tbody');
+  if(!list.length){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có dữ liệu xe</td></tr>';document.getElementById('vehicle-cards').innerHTML='<div style="text-align:center;padding:3rem;color:var(--text3)">Chưa có dữ liệu xe</div>';return;}
+  tbody.innerHTML=list.map(function(v){
+    var ew=isExp(v.inspection_date)?'style="color:var(--danger);font-weight:600"':isSoon(v.inspection_date)?'style="color:var(--warn);font-weight:600"':'';
+    return '<tr><td class="td-b td-m">'+(v.plate||'—')+'</td><td style="font-size:12px">'+(v.type==='van_1t'?'🚐 Van 1T':'🚛 Tải 2T')+'</td><td style="font-size:12px">'+(v.year||'—')+'</td><td style="font-size:12px">'+(v.driver||'—')+'</td><td '+ew+' style="font-size:12px">'+fmtD(v.inspection_date)+'</td><td style="font-size:12px">'+fmtD(v.insurance_date)+'</td><td style="font-family:\'DM Mono\',monospace;font-size:12px">'+(v.km?Number(v.km).toLocaleString()+' km':'—')+'</td><td>'+vBadge(v.status)+'</td><td><button class="bico" onclick="editVehicle(\''+v.plate+'\')"><i class="ti ti-edit"></i></button></td></tr>';
+  }).join('');
+  document.getElementById('vehicle-cards').innerHTML=list.map(function(v){
+    return '<div class="vcard"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div style="font-family:\'DM Mono\',monospace;font-size:16px;font-weight:700">'+(v.plate||'—')+'</div><div style="font-size:12px;color:var(--text3);margin-top:4px">'+(v.type==='van_1t'?'🚐 Van 1 tấn':'🚛 Xe tải 2 tấn')+'</div></div>'+vBadge(v.status)+'</div><div class="km-bar"><div class="km-fill" style="width:'+Math.min((v.km||0)/300000*100,100)+'%"></div></div><div style="font-size:11px;color:var(--text3);margin-top:4px">'+(v.km?Number(v.km).toLocaleString()+' / 300,000 km':'Chưa cập nhật km')+'</div><div class="vci"><div><span style="color:var(--text3);display:block;font-size:11px">Đăng kiểm</span><span style="font-weight:500;font-size:12px'+(isExp(v.inspection_date)?';color:var(--danger)':isSoon(v.inspection_date)?';color:var(--warn)':'')+'">'+(v.inspection_date?fmtD(v.inspection_date):'—')+'</span></div><div><span style="color:var(--text3);display:block;font-size:11px">Bảo hiểm</span><span style="font-weight:500;font-size:12px">'+fmtD(v.insurance_date)+'</span></div><div><span style="color:var(--text3);display:block;font-size:11px">Năm SX</span><span style="font-weight:500;font-size:12px">'+(v.year||'—')+'</span></div><div><span style="color:var(--text3);display:block;font-size:11px">Tài xế</span><span style="font-weight:500;font-size:12px">'+(v.driver||'Chưa gán')+'</span></div></div></div>';
+  }).join('');
+}
+function saveVehicle(){
+  var v={plate:(document.getElementById('vm-plate').value||'').toUpperCase().trim(),type:document.getElementById('vm-type').value,year:document.getElementById('vm-year').value,color:document.getElementById('vm-color').value,inspection_date:document.getElementById('vm-inspect').value,insurance_date:document.getElementById('vm-insure').value,km:document.getElementById('vm-km').value,driver:document.getElementById('vm-driver').value,status:document.getElementById('vm-status').value,note:document.getElementById('vm-note').value};
+  if(!v.plate){toast('Vui lòng nhập biển số','r');return;}
+  var idx=db.vehicles.findIndex(function(x){return x.plate===v.plate;});
+  if(idx>=0) db.vehicles[idx]=v; else db.vehicles.push(v);
+  renderVehicles();closeM('vehicle-modal');toast('Đã lưu xe '+v.plate);
+}
+function editVehicle(plate){
+  var v=db.vehicles.find(function(x){return x.plate===plate;});if(!v)return;
+  document.getElementById('vm-plate').value=v.plate||'';document.getElementById('vm-type').value=v.type||'van_1t';
+  document.getElementById('vm-year').value=v.year||'';document.getElementById('vm-color').value=v.color||'';
+  document.getElementById('vm-inspect').value=v.inspection_date||'';document.getElementById('vm-insure').value=v.insurance_date||'';
+  document.getElementById('vm-km').value=v.km||'';document.getElementById('vm-status').value=v.status||'active';document.getElementById('vm-note').value=v.note||'';
+  fillDrvSels();openM('vehicle-modal');
 }
 
-// ==================== COST FILTER ====================
-function initCostFilters() {
-  const now = new Date();
-  const sel = document.getElementById('cf-month');
-  if (sel && sel.options.length <= 1) {
-    for (let i = 0; i < 12; i++) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const opt = document.createElement('option');
-      opt.value = d.getMonth() + '-' + d.getFullYear();
-      opt.textContent = 'Tháng ' + (d.getMonth() + 1) + '/' + d.getFullYear();
-      sel.appendChild(opt);
-    }
-  }
+// QUOTES
+function openQuoteModal(){editQIdx=null;document.getElementById('qm-title').textContent='Tạo báo giá';['qm-partner','qm-route','qm-price','qm-note'].forEach(function(id){document.getElementById(id).value='';});document.getElementById('qm-valid').value='';resetUp('qm');openM('quote-modal');}
+function saveQuote(){
+  if(!document.getElementById('qm-partner').value){toast('Vui lòng nhập tên đối tác','r');return;}
+  var q={id:editQIdx!==null?db.quotes[editQIdx].id:'BG-'+Date.now(),type:document.getElementById('qm-type').value,partner:document.getElementById('qm-partner').value,vtype:document.getElementById('qm-vtype').value,route:document.getElementById('qm-route').value,price:document.getElementById('qm-price').value,valid:document.getElementById('qm-valid').value,note:document.getElementById('qm-note').value,date:editQIdx!==null?db.quotes[editQIdx].date:new Date().toISOString(),file:upFiles.qm?upFiles.qm.name:'',status:'active'};
+  if(editQIdx!==null) db.quotes[editQIdx]=q; else db.quotes.push(q);
+  editQIdx=null;renderQuotes();closeM('quote-modal');toast('Đã lưu báo giá');
 }
-
-// ==================== OVERRIDE renderCosts WITH FILTER ====================
-const _origRenderCosts = renderCosts;
-renderCosts = function() {
-  initCostFilters();
-  const mf = (document.getElementById('cf-month') || {}).value || '';
-  const tf = (document.getElementById('cf-type') || {}).value || '';
-  const vf = (document.getElementById('cf-vehicle') || {}).value || '';
-  let list = db.costs.slice();
-  if (mf) { const [m, y] = mf.split('-'); list = list.filter(c => { const d = new Date(c.date); return d.getMonth() === +m && d.getFullYear() === +y; }); }
-  if (tf) list = list.filter(c => c.type === tf);
-  if (vf) list = list.filter(c => c.vehicle === vf);
-  const tbody = document.getElementById('cost-tbody');
-  tbody.innerHTML = list.length ? list.slice().reverse().map(c => `<tr><td style="font-size:12px">${fmtDate(c.date)}</td><td><span class="badge b-gray">${c.typeLabel || c.type}</span></td><td class="mono" style="font-size:12px">${c.vehicle || '—'}</td><td style="font-size:12px">${c.driver || '—'}</td><td class="mono text-red" style="font-weight:600">${fmtMoney(c.amount)}</td><td style="font-size:12px;color:var(--text3)">${c.note || '—'}</td></tr>`).join('') : '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text3)">Không có dữ liệu</td></tr>';
-  // Update vehicle filter
-  const vsel = document.getElementById('cf-vehicle');
-  if (vsel && vsel.options.length <= 1) {
-    const plates = [...new Set(db.vehicles.map(v => v.plate).filter(Boolean))];
-    plates.forEach(p => { const opt = document.createElement('option'); opt.value = p; opt.textContent = p; vsel.appendChild(opt); });
-  }
-};
-
-// Override saveQuote to handle edit
-const _origSaveQuote = saveQuote;
-saveQuote = function() {
-  if (!document.getElementById('qm-partner').value) { toast('Vui lòng nhập tên đối tác', 'error'); return; }
-  const q = { id: editQuoteIdx !== null ? db.quotes[editQuoteIdx].id : 'BG-' + Date.now(), type: document.getElementById('qm-type').value, partner: document.getElementById('qm-partner').value, vtype: document.getElementById('qm-vtype').value, route: document.getElementById('qm-route').value, price: document.getElementById('qm-price').value, valid: document.getElementById('qm-valid').value, note: document.getElementById('qm-note').value, date: editQuoteIdx !== null ? db.quotes[editQuoteIdx].date : new Date().toISOString(), status: 'active' };
-  if (editQuoteIdx !== null) { db.quotes[editQuoteIdx] = q; editQuoteIdx = null; } else { db.quotes.push(q); }
-  renderQuotes(); closeM('quote-modal'); toast('Đã lưu báo giá');
-};
-
-// Override saveContract to handle edit
-const _origSaveContract = saveContract;
-saveContract = function() {
-  if (!document.getElementById('cm-partner').value) { toast('Vui lòng nhập tên đối tác', 'error'); return; }
-  const svc = { transport: 'Vận chuyển', lease: 'Thuê xe', maintenance: 'Bảo dưỡng', other: 'Khác' };
-  const c = { id: editContractIdx !== null ? db.contracts[editContractIdx].id : 'HD-' + Date.now(), type: document.getElementById('cm-type').value, partner: document.getElementById('cm-partner').value, service: svc[document.getElementById('cm-service').value] || '', value: document.getElementById('cm-value').value, sign: document.getElementById('cm-sign').value, expire: document.getElementById('cm-expire').value, van: document.getElementById('cm-van').value, truck: document.getElementById('cm-truck').value, note: document.getElementById('cm-note').value };
-  if (editContractIdx !== null) { db.contracts[editContractIdx] = c; editContractIdx = null; } else { db.contracts.push(c); }
-  renderContracts(); closeM('contract-modal'); toast('Đã lưu hợp đồng');
-};
-
-</script>
-</body>
-</html>
+function editQuote(idx){
+  editQIdx=idx;var q=db.quotes[idx];if(!q)return;
+  document.getElementById('qm-title').textContent='Sửa báo giá';
+  document.getElementById('qm-type').value=q.type||'out';document.getElementById('qm-partner').value=q.partner||'';
+  document.getElementById('qm-vtype').value=q.vtype||'van_1t';document.getElementById('qm-route').value=q.route||'';
+  document.getElementById('qm-price').value=q.price||'';document.getElementById('qm-valid').value=q.valid||'';document.getElementById('qm-note').value=q.note||'';
+  resetUp('qm');openM('quote-modal');
+}
+function delQuote(idx){
+  var q=db.quotes[idx];if(!q)return;
+  if(!confirm('Xóa báo giá '+q.id+' của '+q.partner+'?\nHành động không thể hoàn tác!'))return;
+  db.quotes.splice(idx,1);renderQuotes();toast('Đã xóa báo giá');
+}
+function renderQuotes(){
+  var out=db.quotes.filter(function(q){return q.type==='out';});
+  var inp=db.quotes.filter(fun
