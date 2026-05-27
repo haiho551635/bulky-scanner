@@ -767,13 +767,18 @@ function saveQuote(){
   if(!document.getElementById('qm-partner').value){toast('Vui lòng nhập tên đối tác','r');return;}
   var q={id:editQIdx!==null?db.quotes[editQIdx].id:'BG-'+Date.now(),type:document.getElementById('qm-type').value,partner:document.getElementById('qm-partner').value,vtype:document.getElementById('qm-vtype').value,route:document.getElementById('qm-route').value,price:document.getElementById('qm-price').value,valid:document.getElementById('qm-valid').value,note:document.getElementById('qm-note').value,date:editQIdx!==null?db.quotes[editQIdx].date:new Date().toISOString(),file:upFiles.qm?upFiles.qm.name:'',status:'active'};
   if(upFiles.qm){
-    showL('Đang upload file lên Drive...');
+    showL('Đang lưu file...');
     uploadToDrive(upFiles.qm,function(res){
       hideL();
-      if(res&&res.success){q.file=res.fileName;q.fileUrl=res.viewUrl;q.fileDownload=res.downloadUrl;}
+      if(res&&res.success){
+        q.file=res.fileName||upFiles.qm.name;
+        q.fileUrl=res.viewUrl||null;
+        q.localKey=res.localKey||null;
+        q.isLocal=res.local||false;
+      }
       if(editQIdx!==null) db.quotes[editQIdx]=q; else db.quotes.push(q);
       editQIdx=null;resetUp('qm');renderQuotes();closeM('quote-modal');
-      toast(res&&res.success?'Đã lưu báo giá + file lên Drive!':'Đã lưu báo giá (lỗi upload file)');
+      toast(res&&res.fileUrl?'Đã lưu + upload Drive!':'Đã lưu file (xem được ngay)');
     });
   } else {
     if(editQIdx!==null) db.quotes[editQIdx]=q; else db.quotes.push(q);
@@ -814,13 +819,18 @@ function saveContract(){
   var svc={transport:'Vận chuyển',lease:'Thuê xe',maintenance:'Bảo dưỡng',other:'Khác'};
   var c={id:editCIdx!==null?db.contracts[editCIdx].id:'HD-'+Date.now(),type:document.getElementById('cm-type').value,partner:document.getElementById('cm-partner').value,service:svc[document.getElementById('cm-service').value]||'',value:document.getElementById('cm-value').value,sign:document.getElementById('cm-sign').value,expire:document.getElementById('cm-expire').value,van:document.getElementById('cm-van').value,truck:document.getElementById('cm-truck').value,note:document.getElementById('cm-note').value,file:upFiles.cm?upFiles.cm.name:''};
   if(upFiles.cm){
-    showL('Đang upload file lên Drive...');
+    showL('Đang lưu file...');
     uploadToDrive(upFiles.cm,function(res){
       hideL();
-      if(res&&res.success){c.file=res.fileName;c.fileUrl=res.viewUrl;c.fileDownload=res.downloadUrl;}
+      if(res&&res.success){
+        c.file=res.fileName||upFiles.cm.name;
+        c.fileUrl=res.viewUrl||null;
+        c.localKey=res.localKey||null;
+        c.isLocal=res.local||false;
+      }
       if(editCIdx!==null) db.contracts[editCIdx]=c; else db.contracts.push(c);
       editCIdx=null;resetUp('cm');renderContracts();closeM('contract-modal');
-      toast(res&&res.success?'Đã lưu hợp đồng + file lên Drive!':'Đã lưu hợp đồng (lỗi upload file)');
+      toast(res&&res.fileUrl?'Đã lưu + upload Drive!':'Đã lưu file (xem được ngay)');
     });
   } else {
     if(editCIdx!==null) db.contracts[editCIdx]=c; else db.contracts.push(c);
@@ -848,7 +858,7 @@ function renderContracts(){
   var soft=db.contracts.filter(function(c){return c.type==='soft';});
   document.getElementById('chard-tbody').innerHTML=hard.length?hard.map(function(c){
     var ri=db.contracts.indexOf(c);
-    return '<tr><td class="td-b td-m">'+c.id+'</td><td class="td-b">'+c.partner+'</td><td style="font-size:12px">'+c.service+'</td><td style="font-size:12px">'+fmtD(c.sign)+'</td><td style="font-size:12px">'+fmtD(c.expire)+'</td><td style="font-family:\'DM Mono\',monospace;font-size:12px">'+fmtM(c.value)+'</td><td>'+expBadge(c)+'</td><td style="font-size:12px">'+(c.fileUrl?'<a href="'+c.fileUrl+'" target="_blank" class="btn btn-ghost btn-sm"><i class="ti ti-eye"></i> Xem file</a>':'<span style="color:var(--text3)">—</span>')+'</td><td><div class="act-btns"><button class="bico" onclick="editContract('+ri+')" title="Sửa"><i class="ti ti-edit"></i></button><button class="bico del" onclick="delContract('+ri+')" title="Xóa"><i class="ti ti-trash"></i></button></div></td></tr>';
+    return '<tr><td class="td-b td-m">'+c.id+'</td><td class="td-b">'+c.partner+'</td><td style="font-size:12px">'+c.service+'</td><td style="font-size:12px">'+fmtD(c.sign)+'</td><td style="font-size:12px">'+fmtD(c.expire)+'</td><td style="font-family:\'DM Mono\',monospace;font-size:12px">'+fmtM(c.value)+'</td><td>'+expBadge(c)+'</td><td style="font-size:12px">'+(c.file?(c.fileUrl?'<a href="'+c.fileUrl+'" target="_blank" class="btn btn-ghost btn-sm"><i class="ti ti-eye"></i> Xem file</a>':c.localKey?'<button class="btn btn-ghost btn-sm" onclick="openLocalFile(\''+c.localKey+'\',\''+c.file+'\')"><i class="ti ti-download"></i> Tải file</button>':'<span style="font-size:12px;color:var(--text3)">'+c.file+'</span>'):'<span style="color:var(--text3)">—</span>')+'</td><td><div class="act-btns"><button class="bico" onclick="editContract('+ri+')" title="Sửa"><i class="ti ti-edit"></i></button><button class="bico del" onclick="delContract('+ri+')" title="Xóa"><i class="ti ti-trash"></i></button></div></td></tr>';
   }).join(''):'<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có hợp đồng</td></tr>';
   document.getElementById('csoft-tbody').innerHTML=soft.length?soft.map(function(c){
     var ri=db.contracts.indexOf(c);
@@ -905,29 +915,48 @@ function updateCostStats(){
   document.getElementById('c-total').textContent=fmtM(db.costs.filter(tm).reduce(function(a,c){return a+Number(c.amount||0);},0))||'0đ';
 }
 
-// UPLOAD FILE LÊN GOOGLE DRIVE qua Apps Script
+// UPLOAD FILE — thử Drive trước, nếu lỗi thì lưu local
 function uploadToDrive(fileObj,cb){
   if(!fileObj||!fileObj.data){if(cb)cb(null);return;}
+  // Lưu local làm backup
+  var localKey='aura_file_'+fileObj.name;
+  try{localStorage.setItem(localKey,fileObj.data);}catch(ex){}
+  // Thử upload lên Drive
   apiPost({
     action:'uploadFile',
     fileName:fileObj.name,
     fileData:fileObj.data,
     mimeType:fileObj.type||'application/octet-stream'
-  }).then(function(r){if(cb)cb(r);}).catch(function(e){console.log('Upload err:',e);if(cb)cb(null);});
+  }).then(function(r){
+    if(r&&r.success){if(cb)cb(r);}
+    else {if(cb)cb({success:true,fileName:fileObj.name,viewUrl:null,localKey:localKey,local:true});}
+  }).catch(function(e){
+    console.log('Drive upload failed, using local:',e);
+    if(cb)cb({success:true,fileName:fileObj.name,viewUrl:null,localKey:localKey,local:true});
+  });
+}
+function openLocalFile(key,name){
+  try{
+    var data=localStorage.getItem(key);
+    if(!data){toast('Không tìm thấy file. Vui lòng upload lại.','w');return;}
+    var a=document.createElement('a');a.href=data;a.download=name;a.click();
+    toast('Đang tải file: '+name);
+  }catch(e){toast('Lỗi mở file','r');}
 }
 function handleUp(input,prefix){
   var file=input.files[0];if(!file)return;
   var zone=document.getElementById(prefix+'-upzone');
   var label=document.getElementById(prefix+'-uplabel');
   var hint=document.getElementById(prefix+'-uphint');
-  // Đọc file thành base64
   var reader=new FileReader();
   reader.onload=function(e){
     upFiles[prefix]={name:file.name,type:file.type,size:file.size,data:e.target.result};
+    // Lưu vào localStorage để xem lại
+    try{localStorage.setItem('aura_file_'+prefix+'_'+file.name,e.target.result);}catch(ex){}
     zone.style.background='var(--brand-light)';zone.style.borderColor='var(--brand)';
     label.textContent=file.name;label.style.color='var(--brand)';
     var sz=file.size<1048576?(file.size/1024).toFixed(1)+' KB':(file.size/1048576).toFixed(1)+' MB';
-    hint.innerHTML='<i class="ti ti-check" style="color:var(--brand)"></i> '+sz+' — <span style="color:var(--text3);text-decoration:underline;cursor:pointer" onclick="resetUp(\''+prefix+'\')">Xóa</span>';
+    hint.innerHTML='<i class="ti ti-check" style="color:var(--brand)"></i> '+sz+' — <span style="color:var(--text3);cursor:pointer;text-decoration:underline" onclick="resetUp(\''+prefix+'\')">Xóa</span>';
     toast('Đã chọn: '+file.name);
   };
   reader.readAsDataURL(file);
