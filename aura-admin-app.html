@@ -767,18 +767,20 @@ function saveQuote(){
   if(!document.getElementById('qm-partner').value){toast('Vui lòng nhập tên đối tác','r');return;}
   var q={id:editQIdx!==null?db.quotes[editQIdx].id:'BG-'+Date.now(),type:document.getElementById('qm-type').value,partner:document.getElementById('qm-partner').value,vtype:document.getElementById('qm-vtype').value,route:document.getElementById('qm-route').value,price:document.getElementById('qm-price').value,valid:document.getElementById('qm-valid').value,note:document.getElementById('qm-note').value,date:editQIdx!==null?db.quotes[editQIdx].date:new Date().toISOString(),file:upFiles.qm?upFiles.qm.name:'',status:'active'};
   if(upFiles.qm){
-    showL('Đang lưu file...');
+    // Lưu file data trực tiếp vào object
+    q.file=upFiles.qm.name;
+    q.fileData=upFiles.qm.data;
+    q.fileUrl=null;
+    if(editQIdx!==null) db.quotes[editQIdx]=q; else db.quotes.push(q);
+    editQIdx=null;resetUp('qm');renderQuotes();closeM('quote-modal');
+    toast('Đã lưu báo giá + file!');
+    // Thử upload Drive ngầm
     uploadToDrive(upFiles.qm,function(res){
-      hideL();
-      if(res&&res.success){
-        q.file=res.fileName||upFiles.qm.name;
-        q.fileUrl=res.viewUrl||null;
-        q.localKey=res.localKey||null;
-        q.isLocal=res.local||false;
+      if(res&&res.fileUrl){
+        var idx=db.quotes.findIndex(function(x){return x.id===q.id;});
+        if(idx>=0){db.quotes[idx].fileUrl=res.fileUrl;db.quotes[idx].fileData=null;renderQuotes();}
+        toast('File đã lên Drive!');
       }
-      if(editQIdx!==null) db.quotes[editQIdx]=q; else db.quotes.push(q);
-      editQIdx=null;resetUp('qm');renderQuotes();closeM('quote-modal');
-      toast(res&&res.fileUrl?'Đã lưu + upload Drive!':'Đã lưu file (xem được ngay)');
     });
   } else {
     if(editQIdx!==null) db.quotes[editQIdx]=q; else db.quotes.push(q);
@@ -819,18 +821,18 @@ function saveContract(){
   var svc={transport:'Vận chuyển',lease:'Thuê xe',maintenance:'Bảo dưỡng',other:'Khác'};
   var c={id:editCIdx!==null?db.contracts[editCIdx].id:'HD-'+Date.now(),type:document.getElementById('cm-type').value,partner:document.getElementById('cm-partner').value,service:svc[document.getElementById('cm-service').value]||'',value:document.getElementById('cm-value').value,sign:document.getElementById('cm-sign').value,expire:document.getElementById('cm-expire').value,van:document.getElementById('cm-van').value,truck:document.getElementById('cm-truck').value,note:document.getElementById('cm-note').value,file:upFiles.cm?upFiles.cm.name:''};
   if(upFiles.cm){
-    showL('Đang lưu file...');
+    c.file=upFiles.cm.name;
+    c.fileData=upFiles.cm.data;
+    c.fileUrl=null;
+    if(editCIdx!==null) db.contracts[editCIdx]=c; else db.contracts.push(c);
+    editCIdx=null;resetUp('cm');renderContracts();closeM('contract-modal');
+    toast('Đã lưu hợp đồng + file!');
     uploadToDrive(upFiles.cm,function(res){
-      hideL();
-      if(res&&res.success){
-        c.file=res.fileName||upFiles.cm.name;
-        c.fileUrl=res.viewUrl||null;
-        c.localKey=res.localKey||null;
-        c.isLocal=res.local||false;
+      if(res&&res.fileUrl){
+        var idx=db.contracts.findIndex(function(x){return x.id===c.id;});
+        if(idx>=0){db.contracts[idx].fileUrl=res.fileUrl;db.contracts[idx].fileData=null;renderContracts();}
+        toast('File đã lên Drive!');
       }
-      if(editCIdx!==null) db.contracts[editCIdx]=c; else db.contracts.push(c);
-      editCIdx=null;resetUp('cm');renderContracts();closeM('contract-modal');
-      toast(res&&res.fileUrl?'Đã lưu + upload Drive!':'Đã lưu file (xem được ngay)');
     });
   } else {
     if(editCIdx!==null) db.contracts[editCIdx]=c; else db.contracts.push(c);
@@ -858,7 +860,7 @@ function renderContracts(){
   var soft=db.contracts.filter(function(c){return c.type==='soft';});
   document.getElementById('chard-tbody').innerHTML=hard.length?hard.map(function(c){
     var ri=db.contracts.indexOf(c);
-    return '<tr><td class="td-b td-m">'+c.id+'</td><td class="td-b">'+c.partner+'</td><td style="font-size:12px">'+c.service+'</td><td style="font-size:12px">'+fmtD(c.sign)+'</td><td style="font-size:12px">'+fmtD(c.expire)+'</td><td style="font-family:\'DM Mono\',monospace;font-size:12px">'+fmtM(c.value)+'</td><td>'+expBadge(c)+'</td><td style="font-size:12px">'+(c.file?(c.fileUrl?'<a href="'+c.fileUrl+'" target="_blank" class="btn btn-ghost btn-sm"><i class="ti ti-eye"></i> Xem file</a>':c.localKey?'<button class="btn btn-ghost btn-sm" onclick="openLocalFile(\''+c.localKey+'\',\''+c.file+'\')"><i class="ti ti-download"></i> Tải file</button>':'<span style="font-size:12px;color:var(--text3)">'+c.file+'</span>'):'<span style="color:var(--text3)">—</span>')+'</td><td><div class="act-btns"><button class="bico" onclick="editContract('+ri+')" title="Sửa"><i class="ti ti-edit"></i></button><button class="bico del" onclick="delContract('+ri+')" title="Xóa"><i class="ti ti-trash"></i></button></div></td></tr>';
+    return '<tr><td class="td-b td-m">'+c.id+'</td><td class="td-b">'+c.partner+'</td><td style="font-size:12px">'+c.service+'</td><td style="font-size:12px">'+fmtD(c.sign)+'</td><td style="font-size:12px">'+fmtD(c.expire)+'</td><td style="font-family:\'DM Mono\',monospace;font-size:12px">'+fmtM(c.value)+'</td><td>'+expBadge(c)+'</td><td style="font-size:12px">'+(c.file?(c.fileUrl?'<a href="'+c.fileUrl+'" target="_blank" class="btn btn-ghost btn-sm"><i class="ti ti-eye"></i> Xem file</a>':c.fileData?'<button class="btn btn-ghost btn-sm" onclick="openFileData(\'contract\','+ri+')"><i class="ti ti-download"></i> '+c.file+'</button>':'<span style="font-size:12px;color:var(--text3)">'+c.file+'</span>'):'<span style="color:var(--text3)">—</span>')+'</td><td><div class="act-btns"><button class="bico" onclick="editContract('+ri+')" title="Sửa"><i class="ti ti-edit"></i></button><button class="bico del" onclick="delContract('+ri+')" title="Xóa"><i class="ti ti-trash"></i></button></div></td></tr>';
   }).join(''):'<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có hợp đồng</td></tr>';
   document.getElementById('csoft-tbody').innerHTML=soft.length?soft.map(function(c){
     var ri=db.contracts.indexOf(c);
@@ -942,6 +944,17 @@ function openLocalFile(key,name){
     var a=document.createElement('a');a.href=data;a.download=name;a.click();
     toast('Đang tải file: '+name);
   }catch(e){toast('Lỗi mở file','r');}
+}
+function openFileData(type,idx){
+  var obj=type==='quote'?db.quotes[idx]:db.contracts[idx];
+  if(!obj||!obj.fileData){toast('File không còn trong bộ nhớ. Vui lòng upload lại.','w');return;}
+  var a=document.createElement('a');
+  a.href=obj.fileData;
+  a.download=obj.file;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  toast('Đang tải: '+obj.file);
 }
 function handleUp(input,prefix){
   var file=input.files[0];if(!file)return;
