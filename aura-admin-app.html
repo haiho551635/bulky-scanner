@@ -2,1038 +2,603 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AURA — Hệ thống quản lý</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AURA — Quản lý</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --brand:#1D9E75;--brand2:#0d7a5a;--brand-light:#e8f7f2;
-  --danger:#e53935;--danger-light:#fdecea;
-  --warn:#f59e0b;--warn-light:#fef3c7;
-  --info:#3b82f6;--info-light:#eff6ff;
-  --bg:#f0f4f8;--surface:#fff;--surface2:#f8fafc;
-  --border:#e2e8f0;--text:#0f172a;--text2:#475569;--text3:#94a3b8;
-  --sidebar:220px;--topbar:56px;
-  --radius:12px;--radius-sm:8px;
-  --shadow:0 1px 3px rgba(0,0,0,.08);
-  --shadow-md:0 4px 16px rgba(0,0,0,.08);
-  --shadow-lg:0 10px 40px rgba(0,0,0,.12);
-}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text)}
-.topbar{height:var(--topbar);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:1rem;position:fixed;top:0;left:0;right:0;z-index:200;box-shadow:var(--shadow)}
-.topbar-brand{font-size:18px;font-weight:700;letter-spacing:.1em;color:var(--brand);display:flex;align-items:center;gap:8px;min-width:var(--sidebar)}
-.topbar-brand span{font-size:11px;font-weight:400;color:var(--text3)}
-.search-bar{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 12px;width:280px}
-.search-bar input{border:none;background:none;outline:none;font-size:13px;font-family:inherit;color:var(--text);width:100%}
-.topbar-right{display:flex;align-items:center;gap:12px;margin-left:auto}
-.topbar-pill{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--brand-light);color:var(--brand)}
-.avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand2));display:flex;align-items:center;justify-content:center;color:white;font-size:13px;font-weight:600}
-.sidebar{width:var(--sidebar);background:var(--surface);border-right:1px solid var(--border);position:fixed;top:var(--topbar);left:0;bottom:0;overflow-y:auto;z-index:100;padding:.75rem 0}
-.nav-label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;padding:.75rem 1.25rem .25rem}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);margin:1px .5rem;transition:background .15s,color .15s;-webkit-user-select:none;user-select:none}
-.nav-item:hover{background:var(--surface2);color:var(--text)}
-.nav-item.active{background:var(--brand-light);color:var(--brand)}
-.nav-item.active .ni{color:var(--brand)}
-.ni{font-size:18px;color:var(--text3);transition:color .15s;pointer-events:none}
-.nav-item:hover .ni{color:var(--text2)}
-.nav-badge{margin-left:auto;background:var(--danger);color:white;font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;min-width:18px;text-align:center;display:none}
-.nav-divider{height:1px;background:var(--border);margin:.5rem .75rem}
-.main{margin-left:var(--sidebar);margin-top:var(--topbar);padding:1.5rem;min-height:calc(100vh - var(--topbar))}
-.page{display:none}.page.active{display:block}
-.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:12px}
-.page-title{font-size:20px;font-weight:700;display:flex;align-items:center;gap:10px}
-.page-title .ni{color:var(--brand);font-size:22px}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem}
-.stat-card{background:var(--surface);border-radius:var(--radius);padding:1.25rem;border:1px solid var(--border);box-shadow:var(--shadow)}
-.stat-icon{width:36px;height:36px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;margin-bottom:10px;font-size:18px}
-.si-green{background:var(--brand-light);color:var(--brand)}.si-blue{background:var(--info-light);color:var(--info)}
-.si-warn{background:var(--warn-light);color:var(--warn)}.si-red{background:var(--danger-light);color:var(--danger)}
-.stat-num{font-size:26px;font-weight:700;font-family:'DM Mono',monospace;line-height:1}
-.stat-label{font-size:12px;color:var(--text3);margin-top:4px}
-.card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:1rem}
-.card-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
-.card-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
-.card-title .ni{color:var(--brand)}
-.card-body{padding:1.25rem}
-.table-wrap{overflow-x:auto}
+:root{--G:#1D9E75;--G2:#0d7a5a;--GL:#e8f7f2;--R:#e53935;--RL:#fdecea;--W:#f59e0b;--WL:#fef3c7;--B:#3b82f6;--BL:#eff6ff;--bg:#f0f4f8;--sf:#fff;--sf2:#f8fafc;--bd:#e2e8f0;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--sb:220px;--tb:56px;--r:12px;--rs:8px}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx)}
+.tb{height:var(--tb);background:#fff;border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 1.5rem;gap:1rem;position:fixed;top:0;left:0;right:0;z-index:200;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.tb-brand{font-size:18px;font-weight:700;letter-spacing:.1em;color:var(--G);display:flex;align-items:center;gap:8px;min-width:var(--sb)}
+.tb-brand span{font-size:11px;font-weight:400;color:var(--tx3)}
+.sbar{display:flex;align-items:center;gap:8px;background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rs);padding:7px 12px;width:280px}
+.sbar input{border:none;background:none;outline:none;font-size:13px;font-family:inherit;color:var(--tx);width:100%}
+.tb-r{display:flex;align-items:center;gap:12px;margin-left:auto}
+.pill{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:500;background:var(--GL);color:var(--G)}
+.av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--G),var(--G2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:600}
+.sb{width:var(--sb);background:#fff;border-right:1px solid var(--bd);position:fixed;top:var(--tb);left:0;bottom:0;overflow-y:auto;z-index:100;padding:.75rem 0}
+.nlbl{font-size:10px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;padding:.75rem 1.25rem .25rem}
+.ni{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--rs);cursor:pointer;font-size:13px;font-weight:500;color:var(--tx2);margin:1px .5rem;transition:background .15s,color .15s;user-select:none}
+.ni:hover{background:var(--sf2);color:var(--tx)}.ni.on{background:var(--GL);color:var(--G)}
+.ni i{font-size:18px;color:var(--tx3);pointer-events:none}.ni.on i{color:var(--G)}.ni:hover i{color:var(--tx2)}
+.nbdg{margin-left:auto;background:var(--R);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;min-width:18px;text-align:center;display:none}
+.ndiv{height:1px;background:var(--bd);margin:.5rem .75rem}
+.mn{margin-left:var(--sb);margin-top:var(--tb);padding:1.5rem;min-height:calc(100vh - var(--tb))}
+.pg{display:none}.pg.on{display:block}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:12px}
+.pt{font-size:20px;font-weight:700;display:flex;align-items:center;gap:10px}
+.pt i{color:var(--G);font-size:22px}
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem}
+.sc{background:#fff;border-radius:var(--r);padding:1.25rem;border:1px solid var(--bd);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.sic{width:36px;height:36px;border-radius:var(--rs);display:flex;align-items:center;justify-content:center;margin-bottom:10px;font-size:18px}
+.sg-g{background:var(--GL);color:var(--G)}.sg-b{background:var(--BL);color:var(--B)}.sg-w{background:var(--WL);color:var(--W)}.sg-r{background:var(--RL);color:var(--R)}
+.sn{font-size:26px;font-weight:700;font-family:'DM Mono',monospace;line-height:1}
+.sl{font-size:12px;color:var(--tx3);margin-top:4px}
+.cd{background:#fff;border-radius:var(--r);border:1px solid var(--bd);box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:1rem}
+.ch{padding:1rem 1.25rem;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.ct{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+.ct i{color:var(--G)}
+.cb{padding:1.25rem}
+.tw{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;padding:10px 12px;font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border);white-space:nowrap;background:var(--surface2)}
-td{padding:11px 12px;border-bottom:1px solid #f1f5f9;vertical-align:middle;color:var(--text2)}
+th{text-align:left;padding:10px 12px;font-size:11px;color:var(--tx3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--bd);white-space:nowrap;background:var(--sf2)}
+td{padding:11px 12px;border-bottom:1px solid #f1f5f9;vertical-align:middle;color:var(--tx2)}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#fafbfc}
-.td-b{color:var(--text);font-weight:600}.td-m{font-family:'DM Mono',monospace;font-size:12px}
+.tb2{color:var(--tx);font-weight:600}.tm{font-family:'DM Mono',monospace;font-size:12px}
 .badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 9px;border-radius:20px;font-weight:600;white-space:nowrap}
-.b-green{background:var(--brand-light);color:var(--brand)}.b-blue{background:var(--info-light);color:var(--info)}
-.b-warn{background:var(--warn-light);color:#92400e}.b-red{background:var(--danger-light);color:var(--danger)}
-.b-gray{background:#f1f5f9;color:var(--text3)}
+.bg{background:var(--GL);color:var(--G)}.bb{background:var(--BL);color:var(--B)}.bw{background:var(--WL);color:#92400e}.br{background:var(--RL);color:var(--R)}.bgr{background:#f1f5f9;color:var(--tx3)}
 .bdot{width:6px;height:6px;border-radius:50%;background:currentColor}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:all .15s;white-space:nowrap}
-.btn-primary{background:var(--brand);color:white}.btn-primary:hover{background:var(--brand2)}
-.btn-secondary{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}.btn-secondary:hover{background:var(--border)}
-.btn-ghost{background:none;color:var(--brand)}.btn-ghost:hover{background:var(--brand-light)}
-.btn-sm{padding:5px 10px;font-size:12px}
-.bico{width:30px;height:30px;border-radius:6px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;color:var(--text2);display:inline-flex;align-items:center;justify-content:center;font-size:15px;transition:all .15s;flex-shrink:0}
-.bico:hover{background:var(--border)}.bico.del{color:var(--danger)}.bico.del:hover{background:var(--danger-light)}
-.form-grid{display:grid;gap:12px}
-.fg2{grid-template-columns:1fr 1fr}.fg3{grid-template-columns:1fr 1fr 1fr}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--rs);font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:all .15s;white-space:nowrap;text-decoration:none}
+.bp{background:var(--G);color:#fff}.bp:hover{background:var(--G2)}
+.bs{background:var(--sf2);color:var(--tx2);border:1px solid var(--bd)}.bs:hover{background:var(--bd)}
+.bgh{background:none;color:var(--G);border:none}.bgh:hover{background:var(--GL)}
+.bsm{padding:5px 10px;font-size:12px}
+.bic{width:30px;height:30px;border-radius:6px;background:var(--sf2);border:1px solid var(--bd);cursor:pointer;color:var(--tx2);display:inline-flex;align-items:center;justify-content:center;font-size:15px;transition:all .15s;flex-shrink:0}
+.bic:hover{background:var(--bd)}.bic.dl{color:var(--R)}.bic.dl:hover{background:var(--RL)}
+.fg{display:grid;gap:12px}.fg2{grid-template-columns:1fr 1fr}.fg3{grid-template-columns:1fr 1fr 1fr}
 @media(max-width:600px){.fg2,.fg3{grid-template-columns:1fr}}
-.field{display:flex;flex-direction:column;gap:5px}
-.field label{font-size:12px;font-weight:600;color:var(--text2)}
-.field input,.field select,.field textarea{padding:9px 11px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;color:var(--text);background:var(--surface);outline:none;transition:border .15s}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(29,158,117,.08)}
-.field textarea{resize:vertical;min-height:80px}
-.field-ro input{background:var(--surface2);color:var(--brand);font-family:'DM Mono',monospace;font-weight:600}
-.fbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.fbar input,.fbar select{padding:7px 11px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;outline:none;background:var(--surface)}
-.fbar input{flex:1;min-width:160px}.fbar input:focus,.fbar select:focus{border-color:var(--brand)}
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:500;align-items:center;justify-content:center;padding:1rem}
-.modal-bg.open{display:flex}
-.modal{background:var(--surface);border-radius:var(--radius);width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
-.modal-lg{max-width:680px}
-.modal-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:1}
-.modal-title{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
-.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3);width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center}
-.modal-close:hover{background:var(--surface2);color:var(--text)}
-.modal-body{padding:1.5rem}
-.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;background:var(--surface2);border-radius:0 0 var(--radius) var(--radius)}
-.tab-bar{display:flex;border-bottom:1px solid var(--border);margin-bottom:1.25rem}
-.tab-btn{padding:9px 16px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;font-family:inherit}
-.tab-btn:hover{color:var(--text)}.tab-btn.active{color:var(--brand);border-bottom-color:var(--brand)}
-.tab-pane{display:none}.tab-pane.active{display:block}
-.stop-row{display:flex;align-items:flex-start;gap:8px;background:var(--surface2);border-radius:var(--radius-sm);padding:10px 12px;border:1px solid var(--border);margin-bottom:6px}
-.stop-num{width:26px;height:26px;border-radius:50%;background:var(--brand);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
-.stop-num.pku{background:var(--info)}
-.stop-fields{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px}
-@media(max-width:500px){.stop-fields{grid-template-columns:1fr}}
-.sinput{padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;outline:none;width:100%;font-family:inherit;background:var(--surface)}
-.sinput:focus{border-color:var(--brand)}
-.brem{background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;padding:2px;border-radius:4px;flex-shrink:0;margin-top:2px}
-.brem:hover{color:var(--danger)}
-.upzone{border:2px dashed var(--border);border-radius:var(--radius);padding:1.5rem;text-align:center;cursor:pointer;transition:all .2s;margin-top:12px}
-.upzone:hover{border-color:var(--brand);background:var(--brand-light)}
-.upzone .ni{font-size:28px;display:block;margin-bottom:6px;color:var(--text3)}
-.upzone:hover .ni{color:var(--brand)}
-.upzone p{font-size:12px;color:var(--text3);margin-top:4px}
-.vcard-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
-.vcard{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:1.25rem;box-shadow:var(--shadow);transition:all .2s;cursor:pointer}
-.vcard:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
-.km-bar{height:4px;background:var(--surface2);border-radius:2px;margin-top:8px;overflow:hidden}
-.km-fill{height:100%;background:var(--brand);border-radius:2px}
-.vci{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;font-size:12px}
-.toast{position:fixed;bottom:1.5rem;right:1.5rem;padding:12px 18px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;z-index:9999;display:none;align-items:center;gap:8px;box-shadow:var(--shadow-lg);max-width:320px}
-.toast.show{display:flex}.t-g{background:var(--brand);color:white}.t-r{background:var(--danger);color:white}.t-w{background:var(--warn);color:white}
-.loading{display:none;position:fixed;inset:0;background:rgba(255,255,255,.75);z-index:9998;align-items:center;justify-content:center;flex-direction:column;gap:12px}
-.loading.show{display:flex}
-.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite}
+.fd{display:flex;flex-direction:column;gap:5px}
+.fd label{font-size:12px;font-weight:600;color:var(--tx2)}
+.fd input,.fd select,.fd textarea{padding:9px 11px;border:1px solid var(--bd);border-radius:var(--rs);font-size:13px;font-family:inherit;color:var(--tx);background:#fff;outline:none;transition:border .15s}
+.fd input:focus,.fd select:focus,.fd textarea:focus{border-color:var(--G);box-shadow:0 0 0 3px rgba(29,158,117,.08)}
+.fd textarea{resize:vertical;min-height:80px}
+.fd-ro input{background:var(--sf2);color:var(--G);font-family:'DM Mono',monospace;font-weight:600}
+.fb{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.fb input,.fb select{padding:7px 11px;border:1px solid var(--bd);border-radius:var(--rs);font-size:13px;font-family:inherit;outline:none;background:#fff}
+.fb input{flex:1;min-width:160px}.fb input:focus,.fb select:focus{border-color:var(--G)}
+.mbg{display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:500;align-items:center;justify-content:center;padding:1rem}
+.mbg.on{display:flex}
+.mb{background:#fff;border-radius:var(--r);width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,.12)}
+.mblg{max-width:680px}
+.mh{padding:1.25rem 1.5rem;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:1}
+.mt2{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
+.mc{background:none;border:none;font-size:20px;cursor:pointer;color:var(--tx3);width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center}
+.mc:hover{background:var(--sf2);color:var(--tx)}
+.mbdy{padding:1.5rem}
+.mft{padding:1rem 1.5rem;border-top:1px solid var(--bd);display:flex;justify-content:flex-end;gap:8px;background:var(--sf2);border-radius:0 0 var(--r) var(--r)}
+.tbar{display:flex;border-bottom:1px solid var(--bd);margin-bottom:1.25rem}
+.tbtn{padding:9px 16px;font-size:13px;font-weight:500;color:var(--tx3);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;font-family:inherit}
+.tbtn:hover{color:var(--tx)}.tbtn.on{color:var(--G);border-bottom-color:var(--G)}
+.tp{display:none}.tp.on{display:block}
+.sr{display:flex;align-items:flex-start;gap:8px;background:var(--sf2);border-radius:var(--rs);padding:10px 12px;border:1px solid var(--bd);margin-bottom:6px}
+.sn2{width:26px;height:26px;border-radius:50%;background:var(--G);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.sn2.pk{background:var(--B)}
+.sf2{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:500px){.sf2{grid-template-columns:1fr}}
+.si{padding:7px 10px;border:1px solid var(--bd);border-radius:6px;font-size:13px;outline:none;width:100%;font-family:inherit;background:#fff}
+.si:focus{border-color:var(--G)}
+.brm{background:none;border:none;color:var(--tx3);cursor:pointer;font-size:18px;padding:2px;border-radius:4px;flex-shrink:0;margin-top:2px}
+.brm:hover{color:var(--R)}
+.uz{border:2px dashed var(--bd);border-radius:var(--r);padding:1.5rem;text-align:center;cursor:pointer;transition:all .2s;margin-top:12px}
+.uz:hover{border-color:var(--G);background:var(--GL)}
+.uz i{font-size:28px;display:block;margin-bottom:6px;color:var(--tx3)}
+.uz:hover i{color:var(--G)}
+.uz p{font-size:12px;color:var(--tx3);margin-top:4px}
+.vcg{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+.vc{background:#fff;border-radius:var(--r);border:1px solid var(--bd);padding:1.25rem;box-shadow:0 1px 3px rgba(0,0,0,.08);transition:all .2s;cursor:pointer}
+.vc:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);transform:translateY(-1px)}
+.kb{height:4px;background:var(--sf2);border-radius:2px;margin-top:8px;overflow:hidden}
+.kf{height:100%;background:var(--G);border-radius:2px}
+.vi{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;font-size:12px}
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;padding:12px 18px;border-radius:var(--rs);font-size:13px;font-weight:500;z-index:9999;display:none;align-items:center;gap:8px;box-shadow:0 10px 40px rgba(0,0,0,.12);max-width:320px}
+.toast.on{display:flex}.tg{background:var(--G);color:#fff}.tr{background:var(--R);color:#fff}.tw2{background:var(--W);color:#fff}
+.ld{display:none;position:fixed;inset:0;background:rgba(255,255,255,.8);z-index:9998;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+.ld.on{display:flex}
+.sp{width:36px;height:36px;border:3px solid var(--bd);border-top-color:var(--G);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-@media(max-width:900px){.grid2{grid-template-columns:1fr}}
-.sticky-p{position:sticky;top:calc(var(--topbar) + 1.5rem)}
-.act-btns{display:flex;gap:4px}
-.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem}
-.info-box{background:var(--surface2);border-radius:var(--radius-sm);padding:12px}
-.info-box-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
-.info-box-val{font-weight:600;font-size:14px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:900px){.g2{grid-template-columns:1fr}}
+.stk{position:sticky;top:calc(var(--tb) + 1.5rem)}
+.ab{display:flex;gap:4px}
+.ib{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem}
+.ib-i{background:var(--sf2);border-radius:var(--rs);padding:12px}
+.ib-l{font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.ib-v{font-weight:600;font-size:14px}
+.flink{color:var(--G);font-size:12px;font-weight:500;display:inline-flex;align-items:center;gap:4px;text-decoration:none}
+.flink:hover{text-decoration:underline}
 </style>
 </head>
 <body>
-<div class="loading" id="loading"><div class="spinner"></div><span style="font-size:13px;color:var(--text3)" id="load-txt">Đang tải...</span></div>
+<div class="ld" id="ld"><div class="sp"></div><span style="font-size:13px;color:var(--tx3)" id="ld-t">Đang tải...</span></div>
 <div class="toast" id="toast"></div>
 
-<div class="topbar">
-  <div class="topbar-brand"><i class="ti ti-truck-delivery" style="font-size:22px"></i>AURA <span>LOGISTICS</span></div>
-  <div class="search-bar"><i class="ti ti-search" style="color:var(--text3)"></i><input type="text" placeholder="Tìm kiếm..."></div>
-  <div class="topbar-right">
-    <div class="topbar-pill"><i class="ti ti-circle-filled" style="font-size:8px"></i> Online</div>
-    <div class="avatar">AD</div>
+<div class="tb">
+  <div class="tb-brand"><i class="ti ti-truck-delivery" style="font-size:22px"></i>AURA <span>LOGISTICS</span></div>
+  <div class="sbar"><i class="ti ti-search" style="color:var(--tx3)"></i><input type="text" placeholder="Tìm kiếm..."></div>
+  <div class="tb-r"><div class="pill"><i class="ti ti-circle-filled" style="font-size:8px"></i> Online</div><div class="av">AD</div></div>
+</div>
+
+<div class="sb">
+  <div class="nlbl">Tổng quan</div>
+  <div class="ni on" id="n-dashboard" onclick="gp('dashboard')"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
+  <div class="nlbl">Vận hành</div>
+  <div class="ni" id="n-orders" onclick="gp('orders')"><i class="ti ti-clipboard-list"></i>Đơn hàng<span class="nbdg" id="bdg-o">0</span></div>
+  <div class="ni" id="n-neworder" onclick="gp('neworder')"><i class="ti ti-plus"></i>Tạo đơn mới</div>
+  <div class="ni" id="n-drivers" onclick="gp('drivers')"><i class="ti ti-users"></i>Tài xế</div>
+  <div class="ni" id="n-vehicles" onclick="gp('vehicles')"><i class="ti ti-truck"></i>Quản lý xe</div>
+  <div class="nlbl">Tài chính</div>
+  <div class="ni" id="n-quotes" onclick="gp('quotes')"><i class="ti ti-receipt"></i>Báo giá</div>
+  <div class="ni" id="n-contracts" onclick="gp('contracts')"><i class="ti ti-file-text"></i>Hợp đồng</div>
+  <div class="ni" id="n-costs" onclick="gp('costs')"><i class="ti ti-coin"></i>Chi phí</div>
+  <div class="ndiv"></div>
+  <div class="ni" id="n-settings" onclick="gp('settings')"><i class="ti ti-settings"></i>Cài đặt</div>
+</div>
+
+<div class="mn">
+
+<div class="pg on" id="pg-dashboard">
+  <div class="ph"><div><div class="pt"><i class="ti ti-layout-dashboard"></i>Dashboard</div><div style="font-size:13px;color:var(--tx3);margin-top:2px" id="d-date"></div></div><button class="btn bs bsm" onclick="loadAll()"><i class="ti ti-refresh"></i> Làm mới</button></div>
+  <div class="sg">
+    <div class="sc"><div class="sic sg-g"><i class="ti ti-clipboard-check"></i></div><div class="sn" style="color:var(--G)" id="d-ord">0</div><div class="sl">Đơn hôm nay</div></div>
+    <div class="sc"><div class="sic sg-b"><i class="ti ti-truck"></i></div><div class="sn" style="color:var(--B)" id="d-veh">0</div><div class="sl">Xe hoạt động</div></div>
+    <div class="sc"><div class="sic sg-w"><i class="ti ti-clock"></i></div><div class="sn" style="color:var(--W)" id="d-pend">0</div><div class="sl">Đơn chờ giao</div></div>
+    <div class="sc"><div class="sic sg-r"><i class="ti ti-alert-triangle"></i></div><div class="sn" style="color:var(--R)" id="d-exp">0</div><div class="sl">Đăng kiểm sắp hết</div></div>
+  </div>
+  <div class="g2">
+    <div class="cd"><div class="ch"><div class="ct"><i class="ti ti-clipboard-list"></i>Đơn gần đây</div><button class="btn bgh bsm" onclick="gp('orders')">Xem tất cả →</button></div><div class="tw"><table><thead><tr><th>Mã đơn</th><th>Tài xế</th><th>Trạng thái</th></tr></thead><tbody id="d-ord-tb"><tr><td colspan="3" style="text-align:center;padding:1.5rem;color:var(--tx3)">Chưa có dữ liệu</td></tr></tbody></table></div></div>
+    <div class="cd"><div class="ch"><div class="ct"><i class="ti ti-truck"></i>Trạng thái xe</div><button class="btn bgh bsm" onclick="gp('vehicles')">Xem tất cả →</button></div><div class="tw"><table><thead><tr><th>Biển số</th><th>Loại</th><th>Trạng thái</th></tr></thead><tbody id="d-veh-tb"><tr><td colspan="3" style="text-align:center;padding:1.5rem;color:var(--tx3)">Chưa có dữ liệu</td></tr></tbody></table></div></div>
   </div>
 </div>
 
-<div class="sidebar">
-  <div class="nav-label">Tổng quan</div>
-  <div class="nav-item active" id="nav-dashboard" onclick="goPage('dashboard')"><i class="ti ti-layout-dashboard ni"></i>Dashboard</div>
-  <div class="nav-label">Vận hành</div>
-  <div class="nav-item" id="nav-orders" onclick="goPage('orders')"><i class="ti ti-clipboard-list ni"></i>Đơn hàng<span class="nav-badge" id="badge-orders">0</span></div>
-  <div class="nav-item" id="nav-create-order" onclick="goPage('create-order')"><i class="ti ti-plus ni"></i>Tạo đơn mới</div>
-  <div class="nav-item" id="nav-drivers" onclick="goPage('drivers')"><i class="ti ti-users ni"></i>Tài xế</div>
-  <div class="nav-item" id="nav-vehicles" onclick="goPage('vehicles')"><i class="ti ti-truck ni"></i>Quản lý xe</div>
-  <div class="nav-label">Tài chính</div>
-  <div class="nav-item" id="nav-quotes" onclick="goPage('quotes')"><i class="ti ti-receipt ni"></i>Báo giá</div>
-  <div class="nav-item" id="nav-contracts" onclick="goPage('contracts')"><i class="ti ti-file-text ni"></i>Hợp đồng</div>
-  <div class="nav-item" id="nav-costs" onclick="goPage('costs')"><i class="ti ti-coin ni"></i>Chi phí</div>
-  <div class="nav-divider"></div>
-  <div class="nav-item" id="nav-settings" onclick="goPage('settings')"><i class="ti ti-settings ni"></i>Cài đặt</div>
-</div>
-
-<div class="main">
-
-<!-- DASHBOARD -->
-<div class="page active" id="page-dashboard">
-  <div class="page-header">
-    <div><div class="page-title"><i class="ti ti-layout-dashboard ni"></i>Dashboard</div><div style="font-size:13px;color:var(--text3);margin-top:2px" id="dash-date"></div></div>
-    <button class="btn btn-secondary btn-sm" onclick="loadAll()"><i class="ti ti-refresh"></i> Làm mới</button>
+<div class="pg" id="pg-orders">
+  <div class="ph"><div class="pt"><i class="ti ti-clipboard-list"></i>Đơn hàng</div><div style="display:flex;gap:8px"><button class="btn bs bsm" onclick="expExcel()"><i class="ti ti-table-export"></i> Xuất Excel</button><button class="btn bp" onclick="gp('neworder')"><i class="ti ti-plus"></i> Tạo đơn mới</button></div></div>
+  <div class="sg" style="grid-template-columns:repeat(4,1fr)">
+    <div class="sc"><div class="sn" id="o-tot">0</div><div class="sl">Tổng đơn</div></div>
+    <div class="sc"><div class="sn" style="color:var(--W)" id="o-pen">0</div><div class="sl">Chờ giao</div></div>
+    <div class="sc"><div class="sn" style="color:var(--B)" id="o-pro">0</div><div class="sl">Đang giao</div></div>
+    <div class="sc"><div class="sn" style="color:var(--G)" id="o-don">0</div><div class="sl">Hoàn thành</div></div>
   </div>
-  <div class="stats-grid">
-    <div class="stat-card"><div class="stat-icon si-green"><i class="ti ti-clipboard-check"></i></div><div class="stat-num" style="color:var(--brand)" id="d-orders">0</div><div class="stat-label">Đơn hôm nay</div></div>
-    <div class="stat-card"><div class="stat-icon si-blue"><i class="ti ti-truck"></i></div><div class="stat-num" style="color:var(--info)" id="d-vehicles">0</div><div class="stat-label">Xe hoạt động</div></div>
-    <div class="stat-card"><div class="stat-icon si-warn"><i class="ti ti-clock"></i></div><div class="stat-num" style="color:var(--warn)" id="d-pending">0</div><div class="stat-label">Đơn chờ giao</div></div>
-    <div class="stat-card"><div class="stat-icon si-red"><i class="ti ti-alert-triangle"></i></div><div class="stat-num" style="color:var(--danger)" id="d-expire">0</div><div class="stat-label">Đăng kiểm sắp hết</div></div>
-  </div>
-  <div class="grid2">
-    <div class="card">
-      <div class="card-header"><div class="card-title"><i class="ti ti-clipboard-list ni"></i>Đơn gần đây</div><button class="btn btn-ghost btn-sm" onclick="goPage('orders')">Xem tất cả →</button></div>
-      <div class="table-wrap"><table><thead><tr><th>Mã đơn</th><th>Tài xế</th><th>Trạng thái</th></tr></thead><tbody id="dash-orders"><tr><td colspan="3" style="text-align:center;padding:1.5rem;color:var(--text3)">Chưa có dữ liệu</td></tr></tbody></table></div>
-    </div>
-    <div class="card">
-      <div class="card-header"><div class="card-title"><i class="ti ti-truck ni"></i>Trạng thái xe</div><button class="btn btn-ghost btn-sm" onclick="goPage('vehicles')">Xem tất cả →</button></div>
-      <div class="table-wrap"><table><thead><tr><th>Biển số</th><th>Loại</th><th>Trạng thái</th></tr></thead><tbody id="dash-vehicles"><tr><td colspan="3" style="text-align:center;padding:1.5rem;color:var(--text3)">Chưa có dữ liệu</td></tr></tbody></table></div>
-    </div>
+  <div class="cd">
+    <div class="ch"><div class="fb" style="flex:1"><input type="text" id="o-s" placeholder="Tìm mã đơn, tài xế..." oninput="rOrders()"><select id="o-sf" onchange="rOrders()"><option value="">Tất cả trạng thái</option><option value="pending">Chờ giao</option><option value="inprogress">Đang giao</option><option value="done">Hoàn thành</option></select></div><button class="bic" onclick="loadOrders()"><i class="ti ti-refresh"></i></button></div>
+    <div class="tw"><table><thead><tr><th>Mã đơn</th><th>Ngày giao</th><th>Điểm giao</th><th>Tài xế</th><th>Trạng thái</th><th>Ghi chú</th><th>Thao tác</th></tr></thead><tbody id="o-tb"><tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--tx3)">Đang tải...</td></tr></tbody></table></div>
   </div>
 </div>
 
-<!-- ORDERS -->
-<div class="page" id="page-orders">
-  <div class="page-header">
-    <div class="page-title"><i class="ti ti-clipboard-list ni"></i>Đơn hàng</div>
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-secondary" onclick="exportExcel()"><i class="ti ti-table-export"></i> Xuất Excel</button>
-      <button class="btn btn-primary" onclick="goPage('create-order')"><i class="ti ti-plus"></i> Tạo đơn mới</button>
-    </div>
-  </div>
-  <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
-    <div class="stat-card"><div class="stat-num" id="o-total">0</div><div class="stat-label">Tổng đơn</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--warn)" id="o-pending">0</div><div class="stat-label">Chờ giao</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--info)" id="o-prog">0</div><div class="stat-label">Đang giao</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--brand)" id="o-done">0</div><div class="stat-label">Hoàn thành</div></div>
-  </div>
-  <div class="card">
-    <div class="card-header">
-      <div class="fbar" style="flex:1">
-        <input type="text" id="o-search" placeholder="Tìm mã đơn, tài xế..." oninput="renderOrders()">
-        <select id="o-sf" onchange="renderOrders()"><option value="">Tất cả trạng thái</option><option value="pending">Chờ giao</option><option value="inprogress">Đang giao</option><option value="done">Hoàn thành</option></select>
-      </div>
-      <button class="bico" onclick="loadOrders()"><i class="ti ti-refresh"></i></button>
-    </div>
-    <div class="table-wrap"><table>
-      <thead><tr><th>Mã đơn</th><th>Ngày giao</th><th>Điểm giao</th><th>Tài xế</th><th>Trạng thái</th><th>Ghi chú</th><th>Thao tác</th></tr></thead>
-      <tbody id="order-tbody"><tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text3)">Đang tải...</td></tr></tbody>
-    </table></div>
-  </div>
-</div>
-
-<!-- CREATE ORDER -->
-<div class="page" id="page-create-order">
-  <div class="page-header">
-    <div class="page-title"><i class="ti ti-plus ni"></i>Tạo đơn mới</div>
-    <button class="btn btn-secondary" onclick="goPage('orders')"><i class="ti ti-arrow-left"></i> Quay lại</button>
-  </div>
+<div class="pg" id="pg-neworder">
+  <div class="ph"><div class="pt"><i class="ti ti-plus"></i>Tạo đơn mới</div><button class="btn bs" onclick="gp('orders')"><i class="ti ti-arrow-left"></i> Quay lại</button></div>
   <div style="display:grid;grid-template-columns:1fr 360px;gap:1rem;align-items:start">
     <div>
-      <div class="card">
-        <div class="card-header"><div class="card-title"><i class="ti ti-info-circle ni"></i>Thông tin đơn</div></div>
-        <div class="card-body">
-          <div class="form-grid fg2">
-            <div class="field field-ro"><label>Mã đơn (tự sinh)</label><div style="display:flex;gap:6px"><input id="inp-orderid" readonly><button class="bico" onclick="refreshOrderId()"><i class="ti ti-refresh"></i></button></div></div>
-            <div class="field"><label>Ngày giao *</label><input type="date" id="inp-date"></div>
-            <div class="field"><label>Loại xe</label><select id="inp-vtype"><option value="">-- Chọn loại --</option><option value="van_1t">Van 1 tấn</option><option value="truck_2t">Xe tải 2 tấn</option></select></div>
-            <div class="field"><label>Gán tài xế</label><select id="inp-driver"><option value="">-- Chọn tài xế --</option></select></div>
-          </div>
-          <div class="field" style="margin-top:12px"><label>Ghi chú</label><textarea id="inp-note" placeholder="Ghi chú..."></textarea></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title"><i class="ti ti-map-pins ni"></i>Điểm giao hàng</div>
-          <div style="display:flex;gap:6px">
-            <button class="btn btn-secondary btn-sm" onclick="openM('paste-modal')"><i class="ti ti-table-import"></i> Paste Excel</button>
-            <button class="btn btn-secondary btn-sm" onclick="addStop()"><i class="ti ti-plus"></i> Thêm điểm</button>
-          </div>
-        </div>
-        <div class="card-body">
-          <div style="margin-bottom:12px">
-            <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;margin-bottom:6px">Điểm lấy hàng</div>
-            <div class="stop-row"><div class="stop-num pku"><i class="ti ti-building-warehouse" style="font-size:11px"></i></div><div class="stop-fields"><input class="sinput" id="pickup-name" placeholder="Tên kho / địa điểm lấy"><input class="sinput" id="pickup-addr" placeholder="Địa chỉ lấy hàng"></div></div>
-          </div>
-          <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;margin-bottom:6px">Các điểm giao</div>
-          <div id="stops-list"></div>
-        </div>
-      </div>
+      <div class="cd"><div class="ch"><div class="ct"><i class="ti ti-info-circle"></i>Thông tin đơn</div></div><div class="cb"><div class="fg fg2"><div class="fd fd-ro"><label>Mã đơn (tự sinh)</label><div style="display:flex;gap:6px"><input id="i-oid" readonly><button class="bic" onclick="rfId()"><i class="ti ti-refresh"></i></button></div></div><div class="fd"><label>Ngày giao *</label><input type="date" id="i-date"></div><div class="fd"><label>Loại xe</label><select id="i-vt"><option value="">-- Chọn loại --</option><option value="van_1t">Van 1 tấn</option><option value="truck_2t">Xe tải 2 tấn</option></select></div><div class="fd"><label>Gán tài xế</label><select id="i-drv"><option value="">-- Chọn tài xế --</option></select></div></div><div class="fd" style="margin-top:12px"><label>Ghi chú</label><textarea id="i-note" placeholder="Ghi chú..."></textarea></div></div></div>
+      <div class="cd"><div class="ch"><div class="ct"><i class="ti ti-map-pins"></i>Điểm giao hàng</div><div style="display:flex;gap:6px"><button class="btn bs bsm" onclick="om('pm')"><i class="ti ti-table-import"></i> Paste Excel</button><button class="btn bs bsm" onclick="addStop()"><i class="ti ti-plus"></i> Thêm điểm</button></div></div>
+      <div class="cb"><div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;margin-bottom:6px">Điểm lấy hàng</div><div class="sr"><div class="sn2 pk"><i class="ti ti-building-warehouse" style="font-size:11px"></i></div><div class="sf2"><input class="si" id="pk-n" placeholder="Tên kho / địa điểm lấy"><input class="si" id="pk-a" placeholder="Địa chỉ lấy hàng"></div></div></div><div style="font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;margin-bottom:6px">Các điểm giao</div><div id="sl"></div></div></div>
     </div>
-    <div class="sticky-p">
-      <div class="card">
-        <div class="card-header"><div class="card-title"><i class="ti ti-eye ni"></i>Xem trước</div></div>
-        <div class="card-body" id="order-preview" style="font-size:13px;color:var(--text3)">Điền thông tin để xem tóm tắt...</div>
-        <div style="padding:0 1.25rem 1.25rem;display:flex;flex-direction:column;gap:8px">
-          <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="submitOrder()"><i class="ti ti-send"></i> Tạo đơn hàng</button>
-          <button class="btn btn-secondary" style="width:100%;justify-content:center" onclick="resetForm()"><i class="ti ti-refresh"></i> Làm lại</button>
-        </div>
-      </div>
-    </div>
+    <div class="stk"><div class="cd"><div class="ch"><div class="ct"><i class="ti ti-eye"></i>Xem trước</div></div><div class="cb" id="o-prev" style="font-size:13px;color:var(--tx3)">Điền thông tin để xem tóm tắt...</div><div style="padding:0 1.25rem 1.25rem;display:flex;flex-direction:column;gap:8px"><button class="btn bp" style="width:100%;justify-content:center" onclick="subOrder()"><i class="ti ti-send"></i> Tạo đơn hàng</button><button class="btn bs" style="width:100%;justify-content:center" onclick="rstForm()"><i class="ti ti-refresh"></i> Làm lại</button></div></div></div>
   </div>
 </div>
 
-<!-- DRIVERS -->
-<div class="page" id="page-drivers">
-  <div class="page-header">
-    <div class="page-title"><i class="ti ti-users ni"></i>Quản lý tài xế</div>
-    <button class="btn btn-primary" onclick="toast('Thêm tài xế trực tiếp vào sheet drivers trong Google Sheet nhé!','w')"><i class="ti ti-external-link"></i> Thêm tài xế</button>
+<div class="pg" id="pg-drivers">
+  <div class="ph"><div class="pt"><i class="ti ti-users"></i>Quản lý tài xế</div><button class="btn bp" onclick="alert('Thêm tài xế trực tiếp vào sheet drivers trong Google Sheet nhé!')"><i class="ti ti-external-link"></i> Thêm tài xế</button></div>
+  <div class="cd"><div class="ch"><div class="fb" style="flex:1"><input type="text" id="d-s" placeholder="Tìm tên, mã tài xế..." oninput="rDrivers()"><select id="d-sf" onchange="rDrivers()"><option value="">Tất cả</option><option value="active">Hoạt động</option><option value="off">Đã nghỉ</option><option value="locked">Bị khóa</option></select></div><button class="bic" onclick="loadDrivers()"><i class="ti ti-refresh"></i></button></div>
+  <div class="tw"><table><thead><tr><th>Mã TX</th><th>Tên tài xế</th><th>Số điện thoại</th><th>Biển số xe</th><th>Trạng thái</th></tr></thead><tbody id="d-tb"><tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--tx3)">Đang tải...</td></tr></tbody></table></div></div>
+</div>
+
+<div class="pg" id="pg-vehicles">
+  <div class="ph"><div class="pt"><i class="ti ti-truck"></i>Quản lý xe</div><button class="btn bp" onclick="om('vm')"><i class="ti ti-plus"></i> Thêm xe</button></div>
+  <div class="sg" style="grid-template-columns:repeat(4,1fr)">
+    <div class="sc"><div class="sn" style="color:var(--G)" id="v-act">0</div><div class="sl">Đang hoạt động</div></div>
+    <div class="sc"><div class="sn" style="color:var(--W)" id="v-mai">0</div><div class="sl">Bảo dưỡng</div></div>
+    <div class="sc"><div class="sn" style="color:var(--R)" id="v-exp">0</div><div class="sl">Hết hạn đăng kiểm</div></div>
+    <div class="sc"><div class="sn" id="v-tot">0</div><div class="sl">Tổng số xe</div></div>
   </div>
-  <div class="card">
-    <div class="card-header">
-      <div class="fbar" style="flex:1">
-        <input type="text" id="d-search" placeholder="Tìm tên, mã tài xế..." oninput="renderDrivers()">
-        <select id="d-sf" onchange="renderDrivers()"><option value="">Tất cả</option><option value="active">Hoạt động</option><option value="off">Đã nghỉ</option><option value="locked">Bị khóa</option></select>
-      </div>
-      <button class="bico" onclick="loadDrivers()"><i class="ti ti-refresh"></i></button>
-    </div>
-    <div class="table-wrap"><table>
-      <thead><tr><th>Mã TX</th><th>Tên tài xế</th><th>Số điện thoại</th><th>Biển số xe</th><th>Trạng thái</th></tr></thead>
-      <tbody id="driver-tbody"><tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text3)">Đang tải...</td></tr></tbody>
-    </table></div>
+  <div class="tbar"><button class="tbtn on" onclick="swTab(this,'vt-lst')">Danh sách</button><button class="tbtn" onclick="swTab(this,'vt-crd')">Thẻ xe</button></div>
+  <div class="tp on" id="vt-lst"><div class="cd"><div class="ch"><div class="fb" style="flex:1"><input type="text" id="v-s" placeholder="Tìm biển số..." oninput="rVehicles()"><select id="v-tf" onchange="rVehicles()"><option value="">Tất cả loại</option><option value="van_1t">Van 1 tấn</option><option value="truck_2t">Tải 2 tấn</option></select><select id="v-sf" onchange="rVehicles()"><option value="">Tất cả trạng thái</option><option value="active">Hoạt động</option><option value="maintenance">Bảo dưỡng</option><option value="inactive">Không HĐ</option></select></div></div><div class="tw"><table><thead><tr><th>Biển số</th><th>Loại xe</th><th>Năm SX</th><th>Tài xế</th><th>Đăng kiểm đến</th><th>Bảo hiểm đến</th><th>Km</th><th>Trạng thái</th><th></th></tr></thead><tbody id="v-tb"><tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--tx3)">Chưa có dữ liệu xe</td></tr></tbody></table></div></div></div>
+  <div class="tp" id="vt-crd"><div class="vcg" id="v-crd"><div style="text-align:center;padding:3rem;color:var(--tx3)">Chưa có dữ liệu xe</div></div></div>
+</div>
+
+<div class="pg" id="pg-quotes">
+  <div class="ph"><div class="pt"><i class="ti ti-receipt"></i>Báo giá</div><button class="btn bp" onclick="oqm()"><i class="ti ti-plus"></i> Tạo báo giá</button></div>
+  <div class="tbar"><button class="tbtn on" onclick="swTab(this,'qt-out')">Báo giá cho khách</button><button class="tbtn" onclick="swTab(this,'qt-in')">Báo giá từ vendor</button></div>
+  <div class="tp on" id="qt-out"><div class="cd"><div class="ch"><div class="ct"><i class="ti ti-send"></i>Gửi cho khách hàng</div></div><div class="tw"><table><thead><tr><th>Mã BG</th><th>Khách hàng</th><th>Loại xe</th><th>Tuyến đường</th><th>Đơn giá</th><th>Ngày tạo</th><th>Hiệu lực đến</th><th>Trạng thái</th><th>File</th><th></th></tr></thead><tbody id="qo-tb"><tr><td colspan="10" style="text-align:center;padding:2rem;color:var(--tx3)">Chưa có báo giá</td></tr></tbody></table></div></div></div>
+  <div class="tp" id="qt-in"><div class="cd"><div class="ch"><div class="ct"><i class="ti ti-inbox"></i>Nhận từ vendor</div></div><div class="tw"><table><thead><tr><th>Mã BG</th><th>Vendor</th><th>Dịch vụ</th><th>Đơn giá</th><th>Hiệu lực đến</th><th>Trạng thái</th><th>File</th><th></th></tr></thead><tbody id="qi-tb"><tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--tx3)">Chưa có báo giá</td></tr></tbody></table></div></div></div>
+</div>
+
+<div class="pg" id="pg-contracts">
+  <div class="ph"><div class="pt"><i class="ti ti-file-text"></i>Hợp đồng</div><button class="btn bp" onclick="ocm()"><i class="ti ti-plus"></i> Thêm hợp đồng</button></div>
+  <div class="tbar"><button class="tbtn on" onclick="swTab(this,'ct-hd')">Bảng cứng</button><button class="tbtn" onclick="swTab(this,'ct-sf')">Bảng mềm</button></div>
+  <div class="tp on" id="ct-hd"><div class="cd"><div class="ch"><div class="ct"><i class="ti ti-file-certificate"></i>Hợp đồng gốc (bảng cứng)</div></div><div class="tw"><table><thead><tr><th>Mã HĐ</th><th>Đối tác</th><th>Loại dịch vụ</th><th>Ngày ký</th><th>Hiệu lực đến</th><th>Giá trị</th><th>Trạng thái</th><th>File</th><th></th></tr></thead><tbody id="ch-tb"><tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--tx3)">Chưa có hợp đồng</td></tr></tbody></table></div></div></div>
+  <div class="tp" id="ct-sf"><div class="cd"><div class="ch"><div class="ct"><i class="ti ti-table"></i>Bảng mềm (linh hoạt)</div></div><div class="tw"><table><thead><tr><th>Mã</th><th>Đối tác</th><th>Tuyến / Dịch vụ</th><th>Van 1T (VNĐ)</th><th>Tải 2T (VNĐ)</th><th>Phụ phí</th><th>Hiệu lực đến</th><th>File</th><th></th></tr></thead><tbody id="cs-tb"><tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--tx3)">Chưa có dữ liệu</td></tr></tbody></table></div></div></div>
+</div>
+
+<div class="pg" id="pg-costs">
+  <div class="ph"><div class="pt"><i class="ti ti-coin"></i>Chi phí vận hành</div><button class="btn bp" onclick="ocostm()"><i class="ti ti-plus"></i> Ghi chi phí</button></div>
+  <div class="sg" style="grid-template-columns:repeat(4,1fr)">
+    <div class="sc"><div class="sic sg-w"><i class="ti ti-gas-station"></i></div><div class="sn" id="c-fuel">0đ</div><div class="sl">Xăng dầu tháng này</div></div>
+    <div class="sc"><div class="sic sg-b"><i class="ti ti-road"></i></div><div class="sn" id="c-toll">0đ</div><div class="sl">Cầu đường tháng này</div></div>
+    <div class="sc"><div class="sic sg-r"><i class="ti ti-tool"></i></div><div class="sn" id="c-rep">0đ</div><div class="sl">Sửa chữa tháng này</div></div>
+    <div class="sc"><div class="sic sg-g"><i class="ti ti-calculator"></i></div><div class="sn" id="c-tot">0đ</div><div class="sl">Tổng chi phí</div></div>
+  </div>
+  <div class="cd"><div class="ch"><div class="ct"><i class="ti ti-list"></i>Lịch sử chi phí</div><div style="display:flex;gap:8px;flex-wrap:wrap"><select id="cf-m" onchange="rCosts()" style="padding:6px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-size:13px;font-family:inherit;outline:none"></select><select id="cf-t" onchange="rCosts()" style="padding:6px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-size:13px;font-family:inherit;outline:none"><option value="">Tất cả loại</option><option value="fuel">⛽ Xăng dầu</option><option value="toll">🛣️ Cầu đường</option><option value="repair">🔧 Sửa chữa</option><option value="other">📦 Khác</option></select><select id="cf-v" onchange="rCosts()" style="padding:6px 10px;border:1px solid var(--bd);border-radius:var(--rs);font-size:13px;font-family:inherit;outline:none"><option value="">Tất cả xe</option></select></div></div>
+  <div class="tw"><table><thead><tr><th>Ngày</th><th>Loại chi phí</th><th>Xe</th><th>Tài xế</th><th>Số tiền</th><th>Ghi chú</th></tr></thead><tbody id="cost-tb"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--tx3)">Chưa có dữ liệu</td></tr></tbody></table></div></div>
+</div>
+
+<div class="pg" id="pg-settings">
+  <div class="ph"><div class="pt"><i class="ti ti-settings"></i>Cài đặt</div></div>
+  <div class="g2">
+    <div class="cd"><div class="ch"><div class="ct"><i class="ti ti-api"></i>Kết nối API</div></div><div class="cb"><div class="fd" style="margin-bottom:12px"><label>Apps Script URL</label><input type="text" id="set-api"></div><button class="btn bp bsm" onclick="toast('Đã lưu cài đặt')"><i class="ti ti-check"></i> Lưu</button></div></div>
+    <div class="cd"><div class="ch"><div class="ct"><i class="ti ti-info-circle"></i>Thông tin</div></div><div class="cb" style="display:flex;flex-direction:column;gap:10px;font-size:13px"><div style="display:flex;justify-content:space-between"><span style="color:var(--tx3)">Phiên bản</span><span>AURA v1.0</span></div><div style="display:flex;justify-content:space-between"><span style="color:var(--tx3)">App tài xế</span><a href="https://haiho551635.github.io/bulky-scanner/aura-driver-app.html" target="_blank" style="color:var(--G)">Mở ↗</a></div><div style="display:flex;justify-content:space-between"><span style="color:var(--tx3)">GitHub</span><a href="https://github.com/haiho551635/bulky-scanner" target="_blank" style="color:var(--G)">haiho551635 ↗</a></div></div></div>
   </div>
 </div>
 
-<!-- VEHICLES -->
-<div class="page" id="page-vehicles">
-  <div class="page-header">
-    <div class="page-title"><i class="ti ti-truck ni"></i>Quản lý xe</div>
-    <button class="btn btn-primary" onclick="openM('vehicle-modal')"><i class="ti ti-plus"></i> Thêm xe</button>
-  </div>
-  <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
-    <div class="stat-card"><div class="stat-num" style="color:var(--brand)" id="v-active">0</div><div class="stat-label">Đang hoạt động</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--warn)" id="v-maint">0</div><div class="stat-label">Bảo dưỡng</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--danger)" id="v-exp">0</div><div class="stat-label">Hết hạn đăng kiểm</div></div>
-    <div class="stat-card"><div class="stat-num" id="v-total">0</div><div class="stat-label">Tổng số xe</div></div>
-  </div>
-  <div class="tab-bar">
-    <button class="tab-btn active" onclick="swTab(this,'vtab-list')">Danh sách</button>
-    <button class="tab-btn" onclick="swTab(this,'vtab-card')">Thẻ xe</button>
-  </div>
-  <div class="tab-pane active" id="vtab-list">
-    <div class="card">
-      <div class="card-header">
-        <div class="fbar" style="flex:1">
-          <input type="text" id="v-search" placeholder="Tìm biển số..." oninput="renderVehicles()">
-          <select id="v-tf" onchange="renderVehicles()"><option value="">Tất cả loại</option><option value="van_1t">Van 1 tấn</option><option value="truck_2t">Tải 2 tấn</option></select>
-          <select id="v-sf" onchange="renderVehicles()"><option value="">Tất cả trạng thái</option><option value="active">Hoạt động</option><option value="maintenance">Bảo dưỡng</option><option value="inactive">Không HĐ</option></select>
-        </div>
-      </div>
-      <div class="table-wrap"><table>
-        <thead><tr><th>Biển số</th><th>Loại xe</th><th>Năm SX</th><th>Tài xế</th><th>Đăng kiểm đến</th><th>Bảo hiểm đến</th><th>Km</th><th>Trạng thái</th><th></th></tr></thead>
-        <tbody id="vehicle-tbody"><tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có dữ liệu xe</td></tr></tbody>
-      </table></div>
-    </div>
-  </div>
-  <div class="tab-pane" id="vtab-card"><div class="vcard-grid" id="vehicle-cards"><div style="text-align:center;padding:3rem;color:var(--text3)">Chưa có dữ liệu xe</div></div></div>
 </div>
-
-<!-- QUOTES -->
-<div class="page" id="page-quotes">
-  <div class="page-header">
-    <div class="page-title"><i class="ti ti-receipt ni"></i>Báo giá</div>
-    <button class="btn btn-primary" onclick="openQuoteModal()"><i class="ti ti-plus"></i> Tạo báo giá</button>
-  </div>
-  <div class="tab-bar">
-    <button class="tab-btn active" onclick="swTab(this,'qtab-out')">Báo giá cho khách</button>
-    <button class="tab-btn" onclick="swTab(this,'qtab-in')">Báo giá từ vendor</button>
-  </div>
-  <div class="tab-pane active" id="qtab-out">
-    <div class="card">
-      <div class="card-header"><div class="card-title"><i class="ti ti-send ni"></i>Gửi cho khách hàng</div></div>
-      <div class="table-wrap"><table>
-        <thead><tr><th>Mã BG</th><th>Khách hàng</th><th>Loại xe</th><th>Tuyến đường</th><th>Đơn giá</th><th>Ngày tạo</th><th>Hiệu lực đến</th><th>Trạng thái</th><th>File</th><th></th></tr></thead>
-        <tbody id="qout-tbody"><tr><td colspan="10" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có báo giá</td></tr></tbody>
-      </table></div>
-    </div>
-  </div>
-  <div class="tab-pane" id="qtab-in">
-    <div class="card">
-      <div class="card-header"><div class="card-title"><i class="ti ti-inbox ni"></i>Nhận từ vendor</div></div>
-      <div class="table-wrap"><table>
-        <thead><tr><th>Mã BG</th><th>Vendor</th><th>Dịch vụ</th><th>Đơn giá</th><th>Hiệu lực đến</th><th>Trạng thái</th><th>File</th><th></th></tr></thead>
-        <tbody id="qin-tbody"><tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có báo giá</td></tr></tbody>
-      </table></div>
-    </div>
-  </div>
-</div>
-
-<!-- CONTRACTS -->
-<div class="page" id="page-contracts">
-  <div class="page-header">
-    <div class="page-title"><i class="ti ti-file-text ni"></i>Hợp đồng</div>
-    <button class="btn btn-primary" onclick="openContractModal()"><i class="ti ti-plus"></i> Thêm hợp đồng</button>
-  </div>
-  <div class="tab-bar">
-    <button class="tab-btn active" onclick="swTab(this,'ctab-hard')">Bảng cứng</button>
-    <button class="tab-btn" onclick="swTab(this,'ctab-soft')">Bảng mềm</button>
-  </div>
-  <div class="tab-pane active" id="ctab-hard">
-    <div class="card">
-      <div class="card-header"><div class="card-title"><i class="ti ti-file-certificate ni"></i>Hợp đồng gốc (bảng cứng)</div></div>
-      <div class="table-wrap"><table>
-        <thead><tr><th>Mã HĐ</th><th>Đối tác</th><th>Loại dịch vụ</th><th>Ngày ký</th><th>Hiệu lực đến</th><th>Giá trị</th><th>Trạng thái</th><th>File</th><th></th></tr></thead>
-        <tbody id="chard-tbody"><tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có hợp đồng</td></tr></tbody>
-      </table></div>
-    </div>
-  </div>
-  <div class="tab-pane" id="ctab-soft">
-    <div class="card">
-      <div class="card-header"><div class="card-title"><i class="ti ti-table ni"></i>Bảng mềm (linh hoạt)</div></div>
-      <div class="table-wrap"><table>
-        <thead><tr><th>Mã</th><th>Đối tác</th><th>Tuyến / Dịch vụ</th><th>Van 1T (VNĐ)</th><th>Tải 2T (VNĐ)</th><th>Phụ phí</th><th>Hiệu lực đến</th><th></th></tr></thead>
-        <tbody id="csoft-tbody"><tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có dữ liệu</td></tr></tbody>
-      </table></div>
-    </div>
-  </div>
-</div>
-
-<!-- COSTS -->
-<div class="page" id="page-costs">
-  <div class="page-header">
-    <div class="page-title"><i class="ti ti-coin ni"></i>Chi phí vận hành</div>
-    <button class="btn btn-primary" onclick="openCostModal()"><i class="ti ti-plus"></i> Ghi chi phí</button>
-  </div>
-  <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
-    <div class="stat-card"><div class="stat-icon si-warn"><i class="ti ti-gas-station"></i></div><div class="stat-num" id="c-fuel">0đ</div><div class="stat-label">Xăng dầu tháng này</div></div>
-    <div class="stat-card"><div class="stat-icon si-blue"><i class="ti ti-road"></i></div><div class="stat-num" id="c-toll">0đ</div><div class="stat-label">Cầu đường tháng này</div></div>
-    <div class="stat-card"><div class="stat-icon si-red"><i class="ti ti-tool"></i></div><div class="stat-num" id="c-repair">0đ</div><div class="stat-label">Sửa chữa tháng này</div></div>
-    <div class="stat-card"><div class="stat-icon si-green"><i class="ti ti-calculator"></i></div><div class="stat-num" id="c-total">0đ</div><div class="stat-label">Tổng chi phí</div></div>
-  </div>
-  <div class="card">
-    <div class="card-header">
-      <div class="card-title"><i class="ti ti-list ni"></i>Lịch sử chi phí</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <select id="cf-month" onchange="renderCosts()" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;outline:none"></select>
-        <select id="cf-type" onchange="renderCosts()" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;outline:none"><option value="">Tất cả loại</option><option value="fuel">⛽ Xăng dầu</option><option value="toll">🛣️ Cầu đường</option><option value="repair">🔧 Sửa chữa</option><option value="other">📦 Khác</option></select>
-        <select id="cf-vehicle" onchange="renderCosts()" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;outline:none"><option value="">Tất cả xe</option></select>
-      </div>
-    </div>
-    <div class="table-wrap"><table>
-      <thead><tr><th>Ngày</th><th>Loại chi phí</th><th>Xe</th><th>Tài xế</th><th>Số tiền</th><th>Ghi chú</th></tr></thead>
-      <tbody id="cost-tbody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có dữ liệu</td></tr></tbody>
-    </table></div>
-  </div>
-</div>
-
-<!-- SETTINGS -->
-<div class="page" id="page-settings">
-  <div class="page-header"><div class="page-title"><i class="ti ti-settings ni"></i>Cài đặt</div></div>
-  <div class="grid2">
-    <div class="card">
-      <div class="card-header"><div class="card-title"><i class="ti ti-api ni"></i>Kết nối API</div></div>
-      <div class="card-body">
-        <div class="field" style="margin-bottom:12px"><label>Apps Script URL</label><input type="text" id="set-api"></div>
-        <button class="btn btn-primary btn-sm" onclick="toast('Đã lưu cài đặt')"><i class="ti ti-check"></i> Lưu</button>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header"><div class="card-title"><i class="ti ti-info-circle ni"></i>Thông tin</div></div>
-      <div class="card-body" style="display:flex;flex-direction:column;gap:10px;font-size:13px">
-        <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Phiên bản</span><span>AURA v1.0</span></div>
-        <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">App tài xế</span><a href="https://haiho551635.github.io/bulky-scanner/aura-driver-app.html" target="_blank" style="color:var(--brand)">Mở ↗</a></div>
-        <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">GitHub</span><a href="https://github.com/haiho551635/bulky-scanner" target="_blank" style="color:var(--brand)">haiho551635 ↗</a></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-</div><!-- /main -->
 
 <!-- MODALS -->
-<div class="modal-bg" id="assign-modal">
-  <div class="modal"><div class="modal-header"><div class="modal-title"><i class="ti ti-user-check" style="color:var(--brand)"></i> Gán tài xế</div><button class="modal-close" onclick="closeM('assign-modal')"><i class="ti ti-x"></i></button></div>
-  <div class="modal-body"><div style="padding:10px 14px;background:var(--surface2);border-radius:var(--radius-sm);font-size:13px;margin-bottom:14px">Đơn: <strong style="font-family:'DM Mono',monospace;color:var(--brand)" id="assign-oid"></strong></div><div class="field"><label>Chọn tài xế</label><select id="assign-driver" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit"></select></div></div>
-  <div class="modal-footer"><button class="btn btn-secondary" onclick="closeM('assign-modal')">Hủy</button><button class="btn btn-primary" onclick="confirmAssign()"><i class="ti ti-check"></i> Xác nhận</button></div></div>
-</div>
+<div class="mbg" id="m-assign"><div class="mb"><div class="mh"><div class="mt2"><i class="ti ti-user-check" style="color:var(--G)"></i> Gán tài xế</div><button class="mc" onclick="cm('m-assign')"><i class="ti ti-x"></i></button></div><div class="mbdy"><div style="padding:10px 14px;background:var(--sf2);border-radius:var(--rs);font-size:13px;margin-bottom:14px">Đơn: <strong style="font-family:'DM Mono',monospace;color:var(--G)" id="m-aoid"></strong></div><div class="fd"><label>Chọn tài xế</label><select id="m-adrv" style="width:100%;padding:10px;border:1px solid var(--bd);border-radius:var(--rs);font-size:14px;font-family:inherit"></select></div></div><div class="mft"><button class="btn bs" onclick="cm('m-assign')">Hủy</button><button class="btn bp" onclick="cfAssign()"><i class="ti ti-check"></i> Xác nhận</button></div></div></div>
 
-<div class="modal-bg" id="order-detail-modal">
-  <div class="modal modal-lg"><div class="modal-header"><div class="modal-title"><i class="ti ti-clipboard-list" style="color:var(--brand)"></i> Chi tiết đơn — <span style="font-family:'DM Mono',monospace;color:var(--brand)" id="od-id"></span></div><button class="modal-close" onclick="closeM('order-detail-modal')"><i class="ti ti-x"></i></button></div>
-  <div class="modal-body">
-    <div class="info-grid">
-      <div class="info-box"><div class="info-box-label">Ngày giao</div><div class="info-box-val" id="od-date"></div></div>
-      <div class="info-box"><div class="info-box-label">Tài xế</div><div class="info-box-val" id="od-driver"></div></div>
-      <div class="info-box"><div class="info-box-label">Trạng thái</div><div id="od-status"></div></div>
-      <div class="info-box"><div class="info-box-label">Ghi chú</div><div style="font-size:13px" id="od-note"></div></div>
-    </div>
-    <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;margin-bottom:8px">Các điểm giao hàng</div>
-    <div class="table-wrap"><table><thead><tr><th>Loại</th><th>Tên điểm</th><th>Địa chỉ</th><th>Kết quả</th></tr></thead><tbody id="od-stops"></tbody></table></div>
-  </div>
-  <div class="modal-footer"><button class="btn btn-secondary" onclick="closeM('order-detail-modal')">Đóng</button></div></div>
-</div>
+<div class="mbg" id="m-odetail"><div class="mb mblg"><div class="mh"><div class="mt2"><i class="ti ti-clipboard-list" style="color:var(--G)"></i> Chi tiết đơn — <span style="font-family:'DM Mono',monospace;color:var(--G)" id="od-id"></span></div><button class="mc" onclick="cm('m-odetail')"><i class="ti ti-x"></i></button></div><div class="mbdy"><div class="ib"><div class="ib-i"><div class="ib-l">Ngày giao</div><div class="ib-v" id="od-date"></div></div><div class="ib-i"><div class="ib-l">Tài xế</div><div class="ib-v" id="od-drv"></div></div><div class="ib-i"><div class="ib-l">Trạng thái</div><div id="od-st"></div></div><div class="ib-i"><div class="ib-l">Ghi chú</div><div style="font-size:13px" id="od-note"></div></div></div><div style="font-size:12px;font-weight:600;color:var(--tx3);text-transform:uppercase;margin-bottom:8px">Các điểm giao hàng</div><div class="tw"><table><thead><tr><th>Loại</th><th>Tên điểm</th><th>Địa chỉ</th><th>Kết quả</th></tr></thead><tbody id="od-stops"></tbody></table></div></div><div class="mft"><button class="btn bs" onclick="cm('m-odetail')">Đóng</button></div></div></div>
 
-<div class="modal-bg" id="vehicle-modal">
-  <div class="modal"><div class="modal-header"><div class="modal-title"><i class="ti ti-truck" style="color:var(--brand)"></i> Thêm / sửa xe</div><button class="modal-close" onclick="closeM('vehicle-modal')"><i class="ti ti-x"></i></button></div>
-  <div class="modal-body"><div class="form-grid fg2">
-    <div class="field"><label>Biển số *</label><input id="vm-plate" placeholder="51A-12345" style="text-transform:uppercase"></div>
-    <div class="field"><label>Loại xe *</label><select id="vm-type"><option value="van_1t">Van 1 tấn</option><option value="truck_2t">Xe tải 2 tấn</option></select></div>
-    <div class="field"><label>Năm sản xuất</label><input id="vm-year" type="number" placeholder="2020"></div>
-    <div class="field"><label>Màu xe</label><input id="vm-color" placeholder="Trắng"></div>
-    <div class="field"><label>Hạn đăng kiểm</label><input id="vm-inspect" type="date"></div>
-    <div class="field"><label>Hạn bảo hiểm</label><input id="vm-insure" type="date"></div>
-    <div class="field"><label>Km hiện tại</label><input id="vm-km" type="number" placeholder="50000"></div>
-    <div class="field"><label>Tài xế phụ trách</label><select id="vm-driver"><option value="">-- Chưa gán --</option></select></div>
-    <div class="field"><label>Trạng thái</label><select id="vm-status"><option value="active">Hoạt động</option><option value="maintenance">Bảo dưỡng</option><option value="inactive">Không hoạt động</option></select></div>
-    <div class="field"><label>Ghi chú</label><input id="vm-note" placeholder="Ghi chú thêm"></div>
-  </div></div>
-  <div class="modal-footer"><button class="btn btn-secondary" onclick="closeM('vehicle-modal')">Hủy</button><button class="btn btn-primary" onclick="saveVehicle()"><i class="ti ti-check"></i> Lưu xe</button></div></div>
-</div>
+<div class="mbg" id="vm"><div class="mb"><div class="mh"><div class="mt2"><i class="ti ti-truck" style="color:var(--G)"></i> Thêm / sửa xe</div><button class="mc" onclick="cm('vm')"><i class="ti ti-x"></i></button></div><div class="mbdy"><div class="fg fg2"><div class="fd"><label>Biển số *</label><input id="vm-p" placeholder="51A-12345" style="text-transform:uppercase"></div><div class="fd"><label>Loại xe *</label><select id="vm-t"><option value="van_1t">Van 1 tấn</option><option value="truck_2t">Xe tải 2 tấn</option></select></div><div class="fd"><label>Năm sản xuất</label><input id="vm-y" type="number" placeholder="2020"></div><div class="fd"><label>Màu xe</label><input id="vm-c" placeholder="Trắng"></div><div class="fd"><label>Hạn đăng kiểm</label><input id="vm-ins" type="date"></div><div class="fd"><label>Hạn bảo hiểm</label><input id="vm-bh" type="date"></div><div class="fd"><label>Km hiện tại</label><input id="vm-km" type="number" placeholder="50000"></div><div class="fd"><label>Tài xế phụ trách</label><select id="vm-d"><option value="">-- Chưa gán --</option></select></div><div class="fd"><label>Trạng thái</label><select id="vm-s"><option value="active">Hoạt động</option><option value="maintenance">Bảo dưỡng</option><option value="inactive">Không hoạt động</option></select></div><div class="fd"><label>Ghi chú</label><input id="vm-n" placeholder="Ghi chú thêm"></div></div></div><div class="mft"><button class="btn bs" onclick="cm('vm')">Hủy</button><button class="btn bp" onclick="saveVehicle()"><i class="ti ti-check"></i> Lưu xe</button></div></div></div>
 
-<div class="modal-bg" id="quote-modal">
-  <div class="modal modal-lg"><div class="modal-header"><div class="modal-title"><i class="ti ti-receipt" style="color:var(--brand)"></i> <span id="qm-title">Tạo báo giá</span></div><button class="modal-close" onclick="closeM('quote-modal')"><i class="ti ti-x"></i></button></div>
-  <div class="modal-body">
-    <div class="form-grid fg2" style="margin-bottom:12px">
-      <div class="field"><label>Loại báo giá</label><select id="qm-type"><option value="out">Báo giá cho khách</option><option value="in">Báo giá từ vendor</option></select></div>
-      <div class="field"><label>Tên khách / Vendor *</label><input id="qm-partner" placeholder="Tên đối tác"></div>
-      <div class="field"><label>Loại xe</label><select id="qm-vtype"><option value="van_1t">Van 1 tấn</option><option value="truck_2t">Xe tải 2 tấn</option><option value="both">Cả hai</option></select></div>
-      <div class="field"><label>Tuyến / Dịch vụ</label><input id="qm-route" placeholder="HCM - Bình Dương"></div>
-      <div class="field"><label>Đơn giá (VNĐ)</label><input id="qm-price" type="number" placeholder="500000"></div>
-      <div class="field"><label>Hiệu lực đến</label><input id="qm-valid" type="date"></div>
-    </div>
-    <div class="field" style="margin-bottom:12px"><label>Ghi chú</label><textarea id="qm-note" placeholder="Điều khoản, ghi chú..."></textarea></div>
-    <div class="upzone" id="qm-upzone" onclick="document.getElementById('qm-file').click()"><i class="ti ti-cloud-upload ni"></i><strong id="qm-uplabel">Upload file báo giá</strong><p id="qm-uphint">PDF, Word, Excel — bấm để chọn</p></div>
-    <input type="file" id="qm-file" style="display:none" accept=".pdf,.doc,.docx,.xls,.xlsx" onchange="handleUp(this,'qm')">
-  </div>
-  <div class="modal-footer"><button class="btn btn-secondary" onclick="closeM('quote-modal')">Hủy</button><button class="btn btn-primary" onclick="saveQuote()"><i class="ti ti-check"></i> Lưu báo giá</button></div></div>
-</div>
+<div class="mbg" id="qm"><div class="mb mblg"><div class="mh"><div class="mt2"><i class="ti ti-receipt" style="color:var(--G)"></i> <span id="qm-ttl">Tạo báo giá</span></div><button class="mc" onclick="cm('qm');eqi=null"><i class="ti ti-x"></i></button></div><div class="mbdy"><div class="fg fg2" style="margin-bottom:12px"><div class="fd"><label>Loại báo giá</label><select id="qm-tp"><option value="out">Báo giá cho khách</option><option value="in">Báo giá từ vendor</option></select></div><div class="fd"><label>Tên khách / Vendor *</label><input id="qm-p" placeholder="Tên đối tác"></div><div class="fd"><label>Loại xe</label><select id="qm-vt"><option value="van_1t">Van 1 tấn</option><option value="truck_2t">Xe tải 2 tấn</option><option value="both">Cả hai</option></select></div><div class="fd"><label>Tuyến / Dịch vụ</label><input id="qm-r" placeholder="HCM - Bình Dương"></div><div class="fd"><label>Đơn giá (VNĐ)</label><input id="qm-pr" type="number" placeholder="500000"></div><div class="fd"><label>Hiệu lực đến</label><input id="qm-v" type="date"></div></div><div class="fd" style="margin-bottom:12px"><label>Ghi chú</label><textarea id="qm-n" placeholder="Điều khoản, ghi chú..."></textarea></div><div class="uz" id="qm-uz" onclick="document.getElementById('qm-f').click()"><i class="ti ti-cloud-upload"></i><strong id="qm-ul">Upload file báo giá</strong><p id="qm-uh">PDF, Word, Excel — bấm để chọn</p></div><input type="file" id="qm-f" style="display:none" accept=".pdf,.doc,.docx,.xls,.xlsx" onchange="hUp(this,'qm')"></div><div class="mft"><button class="btn bs" onclick="cm('qm');eqi=null">Hủy</button><button class="btn bp" onclick="saveQuote()"><i class="ti ti-check"></i> Lưu báo giá</button></div></div></div>
 
-<div class="modal-bg" id="contract-modal">
-  <div class="modal modal-lg"><div class="modal-header"><div class="modal-title"><i class="ti ti-file-text" style="color:var(--brand)"></i> <span id="cm-title">Thêm hợp đồng</span></div><button class="modal-close" onclick="closeM('contract-modal')"><i class="ti ti-x"></i></button></div>
-  <div class="modal-body">
-    <div class="form-grid fg2" style="margin-bottom:12px">
-      <div class="field"><label>Loại hợp đồng</label><select id="cm-type"><option value="hard">Bảng cứng</option><option value="soft">Bảng mềm</option></select></div>
-      <div class="field"><label>Đối tác *</label><input id="cm-partner" placeholder="Tên đối tác"></div>
-      <div class="field"><label>Loại dịch vụ</label><select id="cm-service"><option value="transport">Vận chuyển</option><option value="lease">Thuê xe</option><option value="maintenance">Bảo dưỡng</option><option value="other">Khác</option></select></div>
-      <div class="field"><label>Giá trị HĐ (VNĐ)</label><input id="cm-value" type="number" placeholder="10000000"></div>
-      <div class="field"><label>Ngày ký</label><input id="cm-sign" type="date"></div>
-      <div class="field"><label>Hiệu lực đến</label><input id="cm-expire" type="date"></div>
-      <div class="field"><label>Đơn giá Van 1T (VNĐ)</label><input id="cm-van" type="number" placeholder="Giá/chuyến"></div>
-      <div class="field"><label>Đơn giá Tải 2T (VNĐ)</label><input id="cm-truck" type="number" placeholder="Giá/chuyến"></div>
-    </div>
-    <div class="field" style="margin-bottom:12px"><label>Ghi chú</label><textarea id="cm-note" placeholder="Điều khoản..."></textarea></div>
-    <div class="upzone" id="cm-upzone" onclick="document.getElementById('cm-file').click()"><i class="ti ti-cloud-upload ni"></i><strong id="cm-uplabel">Upload file hợp đồng</strong><p id="cm-uphint">PDF, Word — bấm để chọn</p></div>
-    <input type="file" id="cm-file" style="display:none" accept=".pdf,.doc,.docx" onchange="handleUp(this,'cm')">
-  </div>
-  <div class="modal-footer"><button class="btn btn-secondary" onclick="closeM('contract-modal')">Hủy</button><button class="btn btn-primary" onclick="saveContract()"><i class="ti ti-check"></i> Lưu hợp đồng</button></div></div>
-</div>
+<div class="mbg" id="ctm"><div class="mb mblg"><div class="mh"><div class="mt2"><i class="ti ti-file-text" style="color:var(--G)"></i> <span id="ctm-ttl">Thêm hợp đồng</span></div><button class="mc" onclick="cm('ctm');eci=null"><i class="ti ti-x"></i></button></div><div class="mbdy"><div class="fg fg2" style="margin-bottom:12px"><div class="fd"><label>Loại hợp đồng</label><select id="ctm-tp"><option value="hard">Bảng cứng</option><option value="soft">Bảng mềm</option></select></div><div class="fd"><label>Đối tác *</label><input id="ctm-p" placeholder="Tên đối tác"></div><div class="fd"><label>Loại dịch vụ</label><select id="ctm-sv"><option value="transport">Vận chuyển</option><option value="lease">Thuê xe</option><option value="maintenance">Bảo dưỡng</option><option value="other">Khác</option></select></div><div class="fd"><label>Giá trị HĐ (VNĐ)</label><input id="ctm-v" type="number" placeholder="10000000"></div><div class="fd"><label>Ngày ký</label><input id="ctm-sg" type="date"></div><div class="fd"><label>Hiệu lực đến</label><input id="ctm-ex" type="date"></div><div class="fd"><label>Đơn giá Van 1T (VNĐ)</label><input id="ctm-vp" type="number" placeholder="Giá/chuyến"></div><div class="fd"><label>Đơn giá Tải 2T (VNĐ)</label><input id="ctm-tp2" type="number" placeholder="Giá/chuyến"></div></div><div class="fd" style="margin-bottom:12px"><label>Ghi chú</label><textarea id="ctm-n" placeholder="Điều khoản..."></textarea></div><div class="uz" id="ctm-uz" onclick="document.getElementById('ctm-f').click()"><i class="ti ti-cloud-upload"></i><strong id="ctm-ul">Upload file hợp đồng</strong><p id="ctm-uh">PDF, Word — bấm để chọn</p></div><input type="file" id="ctm-f" style="display:none" accept=".pdf,.doc,.docx" onchange="hUp(this,'ctm')"></div><div class="mft"><button class="btn bs" onclick="cm('ctm');eci=null">Hủy</button><button class="btn bp" onclick="saveContract()"><i class="ti ti-check"></i> Lưu hợp đồng</button></div></div></div>
 
-<div class="modal-bg" id="cost-modal">
-  <div class="modal"><div class="modal-header"><div class="modal-title"><i class="ti ti-coin" style="color:var(--brand)"></i> Ghi chi phí</div><button class="modal-close" onclick="closeM('cost-modal')"><i class="ti ti-x"></i></button></div>
-  <div class="modal-body"><div class="form-grid fg2">
-    <div class="field"><label>Ngày *</label><input id="costm-date" type="date"></div>
-    <div class="field"><label>Loại chi phí *</label><select id="costm-type"><option value="fuel">⛽ Xăng dầu</option><option value="toll">🛣️ Cầu đường</option><option value="repair">🔧 Sửa chữa</option><option value="other">📦 Khác</option></select></div>
-    <div class="field"><label>Xe</label><select id="costm-vehicle"><option value="">-- Chọn xe --</option></select></div>
-    <div class="field"><label>Tài xế</label><select id="costm-driver"><option value="">-- Chọn tài xế --</option></select></div>
-    <div class="field"><label>Số tiền (VNĐ) *</label><input id="costm-amount" type="number" placeholder="500000"></div>
-    <div class="field"><label>Ghi chú</label><input id="costm-note" placeholder="Mô tả chi phí"></div>
-  </div></div>
-  <div class="modal-footer"><button class="btn btn-secondary" onclick="closeM('cost-modal')">Hủy</button><button class="btn btn-primary" onclick="saveCost()"><i class="ti ti-check"></i> Lưu</button></div></div>
-</div>
+<div class="mbg" id="costm"><div class="mb"><div class="mh"><div class="mt2"><i class="ti ti-coin" style="color:var(--G)"></i> Ghi chi phí</div><button class="mc" onclick="cm('costm')"><i class="ti ti-x"></i></button></div><div class="mbdy"><div class="fg fg2"><div class="fd"><label>Ngày *</label><input id="costm-d" type="date"></div><div class="fd"><label>Loại chi phí *</label><select id="costm-t"><option value="fuel">⛽ Xăng dầu</option><option value="toll">🛣️ Cầu đường</option><option value="repair">🔧 Sửa chữa</option><option value="other">📦 Khác</option></select></div><div class="fd"><label>Xe</label><select id="costm-v"><option value="">-- Chọn xe --</option></select></div><div class="fd"><label>Tài xế</label><select id="costm-drv"><option value="">-- Chọn tài xế --</option></select></div><div class="fd"><label>Số tiền (VNĐ) *</label><input id="costm-a" type="number" placeholder="500000"></div><div class="fd"><label>Ghi chú</label><input id="costm-n" placeholder="Mô tả chi phí"></div></div></div><div class="mft"><button class="btn bs" onclick="cm('costm')">Hủy</button><button class="btn bp" onclick="saveCost()"><i class="ti ti-check"></i> Lưu</button></div></div></div>
 
-<div class="modal-bg" id="paste-modal">
-  <div class="modal"><div class="modal-header"><div class="modal-title"><i class="ti ti-table-import" style="color:var(--info)"></i> Paste từ Excel</div><button class="modal-close" onclick="closeM('paste-modal')"><i class="ti ti-x"></i></button></div>
-  <div class="modal-body">
-    <div class="field"><label>Dán dữ liệu vào đây</label><textarea id="paste-data" rows="8" placeholder="Copy từ Excel rồi dán vào đây&#10;Mỗi dòng 1 điểm giao&#10;Định dạng: Tên khách [Tab] Địa chỉ&#10;&#10;Ví dụ:&#10;Nguyễn Văn A	45 Nguyễn Huệ Q.1&#10;Trần Thị B	88 Lê Lợi Q.3" style="font-family:'DM Mono',monospace;font-size:12px"></textarea></div>
-    <p style="font-size:12px;color:var(--text3);margin-top:8px">2 cột: Tên khách — Địa chỉ, phân cách Tab hoặc |</p>
-  </div>
-  <div class="modal-footer"><button class="btn btn-secondary" onclick="closeM('paste-modal')">Hủy</button><button class="btn btn-primary" onclick="parsePaste()"><i class="ti ti-check"></i> Nhập dữ liệu</button></div></div>
-</div>
+<div class="mbg" id="pm"><div class="mb"><div class="mh"><div class="mt2"><i class="ti ti-table-import" style="color:var(--B)"></i> Paste từ Excel</div><button class="mc" onclick="cm('pm')"><i class="ti ti-x"></i></button></div><div class="mbdy"><div class="fd"><label>Dán dữ liệu vào đây</label><textarea id="pm-d" rows="8" placeholder="Copy từ Excel rồi dán vào đây&#10;Mỗi dòng 1 điểm giao&#10;Định dạng: Tên khách [Tab] Địa chỉ&#10;&#10;Ví dụ:&#10;Nguyễn Văn A	45 Nguyễn Huệ Q.1&#10;Trần Thị B	88 Lê Lợi Q.3" style="font-family:'DM Mono',monospace;font-size:12px"></textarea></div><p style="font-size:12px;color:var(--tx3);margin-top:8px">2 cột: Tên khách — Địa chỉ, phân cách Tab hoặc |</p></div><div class="mft"><button class="btn bs" onclick="cm('pm')">Hủy</button><button class="btn bp" onclick="parsePaste()"><i class="ti ti-check"></i> Nhập dữ liệu</button></div></div></div>
 
 <script>
-const API = 'https://script.google.com/macros/s/AKfycbxwuqIuNnPbL5PAoOF3opMT2gltYG6a1NKHY2ovqHj4t0XbHQmNOtwn2EcAGRe4wnvMaw/exec';
-var db = {orders:[],drivers:[],vehicles:[],quotes:[],contracts:[],costs:[]};
-var assignOid=null, stopCount=0, editQIdx=null, editCIdx=null, upFiles={qm:null,cm:null};
+var API='https://script.google.com/macros/s/AKfycbxwuqIuNnPbL5PAoOF3opMT2gltYG6a1NKHY2ovqHj4t0XbHQmNOtwn2EcAGRe4wnvMaw/exec';
+var db={orders:[],drivers:[],vehicles:[],quotes:[],contracts:[],costs:[]};
+var aoid=null,sc=0,eqi=null,eci=null,uf={qm:null,ctm:null};
 
-// NAV
-function goPage(name){
-  var pages=document.querySelectorAll('.page');
-  for(var i=0;i<pages.length;i++) pages[i].classList.remove('active');
-  var navs=document.querySelectorAll('.nav-item');
-  for(var i=0;i<navs.length;i++) navs[i].classList.remove('active');
-  var pg=document.getElementById('page-'+name);
-  var nv=document.getElementById('nav-'+name);
-  if(pg) pg.classList.add('active');
-  if(nv) nv.classList.add('active');
+function gp(n){
+  document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.ni').forEach(function(x){x.classList.remove('on');});
+  var p=document.getElementById('pg-'+n);
+  var nv=document.getElementById('n-'+n);
+  if(p)p.classList.add('on');
+  if(nv)nv.classList.add('on');
 }
-
-// MODAL
-function openM(id){document.getElementById(id).classList.add('open');}
-function closeM(id){document.getElementById(id).classList.remove('open');}
-
-// TAB
-function swTab(btn,paneId){
-  var par=btn.closest('.page')||document.body;
-  var btns=par.querySelectorAll('.tab-btn');
-  for(var i=0;i<btns.length;i++) btns[i].classList.remove('active');
-  var panes=par.querySelectorAll('.tab-pane');
-  for(var i=0;i<panes.length;i++) panes[i].classList.remove('active');
-  btn.classList.add('active');
-  var pane=document.getElementById(paneId);
-  if(pane) pane.classList.add('active');
+function om(id){document.getElementById(id).classList.add('on');}
+function cm(id){document.getElementById(id).classList.remove('on');}
+function swTab(btn,pid){
+  var par=btn.closest('.pg')||document.body;
+  par.querySelectorAll('.tbtn').forEach(function(b){b.classList.remove('on');});
+  par.querySelectorAll('.tp').forEach(function(p){p.classList.remove('on');});
+  btn.classList.add('on');
+  var pane=document.getElementById(pid);
+  if(pane)pane.classList.add('on');
 }
-
-// UTILS
-function showL(t){document.getElementById('load-txt').textContent=t||'Đang tải...';document.getElementById('loading').classList.add('show');}
-function hideL(){document.getElementById('loading').classList.remove('show');}
-function toast(msg,type){
-  var el=document.getElementById('toast');
-  el.textContent=msg;
-  el.className='toast show '+(type==='r'?'t-r':type==='w'?'t-w':'t-g');
-  setTimeout(function(){el.classList.remove('show');},3000);
-}
-function fmtM(n){if(!n)return '—';return Number(n).toLocaleString('vi-VN')+'đ';}
-function fmtD(s){if(!s)return '—';try{var d=new Date(s);if(isNaN(d))return s;return d.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'});}catch(e){return s;}}
+function sL(t){document.getElementById('ld-t').textContent=t||'Đang tải...';document.getElementById('ld').classList.add('on');}
+function hL(){document.getElementById('ld').classList.remove('on');}
+function toast(m,t){var el=document.getElementById('toast');el.textContent=m;el.className='toast on '+(t==='r'?'tr':t==='w'?'tw2':'tg');setTimeout(function(){el.classList.remove('on');},3000);}
+function fM(n){if(!n||n==0)return'—';return Number(n).toLocaleString('vi-VN')+'đ';}
+function fD(s){if(!s)return'—';try{var d=new Date(s);if(isNaN(d))return s;return d.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'});}catch(e){return s;}}
 function isExp(d){return d&&new Date(d)<new Date();}
 function isSoon(d){if(!d)return false;var dt=new Date(d),now=new Date();return dt>now&&(dt-now)<30*86400000;}
-function apiGet(p){return fetch(API+'?'+new URLSearchParams(p)).then(function(r){return r.json();});}
-function apiPost(b){return fetch(API,{method:'POST',body:JSON.stringify(b)}).then(function(r){return r.json();});}
+function aGet(p){return fetch(API+'?'+new URLSearchParams(p)).then(function(r){return r.json();});}
+function aPost(b){return fetch(API,{method:'POST',body:JSON.stringify(b)}).then(function(r){return r.json();});}
 
-// BADGES
-function sBadge(s){var m={pending:'<span class="badge b-warn"><span class="bdot"></span>Chờ giao</span>',inprogress:'<span class="badge b-blue"><span class="bdot"></span>Đang giao</span>',done:'<span class="badge b-green"><span class="bdot"></span>Hoàn thành</span>'};return m[s]||'<span class="badge b-gray">—</span>';}
-function vBadge(s){var m={active:'<span class="badge b-green">Hoạt động</span>',maintenance:'<span class="badge b-warn">Bảo dưỡng</span>',inactive:'<span class="badge b-gray">Không HĐ</span>'};return m[s]||'<span class="badge b-gray">—</span>';}
-function dBadge(s){var m={active:'<span class="badge b-green">Hoạt động</span>',off:'<span class="badge b-gray">Đã nghỉ</span>',locked:'<span class="badge b-red">Bị khóa</span>'};return m[s]||'<span class="badge b-gray">—</span>';}
-function expBadge(c){return isExp(c.expire)?'<span class="badge b-red">Hết hạn</span>':isSoon(c.expire)?'<span class="badge b-warn">Sắp hết</span>':'<span class="badge b-green">Hiệu lực</span>';}
+function sBadge(s){var m={pending:'<span class="badge bw"><span class="bdot"></span>Chờ giao</span>',inprogress:'<span class="badge bb"><span class="bdot"></span>Đang giao</span>',done:'<span class="badge bg"><span class="bdot"></span>Hoàn thành</span>'};return m[s]||'<span class="badge bgr">—</span>';}
+function vBadge(s){var m={active:'<span class="badge bg">Hoạt động</span>',maintenance:'<span class="badge bw">Bảo dưỡng</span>',inactive:'<span class="badge bgr">Không HĐ</span>'};return m[s]||'<span class="badge bgr">—</span>';}
+function dBadge(s){var m={active:'<span class="badge bg">Hoạt động</span>',off:'<span class="badge bgr">Đã nghỉ</span>',locked:'<span class="badge br">Bị khóa</span>'};return m[s]||'<span class="badge bgr">—</span>';}
+function expBadge(c){return isExp(c.expire)?'<span class="badge br">Hết hạn</span>':isSoon(c.expire)?'<span class="badge bw">Sắp hết</span>':'<span class="badge bg">Hiệu lực</span>';}
+function fileTd(obj){
+  if(obj.fileUrl)return '<a href="'+obj.fileUrl+'" target="_blank" class="flink"><i class="ti ti-eye"></i> Xem file</a>';
+  if(obj.fileData)return '<a href="'+obj.fileData+'" download="'+obj.file+'" class="flink"><i class="ti ti-download"></i> Tải file</a>';
+  if(obj.file)return '<span style="font-size:12px;color:var(--tx3)">'+obj.file+'</span>';
+  return '<span style="color:var(--tx3)">—</span>';
+}
 
-// LOAD
 function loadAll(){
-  showL('Đang tải...');
-  return Promise.all([loadOrders(),loadDrivers()]).catch(function(e){console.log(e);}).then(function(){hideL();renderDash();});
+  sL('Đang tải...');
+  Promise.all([loadOrders(),loadDrivers()]).catch(function(){}).then(function(){hL();rDash();});
 }
 function loadOrders(){
-  return apiGet({action:'getAdminOrders'}).then(function(r){
-    if(r.success){db.orders=r.orders||[];renderOrders();updateOStats();updateBadge();}
-  }).catch(function(e){console.log('orders err',e);});
+  return aGet({action:'getAdminOrders'}).then(function(r){
+    if(r.success){db.orders=r.orders||[];rOrders();uoStats();}
+  }).catch(function(){});
 }
 function loadDrivers(){
-  return apiGet({action:'getDrivers'}).then(function(r){
-    if(r.success){db.drivers=r.drivers||[];renderDrivers();fillDrvSels();}
-  }).catch(function(e){console.log('drivers err',e);});
+  return aGet({action:'getDrivers'}).then(function(r){
+    if(r.success){db.drivers=r.drivers||[];rDrivers();fillDrv();}
+  }).catch(function(){});
 }
-function updateBadge(){var n=db.orders.filter(function(o){return o.status==='pending';}).length;var b=document.getElementById('badge-orders');b.textContent=n;b.style.display=n>0?'inline-flex':'none';}
+function uoBadge(){var n=db.orders.filter(function(o){return o.status==='pending';}).length;var b=document.getElementById('bdg-o');b.textContent=n;b.style.display=n>0?'inline-flex':'none';}
 
-// DASH
-function renderDash(){
-  document.getElementById('dash-date').textContent=new Date().toLocaleDateString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
-  document.getElementById('d-orders').textContent=db.orders.length;
-  document.getElementById('d-pending').textContent=db.orders.filter(function(o){return o.status==='pending';}).length;
-  document.getElementById('d-vehicles').textContent=db.vehicles.filter(function(v){return v.status==='active';}).length;
-  document.getElementById('d-expire').textContent=db.vehicles.filter(function(v){return isSoon(v.inspection_date)||isExp(v.inspection_date);}).length;
-  var recent=db.orders.slice(-5).reverse();
-  document.getElementById('dash-orders').innerHTML=recent.length?recent.map(function(o){return '<tr><td class="td-b td-m">'+( o.order_id||'—')+'</td><td style="font-size:12px">'+(o.driver_name||'<span style="color:var(--text3)">Chưa gán</span>')+'</td><td>'+sBadge(o.status)+'</td></tr>';}).join(''):'<tr><td colspan="3" style="text-align:center;padding:1.5rem;color:var(--text3)">Chưa có đơn hàng</td></tr>';
-  document.getElementById('dash-vehicles').innerHTML=db.vehicles.length?db.vehicles.slice(0,5).map(function(v){return '<tr><td class="td-b" style="font-family:\'DM Mono\',monospace">'+(v.plate||'—')+'</td><td style="font-size:12px">'+(v.type==='van_1t'?'Van 1T':'Tải 2T')+'</td><td>'+vBadge(v.status)+'</td></tr>';}).join(''):'<tr><td colspan="3" style="text-align:center;padding:1.5rem;color:var(--text3)">Chưa có dữ liệu xe</td></tr>';
+function rDash(){
+  document.getElementById('d-date').textContent=new Date().toLocaleDateString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
+  document.getElementById('d-ord').textContent=db.orders.length;
+  document.getElementById('d-pend').textContent=db.orders.filter(function(o){return o.status==='pending';}).length;
+  document.getElementById('d-veh').textContent=db.vehicles.filter(function(v){return v.status==='active';}).length;
+  document.getElementById('d-exp').textContent=db.vehicles.filter(function(v){return isSoon(v.inspection_date)||isExp(v.inspection_date);}).length;
+  var rec=db.orders.slice(-5).reverse();
+  document.getElementById('d-ord-tb').innerHTML=rec.length?rec.map(function(o){return'<tr><td class="tb2 tm">'+(o.order_id||'—')+'</td><td style="font-size:12px">'+(o.driver_name||'<span style="color:var(--tx3)">Chưa gán</span>')+'</td><td>'+sBadge(o.status)+'</td></tr>';}).join(''):'<tr><td colspan="3" style="text-align:center;padding:1.5rem;color:var(--tx3)">Chưa có đơn hàng</td></tr>';
+  document.getElementById('d-veh-tb').innerHTML=db.vehicles.length?db.vehicles.slice(0,5).map(function(v){return'<tr><td class="tb2 tm">'+(v.plate||'—')+'</td><td style="font-size:12px">'+(v.type==='van_1t'?'Van 1T':'Tải 2T')+'</td><td>'+vBadge(v.status)+'</td></tr>';}).join(''):'<tr><td colspan="3" style="text-align:center;padding:1.5rem;color:var(--tx3)">Chưa có dữ liệu xe</td></tr>';
 }
 
-// ORDERS
-function updateOStats(){
-  document.getElementById('o-total').textContent=db.orders.length;
-  document.getElementById('o-pending').textContent=db.orders.filter(function(o){return o.status==='pending';}).length;
-  document.getElementById('o-prog').textContent=db.orders.filter(function(o){return o.status==='inprogress';}).length;
-  document.getElementById('o-done').textContent=db.orders.filter(function(o){return o.status==='done';}).length;
+function uoStats(){
+  document.getElementById('o-tot').textContent=db.orders.length;
+  document.getElementById('o-pen').textContent=db.orders.filter(function(o){return o.status==='pending';}).length;
+  document.getElementById('o-pro').textContent=db.orders.filter(function(o){return o.status==='inprogress';}).length;
+  document.getElementById('o-don').textContent=db.orders.filter(function(o){return o.status==='done';}).length;
+  uoBadge();
 }
-function renderOrders(){
-  var search=(document.getElementById('o-search').value||'').toLowerCase();
+function rOrders(){
+  var s=(document.getElementById('o-s').value||'').toLowerCase();
   var sf=document.getElementById('o-sf').value;
-  var list=db.orders.filter(function(o){
-    var ms=!search||(o.order_id||'').toLowerCase().indexOf(search)>=0||(o.driver_name||'').toLowerCase().indexOf(search)>=0;
-    var mf=!sf||o.status===sf;
-    return ms&&mf;
-  });
-  var tbody=document.getElementById('order-tbody');
-  if(!list.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text3)">Không có đơn hàng</td></tr>';return;}
-  tbody.innerHTML=list.map(function(o){
+  var list=db.orders.filter(function(o){var ms=!s||(o.order_id||'').toLowerCase().indexOf(s)>=0||(o.driver_name||'').toLowerCase().indexOf(s)>=0;return ms&&(!sf||o.status===sf);});
+  var tb=document.getElementById('o-tb');
+  if(!list.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--tx3)">Không có đơn hàng</td></tr>';return;}
+  tb.innerHTML=list.map(function(o){
     var id=o.order_id||o.id||'—';
     var drops=(o.stops||[]).filter(function(s){return s.type==='drop';}).length;
     var isDone=o.status==='done';
-    var action=isDone?'<span class="badge b-green">✓ Xong</span>':'<button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openAssign(\''+id+'\')"><i class="ti ti-user-plus"></i> Gán TX</button>';
-    return '<tr style="cursor:pointer" onclick="viewOrder(\''+id+'\')"><td class="td-b td-m">'+id+'</td><td style="font-size:12px;color:var(--text3)">'+fmtD(o.date)+'</td><td style="font-size:12px">'+drops+' điểm</td><td>'+(o.driver_name?'<strong style="font-size:13px">'+o.driver_name+'</strong>':'<span style="color:var(--text3);font-size:12px">Chưa gán</span>')+'</td><td>'+sBadge(o.status)+'</td><td style="font-size:12px;color:var(--text3)">'+(o.note||'—')+'</td><td>'+action+'</td></tr>';
+    var act=isDone?'<span class="badge bg">✓ Xong</span>':'<button class="btn bs bsm" onclick="event.stopPropagation();oAssign(\''+id+'\')"><i class="ti ti-user-plus"></i> Gán TX</button>';
+    return'<tr style="cursor:pointer" onclick="viewOrder(\''+id+'\')"><td class="tb2 tm">'+id+'</td><td style="font-size:12px;color:var(--tx3)">'+fD(o.date)+'</td><td style="font-size:12px">'+drops+' điểm</td><td>'+(o.driver_name?'<strong style="font-size:13px">'+o.driver_name+'</strong>':'<span style="color:var(--tx3);font-size:12px">Chưa gán</span>')+'</td><td>'+sBadge(o.status)+'</td><td style="font-size:12px;color:var(--tx3)">'+(o.note||'—')+'</td><td>'+act+'</td></tr>';
   }).join('');
 }
 function viewOrder(oid){
-  var o=db.orders.find(function(x){return (x.order_id||x.id)===oid;});
-  if(!o)return;
+  var o=db.orders.find(function(x){return(x.order_id||x.id)===oid;});if(!o)return;
   document.getElementById('od-id').textContent=oid;
-  document.getElementById('od-date').textContent=fmtD(o.date);
-  document.getElementById('od-driver').textContent=o.driver_name||'Chưa gán';
-  document.getElementById('od-status').innerHTML=sBadge(o.status);
+  document.getElementById('od-date').textContent=fD(o.date);
+  document.getElementById('od-drv').textContent=o.driver_name||'Chưa gán';
+  document.getElementById('od-st').innerHTML=sBadge(o.status);
   document.getElementById('od-note').textContent=o.note||'—';
   var stops=o.stops||[];
   document.getElementById('od-stops').innerHTML=stops.map(function(s,i){
     var isP=s.type==='pickup';
-    var lbl=isP?'🏭 Lấy hàng':'📍 Điểm '+(i);
-    var stb=s.status==='done'?'<span class="badge b-green">✓ Hoàn thành</span>':s.status==='fail'?'<span class="badge b-red">✗ Thất bại'+(s.reason?' — '+s.reason:'')+'</span>':'<span class="badge b-gray">Chờ</span>';
-    return '<tr><td style="font-size:12px">'+lbl+'</td><td style="font-weight:500">'+(s.name||'—')+'</td><td style="font-size:12px;color:var(--text3)">'+(s.addr||'—')+'</td><td>'+stb+'</td></tr>';
-  }).join('')||'<tr><td colspan="4" style="text-align:center;color:var(--text3)">Không có dữ liệu</td></tr>';
-  openM('order-detail-modal');
+    var lbl=isP?'🏭 Lấy hàng':'📍 Điểm '+i;
+    var stb=s.status==='done'?'<span class="badge bg">✓ Hoàn thành</span>':s.status==='fail'?'<span class="badge br">✗ Thất bại'+(s.reason?' — '+s.reason:'')+'</span>':'<span class="badge bgr">Chờ</span>';
+    return'<tr><td style="font-size:12px">'+lbl+'</td><td style="font-weight:500">'+(s.name||'—')+'</td><td style="font-size:12px;color:var(--tx3)">'+(s.addr||'—')+'</td><td>'+stb+'</td></tr>';
+  }).join('')||'<tr><td colspan="4" style="text-align:center;color:var(--tx3)">Không có dữ liệu</td></tr>';
+  om('m-odetail');
 }
-function openAssign(oid){
-  assignOid=oid;
-  document.getElementById('assign-oid').textContent=oid;
-  fillDrvSels();
-  var o=db.orders.find(function(x){return (x.order_id||x.id)===oid;});
-  if(o&&o.driver_code) document.getElementById('assign-driver').value=o.driver_code;
-  openM('assign-modal');
+function oAssign(oid){
+  aoid=oid;document.getElementById('m-aoid').textContent=oid;fillDrv();
+  var o=db.orders.find(function(x){return(x.order_id||x.id)===oid;});
+  if(o&&o.driver_code)document.getElementById('m-adrv').value=o.driver_code;
+  om('m-assign');
 }
-function confirmAssign(){
-  var code=document.getElementById('assign-driver').value;
+function cfAssign(){
+  var code=document.getElementById('m-adrv').value;
   if(!code){toast('Vui lòng chọn tài xế','r');return;}
-  var d=db.drivers.find(function(x){return (x.driver_code||x.code)===code;});
-  showL('Đang gán tài xế...');
-  apiPost({action:'assignDriver',order_id:assignOid,driver_code:code,driver_name:d?(d.driver_name||d.name||''):''}).then(function(r){
-    hideL();
-    if(r.success){toast('Gán tài xế thành công!');closeM('assign-modal');loadOrders();}
-    else toast(r.message||'Lỗi','r');
-  }).catch(function(){hideL();toast('Lỗi kết nối','r');});
+  var d=db.drivers.find(function(x){return(x.driver_code||x.code)===code;});
+  sL('Đang gán tài xế...');
+  aPost({action:'assignDriver',order_id:aoid,driver_code:code,driver_name:d?(d.driver_name||d.name||''):''}).then(function(r){
+    hL();if(r.success){toast('Gán tài xế thành công!');cm('m-assign');loadOrders();}else toast(r.message||'Lỗi','r');
+  }).catch(function(){hL();toast('Lỗi kết nối','r');});
 }
-function exportExcel(){
+function expExcel(){
   if(!db.orders.length){toast('Không có đơn hàng','w');return;}
   var sm={pending:'Chờ giao',inprogress:'Đang giao',done:'Hoàn thành'};
-  var headers=['Mã đơn','Ngày giao','Tài xế','Mã tài xế','Số điểm giao','Trạng thái','Ghi chú'];
-  var csv=headers.join(',')+'\n';
+  var csv='Mã đơn,Ngày giao,Tài xế,Mã tài xế,Số điểm giao,Trạng thái,Ghi chú\n';
   db.orders.forEach(function(o){
     var row=[o.order_id||o.id||'',o.date||'',o.driver_name||'',o.driver_code||'',(o.stops||[]).filter(function(s){return s.type==='drop';}).length,sm[o.status]||o.status||'',o.note||''];
-    csv+=row.map(function(v){return '"'+String(v).replace(/"/g,'""')+'"';}).join(',')+'\n';
+    csv+=row.map(function(v){return'"'+String(v).replace(/"/g,'""')+'"';}).join(',')+'\n';
   });
-  var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
-  var url=URL.createObjectURL(blob);
-  var a=document.createElement('a');a.href=url;a.download='AURA_DonHang_'+new Date().toLocaleDateString('vi-VN').replace(/\//g,'-')+'.csv';a.click();URL.revokeObjectURL(url);
-  toast('Đã xuất file Excel!');
+  var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download='AURA_DonHang.csv';a.click();
+  toast('Đã xuất Excel!');
 }
 
-// DRIVERS
-function fillDrvSels(){
+function fillDrv(){
   var active=db.drivers.filter(function(d){return String(d.status||'').trim()==='active';});
-  var opts='<option value="">-- Chọn tài xế --</option>'+active.map(function(d){var c=d.driver_code||d.code||'';var n=d.driver_name||d.name||'';return '<option value="'+c+'">'+n+' ('+c+')</option>';}).join('');
-  ['inp-driver','assign-driver','costm-driver'].forEach(function(id){var el=document.getElementById(id);if(el)el.innerHTML=opts;});
-  var vd=document.getElementById('vm-driver');
-  if(vd) vd.innerHTML='<option value="">-- Chưa gán --</option>'+active.map(function(d){return '<option value="'+(d.driver_code||d.code||'')+'">'+(d.driver_name||d.name||'')+'</option>';}).join('');
+  var opts='<option value="">-- Chọn tài xế --</option>'+active.map(function(d){var c=d.driver_code||d.code||'';var n=d.driver_name||d.name||'';return'<option value="'+c+'">'+n+' ('+c+')</option>';}).join('');
+  ['i-drv','m-adrv','costm-drv'].forEach(function(id){var el=document.getElementById(id);if(el)el.innerHTML=opts;});
+  var vd=document.getElementById('vm-d');if(vd)vd.innerHTML='<option value="">-- Chưa gán --</option>'+active.map(function(d){return'<option value="'+(d.driver_code||d.code||'')+'">'+(d.driver_name||d.name||'')+'</option>';}).join('');
 }
-function renderDrivers(){
-  var search=(document.getElementById('d-search').value||'').toLowerCase();
+function rDrivers(){
+  var s=(document.getElementById('d-s').value||'').toLowerCase();
   var sf=document.getElementById('d-sf').value;
-  var list=db.drivers.filter(function(d){
-    var c=d.driver_code||d.code||'';var n=d.driver_name||d.name||'';
-    var ms=!search||c.toLowerCase().indexOf(search)>=0||n.toLowerCase().indexOf(search)>=0;
-    var mf=!sf||String(d.status||'').trim()===sf;
-    return ms&&mf;
-  });
-  var tbody=document.getElementById('driver-tbody');
-  if(!list.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text3)">Không có tài xế</td></tr>';return;}
-  tbody.innerHTML=list.map(function(d){
-    var c=d.driver_code||d.code||'—';var n=d.driver_name||d.name||'—';
-    return '<tr><td class="td-b td-m">'+c+'</td><td class="td-b">'+n+'</td><td style="font-size:12px">'+(d.phone||'—')+'</td><td style="font-family:\'DM Mono\',monospace;font-size:12px">'+(d.license_plate||'—')+'</td><td>'+dBadge(String(d.status||'').trim())+'</td></tr>';
-  }).join('');
+  var list=db.drivers.filter(function(d){var c=d.driver_code||d.code||'';var n=d.driver_name||d.name||'';return(!s||c.toLowerCase().indexOf(s)>=0||n.toLowerCase().indexOf(s)>=0)&&(!sf||String(d.status||'').trim()===sf);});
+  var tb=document.getElementById('d-tb');
+  if(!list.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--tx3)">Không có tài xế</td></tr>';return;}
+  tb.innerHTML=list.map(function(d){var c=d.driver_code||d.code||'—';var n=d.driver_name||d.name||'—';return'<tr><td class="tb2 tm">'+c+'</td><td class="tb2">'+n+'</td><td style="font-size:12px">'+(d.phone||'—')+'</td><td class="tm" style="font-size:12px">'+(d.license_plate||'—')+'</td><td>'+dBadge(String(d.status||'').trim())+'</td></tr>';}).join('');
 }
 
-// VEHICLES
-function renderVehicles(){
-  var s=(document.getElementById('v-search').value||'').toLowerCase();
+function rVehicles(){
+  var s=(document.getElementById('v-s').value||'').toLowerCase();
   var tf=document.getElementById('v-tf').value;
   var sf=document.getElementById('v-sf').value;
-  var list=db.vehicles.filter(function(v){return (!s||(v.plate||'').toLowerCase().indexOf(s)>=0)&&(!tf||v.type===tf)&&(!sf||v.status===sf);});
-  document.getElementById('v-total').textContent=db.vehicles.length;
-  document.getElementById('v-active').textContent=db.vehicles.filter(function(v){return v.status==='active';}).length;
-  document.getElementById('v-maint').textContent=db.vehicles.filter(function(v){return v.status==='maintenance';}).length;
+  var list=db.vehicles.filter(function(v){return(!s||(v.plate||'').toLowerCase().indexOf(s)>=0)&&(!tf||v.type===tf)&&(!sf||v.status===sf);});
+  document.getElementById('v-tot').textContent=db.vehicles.length;
+  document.getElementById('v-act').textContent=db.vehicles.filter(function(v){return v.status==='active';}).length;
+  document.getElementById('v-mai').textContent=db.vehicles.filter(function(v){return v.status==='maintenance';}).length;
   document.getElementById('v-exp').textContent=db.vehicles.filter(function(v){return isExp(v.inspection_date);}).length;
-  var tbody=document.getElementById('vehicle-tbody');
-  if(!list.length){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có dữ liệu xe</td></tr>';document.getElementById('vehicle-cards').innerHTML='<div style="text-align:center;padding:3rem;color:var(--text3)">Chưa có dữ liệu xe</div>';return;}
-  tbody.innerHTML=list.map(function(v){
-    var ew=isExp(v.inspection_date)?'style="color:var(--danger);font-weight:600"':isSoon(v.inspection_date)?'style="color:var(--warn);font-weight:600"':'';
-    return '<tr><td class="td-b td-m">'+(v.plate||'—')+'</td><td style="font-size:12px">'+(v.type==='van_1t'?'🚐 Van 1T':'🚛 Tải 2T')+'</td><td style="font-size:12px">'+(v.year||'—')+'</td><td style="font-size:12px">'+(v.driver||'—')+'</td><td '+ew+' style="font-size:12px">'+fmtD(v.inspection_date)+'</td><td style="font-size:12px">'+fmtD(v.insurance_date)+'</td><td style="font-family:\'DM Mono\',monospace;font-size:12px">'+(v.km?Number(v.km).toLocaleString()+' km':'—')+'</td><td>'+vBadge(v.status)+'</td><td><button class="bico" onclick="editVehicle(\''+v.plate+'\')"><i class="ti ti-edit"></i></button></td></tr>';
-  }).join('');
-  document.getElementById('vehicle-cards').innerHTML=list.map(function(v){
-    return '<div class="vcard"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div style="font-family:\'DM Mono\',monospace;font-size:16px;font-weight:700">'+(v.plate||'—')+'</div><div style="font-size:12px;color:var(--text3);margin-top:4px">'+(v.type==='van_1t'?'🚐 Van 1 tấn':'🚛 Xe tải 2 tấn')+'</div></div>'+vBadge(v.status)+'</div><div class="km-bar"><div class="km-fill" style="width:'+Math.min((v.km||0)/300000*100,100)+'%"></div></div><div style="font-size:11px;color:var(--text3);margin-top:4px">'+(v.km?Number(v.km).toLocaleString()+' / 300,000 km':'Chưa cập nhật km')+'</div><div class="vci"><div><span style="color:var(--text3);display:block;font-size:11px">Đăng kiểm</span><span style="font-weight:500;font-size:12px'+(isExp(v.inspection_date)?';color:var(--danger)':isSoon(v.inspection_date)?';color:var(--warn)':'')+'">'+(v.inspection_date?fmtD(v.inspection_date):'—')+'</span></div><div><span style="color:var(--text3);display:block;font-size:11px">Bảo hiểm</span><span style="font-weight:500;font-size:12px">'+fmtD(v.insurance_date)+'</span></div><div><span style="color:var(--text3);display:block;font-size:11px">Năm SX</span><span style="font-weight:500;font-size:12px">'+(v.year||'—')+'</span></div><div><span style="color:var(--text3);display:block;font-size:11px">Tài xế</span><span style="font-weight:500;font-size:12px">'+(v.driver||'Chưa gán')+'</span></div></div></div>';
-  }).join('');
+  var tb=document.getElementById('v-tb');
+  if(!list.length){tb.innerHTML='<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--tx3)">Chưa có dữ liệu xe</td></tr>';document.getElementById('v-crd').innerHTML='<div style="text-align:center;padding:3rem;color:var(--tx3)">Chưa có dữ liệu xe</div>';return;}
+  tb.innerHTML=list.map(function(v){var ew=isExp(v.inspection_date)?'style="color:var(--R);font-weight:600"':isSoon(v.inspection_date)?'style="color:var(--W);font-weight:600"':'';return'<tr><td class="tb2 tm">'+(v.plate||'—')+'</td><td style="font-size:12px">'+(v.type==='van_1t'?'🚐 Van 1T':'🚛 Tải 2T')+'</td><td style="font-size:12px">'+(v.year||'—')+'</td><td style="font-size:12px">'+(v.driver||'—')+'</td><td '+ew+' style="font-size:12px">'+fD(v.inspection_date)+'</td><td style="font-size:12px">'+fD(v.insurance_date)+'</td><td class="tm" style="font-size:12px">'+(v.km?Number(v.km).toLocaleString()+' km':'—')+'</td><td>'+vBadge(v.status)+'</td><td><button class="bic" onclick="editV(\''+v.plate+'\')"><i class="ti ti-edit"></i></button></td></tr>';}).join('');
+  document.getElementById('v-crd').innerHTML=list.map(function(v){return'<div class="vc"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div style="font-family:\'DM Mono\',monospace;font-size:16px;font-weight:700">'+(v.plate||'—')+'</div><div style="font-size:12px;color:var(--tx3);margin-top:4px">'+(v.type==='van_1t'?'🚐 Van 1 tấn':'🚛 Xe tải 2 tấn')+'</div></div>'+vBadge(v.status)+'</div><div class="kb"><div class="kf" style="width:'+Math.min((v.km||0)/300000*100,100)+'%"></div></div><div style="font-size:11px;color:var(--tx3);margin-top:4px">'+(v.km?Number(v.km).toLocaleString()+' / 300,000 km':'Chưa cập nhật km')+'</div><div class="vi"><div><span style="color:var(--tx3);display:block;font-size:11px">Đăng kiểm</span><span style="font-weight:500;font-size:12px'+(isExp(v.inspection_date)?';color:var(--R)':isSoon(v.inspection_date)?';color:var(--W)':'')+'">'+(v.inspection_date?fD(v.inspection_date):'—')+'</span></div><div><span style="color:var(--tx3);display:block;font-size:11px">Bảo hiểm</span><span style="font-weight:500;font-size:12px">'+fD(v.insurance_date)+'</span></div><div><span style="color:var(--tx3);display:block;font-size:11px">Năm SX</span><span style="font-weight:500;font-size:12px">'+(v.year||'—')+'</span></div><div><span style="color:var(--tx3);display:block;font-size:11px">Tài xế</span><span style="font-weight:500;font-size:12px">'+(v.driver||'Chưa gán')+'</span></div></div></div>';}).join('');
 }
 function saveVehicle(){
-  var v={plate:(document.getElementById('vm-plate').value||'').toUpperCase().trim(),type:document.getElementById('vm-type').value,year:document.getElementById('vm-year').value,color:document.getElementById('vm-color').value,inspection_date:document.getElementById('vm-inspect').value,insurance_date:document.getElementById('vm-insure').value,km:document.getElementById('vm-km').value,driver:document.getElementById('vm-driver').value,status:document.getElementById('vm-status').value,note:document.getElementById('vm-note').value};
-  if(!v.plate){toast('Vui lòng nhập biển số','r');return;}
+  var v={plate:(document.getElementById('vm-p').value||'').toUpperCase().trim(),type:document.getElementById('vm-t').value,year:document.getElementById('vm-y').value,color:document.getElementById('vm-c').value,inspection_date:document.getElementById('vm-ins').value,insurance_date:document.getElementById('vm-bh').value,km:document.getElementById('vm-km').value,driver:document.getElementById('vm-d').value,status:document.getElementById('vm-s').value,note:document.getElementById('vm-n').value};
+  if(!v.plate){toast('Vui lòng nhập biển số xe','r');return;}
   var idx=db.vehicles.findIndex(function(x){return x.plate===v.plate;});
-  if(idx>=0) db.vehicles[idx]=v; else db.vehicles.push(v);
-  renderVehicles();closeM('vehicle-modal');toast('Đã lưu xe '+v.plate);
+  if(idx>=0)db.vehicles[idx]=v;else db.vehicles.push(v);
+  rVehicles();cm('vm');toast('Đã lưu xe '+v.plate);
 }
-function editVehicle(plate){
+function editV(plate){
   var v=db.vehicles.find(function(x){return x.plate===plate;});if(!v)return;
-  document.getElementById('vm-plate').value=v.plate||'';document.getElementById('vm-type').value=v.type||'van_1t';
-  document.getElementById('vm-year').value=v.year||'';document.getElementById('vm-color').value=v.color||'';
-  document.getElementById('vm-inspect').value=v.inspection_date||'';document.getElementById('vm-insure').value=v.insurance_date||'';
-  document.getElementById('vm-km').value=v.km||'';document.getElementById('vm-status').value=v.status||'active';document.getElementById('vm-note').value=v.note||'';
-  fillDrvSels();openM('vehicle-modal');
+  document.getElementById('vm-p').value=v.plate||'';document.getElementById('vm-t').value=v.type||'van_1t';document.getElementById('vm-y').value=v.year||'';document.getElementById('vm-c').value=v.color||'';document.getElementById('vm-ins').value=v.inspection_date||'';document.getElementById('vm-bh').value=v.insurance_date||'';document.getElementById('vm-km').value=v.km||'';document.getElementById('vm-s').value=v.status||'active';document.getElementById('vm-n').value=v.note||'';
+  fillDrv();om('vm');
 }
 
-// QUOTES
-function openQuoteModal(){editQIdx=null;document.getElementById('qm-title').textContent='Tạo báo giá';['qm-partner','qm-route','qm-price','qm-note'].forEach(function(id){document.getElementById(id).value='';});document.getElementById('qm-valid').value='';resetUp('qm');openM('quote-modal');}
-function saveQuote(){
-  if(!document.getElementById('qm-partner').value){toast('Vui lòng nhập tên đối tác','r');return;}
-  var q={id:editQIdx!==null?db.quotes[editQIdx].id:'BG-'+Date.now(),type:document.getElementById('qm-type').value,partner:document.getElementById('qm-partner').value,vtype:document.getElementById('qm-vtype').value,route:document.getElementById('qm-route').value,price:document.getElementById('qm-price').value,valid:document.getElementById('qm-valid').value,note:document.getElementById('qm-note').value,date:editQIdx!==null?db.quotes[editQIdx].date:new Date().toISOString(),file:upFiles.qm?upFiles.qm.name:'',status:'active'};
-  if(upFiles.qm){
-    q.file=upFiles.qm.name;
-    q.fileData=upFiles.qm.data;
-    q.fileUrl=null;
-    if(editQIdx!==null) db.quotes[editQIdx]=q; else db.quotes.push(q);
-    editQIdx=null;resetUp('qm');renderQuotes();closeM('quote-modal');
-    toast('Đã lưu!');
-  } else {
-    if(editQIdx!==null) db.quotes[editQIdx]=q; else db.quotes.push(q);
-    editQIdx=null;renderQuotes();closeM('quote-modal');toast('Đã lưu báo giá');
-  }
-}
-function editQuote(idx){
-  editQIdx=idx;var q=db.quotes[idx];if(!q)return;
-  document.getElementById('qm-title').textContent='Sửa báo giá';
-  document.getElementById('qm-type').value=q.type||'out';document.getElementById('qm-partner').value=q.partner||'';
-  document.getElementById('qm-vtype').value=q.vtype||'van_1t';document.getElementById('qm-route').value=q.route||'';
-  document.getElementById('qm-price').value=q.price||'';document.getElementById('qm-valid').value=q.valid||'';document.getElementById('qm-note').value=q.note||'';
-  resetUp('qm');openM('quote-modal');
-}
-function delQuote(idx){
-  var q=db.quotes[idx];if(!q)return;
-  if(!confirm('Xóa báo giá '+q.id+' của '+q.partner+'?\nHành động không thể hoàn tác!'))return;
-  db.quotes.splice(idx,1);renderQuotes();toast('Đã xóa báo giá');
-}
-function renderQuotes(){
-  var out=db.quotes.filter(function(q){return q.type==='out';});
-  var inp=db.quotes.filter(function(q){return q.type==='in';});
-  var vl=function(t){return t==='van_1t'?'Van 1T':t==='truck_2t'?'Tải 2T':'Cả hai';};
-  document.getElementById('qout-tbody').innerHTML=out.length?out.map(function(q){
-    var ri=db.quotes.indexOf(q);
-    return '<tr><td class="td-b td-m">'+q.id+'</td><td class="td-b">'+q.partner+'</td><td style="font-size:12px">'+vl(q.vtype)+'</td><td style="font-size:12px">'+(q.route||'—')+'</td><td style="font-family:\'DM Mono\',monospace;font-size:12px">'+fmtM(q.price)+'</td><td style="font-size:12px">'+fmtD(q.date)+'</td><td style="font-size:12px">'+fmtD(q.valid)+'</td><td><span class="badge b-green">Hiệu lực</span></td><td style="font-size:12px;color:var(--text3)">'+(q.fileData?'<a href="'+q.fileData+'" download="'+q.file+'" style="color:var(--brand);font-size:12px;font-weight:500"><i class="ti ti-download"></i> Tải file</a>':(q.fileUrl?'<a href="'+q.fileUrl+'" target="_blank" style="color:var(--brand);font-size:12px"><i class="ti ti-eye"></i> Xem</a>':(q.file||'—')))+'</td><td><div class="act-btns"><button class="bico" onclick="editQuote('+ri+')" title="Sửa"><i class="ti ti-edit"></i></button><button class="bico del" onclick="delQuote('+ri+')" title="Xóa"><i class="ti ti-trash"></i></button></div></td></tr>';
-  }).join(''):'<tr><td colspan="10" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có báo giá</td></tr>';
-  document.getElementById('qin-tbody').innerHTML=inp.length?inp.map(function(q){
-    var ri=db.quotes.indexOf(q);
-    return '<tr><td class="td-b td-m">'+q.id+'</td><td class="td-b">'+q.partner+'</td><td style="font-size:12px">'+(q.route||'—')+'</td><td style="font-family:\'DM Mono\',monospace;font-size:12px">'+fmtM(q.price)+'</td><td style="font-size:12px">'+fmtD(q.valid)+'</td><td><span class="badge b-green">Hiệu lực</span></td><td style="font-size:12px;color:var(--text3)">'+(q.fileData?'<a href="'+q.fileData+'" download="'+q.file+'" style="color:var(--brand);font-size:12px;font-weight:500"><i class="ti ti-download"></i> Tải file</a>':(q.fileUrl?'<a href="'+q.fileUrl+'" target="_blank" style="color:var(--brand);font-size:12px"><i class="ti ti-eye"></i> Xem</a>':(q.file||'—')))+'</td><td><div class="act-btns"><button class="bico" onclick="editQuote('+ri+')" title="Sửa"><i class="ti ti-edit"></i></button><button class="bico del" onclick="delQuote('+ri+')" title="Xóa"><i class="ti ti-trash"></i></button></div></td></tr>';
-  }).join(''):'<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có báo giá</td></tr>';
-}
-
-// CONTRACTS
-function openContractModal(){editCIdx=null;document.getElementById('cm-title').textContent='Thêm hợp đồng';['cm-partner','cm-value','cm-van','cm-truck','cm-note'].forEach(function(id){document.getElementById(id).value='';});['cm-sign','cm-expire'].forEach(function(id){document.getElementById(id).value='';});resetUp('cm');openM('contract-modal');}
-function saveContract(){
-  if(!document.getElementById('cm-partner').value){toast('Vui lòng nhập tên đối tác','r');return;}
-  var svc={transport:'Vận chuyển',lease:'Thuê xe',maintenance:'Bảo dưỡng',other:'Khác'};
-  var c={id:editCIdx!==null?db.contracts[editCIdx].id:'HD-'+Date.now(),type:document.getElementById('cm-type').value,partner:document.getElementById('cm-partner').value,service:svc[document.getElementById('cm-service').value]||'',value:document.getElementById('cm-value').value,sign:document.getElementById('cm-sign').value,expire:document.getElementById('cm-expire').value,van:document.getElementById('cm-van').value,truck:document.getElementById('cm-truck').value,note:document.getElementById('cm-note').value,file:upFiles.cm?upFiles.cm.name:''};
-  if(upFiles.cm){
-    c.file=upFiles.cm.name;
-    c.fileData=upFiles.cm.data;
-    c.fileUrl=null;
-    if(editCIdx!==null) db.contracts[editCIdx]=c; else db.contracts.push(c);
-    editCIdx=null;resetUp('cm');renderContracts();closeM('contract-modal');
-    toast('Đã lưu!');
-  } else {
-    if(editCIdx!==null) db.contracts[editCIdx]=c; else db.contracts.push(c);
-    editCIdx=null;renderContracts();closeM('contract-modal');toast('Đã lưu hợp đồng');
-  }
-}
-function editContract(idx){
-  editCIdx=idx;var c=db.contracts[idx];if(!c)return;
-  document.getElementById('cm-title').textContent='Sửa hợp đồng';
-  document.getElementById('cm-type').value=c.type||'hard';document.getElementById('cm-partner').value=c.partner||'';
-  var sm={'Vận chuyển':'transport','Thuê xe':'lease','Bảo dưỡng':'maintenance','Khác':'other'};
-  document.getElementById('cm-service').value=sm[c.service]||'transport';
-  document.getElementById('cm-value').value=c.value||'';document.getElementById('cm-sign').value=c.sign||'';
-  document.getElementById('cm-expire').value=c.expire||'';document.getElementById('cm-van').value=c.van||'';
-  document.getElementById('cm-truck').value=c.truck||'';document.getElementById('cm-note').value=c.note||'';
-  resetUp('cm');openM('contract-modal');
-}
-function delContract(idx){
-  var c=db.contracts[idx];if(!c)return;
-  if(!confirm('Xóa hợp đồng '+c.id+' của '+c.partner+'?\nHành động không thể hoàn tác!'))return;
-  db.contracts.splice(idx,1);renderContracts();toast('Đã xóa hợp đồng');
-}
-function renderContracts(){
-  var hard=db.contracts.filter(function(c){return c.type==='hard';});
-  var soft=db.contracts.filter(function(c){return c.type==='soft';});
-  document.getElementById('chard-tbody').innerHTML=hard.length?hard.map(function(c){
-    var ri=db.contracts.indexOf(c);
-    return '<tr><td class="td-b td-m">'+c.id+'</td><td class="td-b">'+c.partner+'</td><td style="font-size:12px">'+c.service+'</td><td style="font-size:12px">'+fmtD(c.sign)+'</td><td style="font-size:12px">'+fmtD(c.expire)+'</td><td style="font-family:\'DM Mono\',monospace;font-size:12px">'+fmtM(c.value)+'</td><td>'+expBadge(c)+'</td><td style="font-size:12px">'+(c.file?(c.fileUrl?'<a href="'+c.fileUrl+'" target="_blank" class="btn btn-ghost btn-sm"><i class="ti ti-eye"></i> Xem file</a>':c.fileData?'<a href="'+c.fileData+'" download="'+c.file+'" style="color:var(--brand);font-size:12px;font-weight:500"><i class="ti ti-download"></i> Tải file</a>':(c.file?'<span style="font-size:12px;color:var(--text3)">'+c.file+'</span>':'<span style="color:var(--text3)">—</span>'))+'</td><td><div class="act-btns"><button class="bico" onclick="editContract('+ri+')" title="Sửa"><i class="ti ti-edit"></i></button><button class="bico del" onclick="delContract('+ri+')" title="Xóa"><i class="ti ti-trash"></i></button></div></td></tr>';
-  }).join(''):'<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có hợp đồng</td></tr>';
-  document.getElementById('csoft-tbody').innerHTML=soft.length?soft.map(function(c){
-    var ri=db.contracts.indexOf(c);
-    return '<tr><td class="td-b td-m">'+c.id+'</td><td class="td-b">'+c.partner+'</td><td style="font-size:12px">'+c.service+'</td><td style="font-family:\'DM Mono\',monospace;font-size:12px">'+fmtM(c.van)+'</td><td style="font-family:\'DM Mono\',monospace;font-size:12px">'+fmtM(c.truck)+'</td><td>—</td><td style="font-size:12px">'+fmtD(c.expire)+'</td><td><div class="act-btns"><button class="bico" onclick="editContract('+ri+')" title="Sửa"><i class="ti ti-edit"></i></button><button class="bico del" onclick="delContract('+ri+')" title="Xóa"><i class="ti ti-trash"></i></button></div></td></tr>';
-  }).join(''):'<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có dữ liệu</td></tr>';
-}
-
-// COSTS
-function openCostModal(){
-  document.getElementById('costm-date').value=new Date().toISOString().split('T')[0];
-  document.getElementById('costm-amount').value='';document.getElementById('costm-note').value='';
-  var cv=document.getElementById('costm-vehicle');
-  cv.innerHTML='<option value="">-- Chọn xe --</option>'+db.vehicles.map(function(v){return '<option value="'+v.plate+'">'+v.plate+'</option>';}).join('');
-  fillDrvSels();openM('cost-modal');
-}
-function saveCost(){
-  if(!document.getElementById('costm-amount').value){toast('Vui lòng nhập số tiền','r');return;}
-  var tl={fuel:'⛽ Xăng dầu',toll:'🛣️ Cầu đường',repair:'🔧 Sửa chữa',other:'📦 Khác'};
-  db.costs.push({date:document.getElementById('costm-date').value,type:document.getElementById('costm-type').value,tLabel:tl[document.getElementById('costm-type').value]||'',vehicle:document.getElementById('costm-vehicle').value,driver:document.getElementById('costm-driver').value,amount:document.getElementById('costm-amount').value,note:document.getElementById('costm-note').value});
-  renderCosts();updateCostStats();closeM('cost-modal');toast('Đã lưu chi phí');
-}
-function initCostFilters(){
-  var now=new Date();var sel=document.getElementById('cf-month');
-  if(sel&&sel.options.length<=1){
-    sel.innerHTML='<option value="">Tất cả tháng</option>';
-    for(var i=0;i<12;i++){var d=new Date(now.getFullYear(),now.getMonth()-i,1);var opt=document.createElement('option');opt.value=d.getMonth()+'-'+d.getFullYear();opt.textContent='Tháng '+(d.getMonth()+1)+'/'+d.getFullYear();sel.appendChild(opt);}
-  }
-  var vsel=document.getElementById('cf-vehicle');
-  if(vsel){
-    var existing=[];for(var i=0;i<vsel.options.length;i++)existing.push(vsel.options[i].value);
-    db.vehicles.forEach(function(v){if(v.plate&&existing.indexOf(v.plate)<0){var opt=document.createElement('option');opt.value=v.plate;opt.textContent=v.plate;vsel.appendChild(opt);}});
-  }
-}
-function renderCosts(){
-  initCostFilters();
-  var mf=document.getElementById('cf-month').value||'';
-  var tf=document.getElementById('cf-type').value||'';
-  var vf=document.getElementById('cf-vehicle').value||'';
-  var list=db.costs.slice();
-  if(mf){var mp=mf.split('-');list=list.filter(function(c){var d=new Date(c.date);return d.getMonth()===+mp[0]&&d.getFullYear()===+mp[1];});}
-  if(tf)list=list.filter(function(c){return c.type===tf;});
-  if(vf)list=list.filter(function(c){return c.vehicle===vf;});
-  document.getElementById('cost-tbody').innerHTML=list.length?list.slice().reverse().map(function(c){
-    return '<tr><td style="font-size:12px">'+fmtD(c.date)+'</td><td><span class="badge b-gray">'+(c.tLabel||c.type)+'</span></td><td style="font-family:\'DM Mono\',monospace;font-size:12px">'+(c.vehicle||'—')+'</td><td style="font-size:12px">'+(c.driver||'—')+'</td><td style="font-family:\'DM Mono\',monospace;color:var(--danger);font-weight:600">'+fmtM(c.amount)+'</td><td style="font-size:12px;color:var(--text3)">'+(c.note||'—')+'</td></tr>';
-  }).join(''):'<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text3)">Không có dữ liệu</td></tr>';
-}
-function updateCostStats(){
-  var now=new Date();
-  var tm=function(c){var d=new Date(c.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();};
-  var sum=function(t){return db.costs.filter(function(c){return c.type===t&&tm(c);}).reduce(function(a,c){return a+Number(c.amount||0);},0);};
-  document.getElementById('c-fuel').textContent=fmtM(sum('fuel'))||'0đ';
-  document.getElementById('c-toll').textContent=fmtM(sum('toll'))||'0đ';
-  document.getElementById('c-repair').textContent=fmtM(sum('repair'))||'0đ';
-  document.getElementById('c-total').textContent=fmtM(db.costs.filter(tm).reduce(function(a,c){return a+Number(c.amount||0);},0))||'0đ';
-}
-
-// UPLOAD FILE — thử Drive trước, nếu lỗi thì lưu local
-function uploadToDrive(fileObj,cb){
-  if(!fileObj||!fileObj.data){if(cb)cb(null);return;}
-  // Lưu local làm backup
-  var localKey='aura_file_'+fileObj.name;
-  try{localStorage.setItem(localKey,fileObj.data);}catch(ex){}
-  // Thử upload lên Drive
-  apiPost({
-    action:'uploadFile',
-    fileName:fileObj.name,
-    fileData:fileObj.data,
-    mimeType:fileObj.type||'application/octet-stream'
-  }).then(function(r){
-    if(r&&r.success){if(cb)cb(r);}
-    else {if(cb)cb({success:true,fileName:fileObj.name,viewUrl:null,localKey:localKey,local:true});}
-  }).catch(function(e){
-    console.log('Drive upload failed, using local:',e);
-    if(cb)cb({success:true,fileName:fileObj.name,viewUrl:null,localKey:localKey,local:true});
-  });
-}
-function openLocalFile(key,name){
-  try{
-    var data=localStorage.getItem(key);
-    if(!data){toast('Không tìm thấy file. Vui lòng upload lại.','w');return;}
-    var a=document.createElement('a');a.href=data;a.download=name;a.click();
-    toast('Đang tải file: '+name);
-  }catch(e){toast('Lỗi mở file','r');}
-}
-function openFileData(type,idx){
-  var obj=type==='quote'?db.quotes[idx]:db.contracts[idx];
-  if(!obj||!obj.fileData){toast('File không còn trong bộ nhớ. Vui lòng upload lại.','w');return;}
-  var a=document.createElement('a');
-  a.href=obj.fileData;
-  a.download=obj.file;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  toast('Đang tải: '+obj.file);
-}
-function handleUp(input,prefix){
+function hUp(input,prefix){
   var file=input.files[0];if(!file)return;
-  var zone=document.getElementById(prefix+'-upzone');
-  var label=document.getElementById(prefix+'-uplabel');
-  var hint=document.getElementById(prefix+'-uphint');
   var reader=new FileReader();
   reader.onload=function(e){
-    upFiles[prefix]={name:file.name,type:file.type,size:file.size,data:e.target.result};
-    // Lưu vào localStorage để xem lại
-    try{localStorage.setItem('aura_file_'+prefix+'_'+file.name,e.target.result);}catch(ex){}
-    zone.style.background='var(--brand-light)';zone.style.borderColor='var(--brand)';
-    label.textContent=file.name;label.style.color='var(--brand)';
+    uf[prefix]={name:file.name,type:file.type,size:file.size,data:e.target.result};
+    var uz=document.getElementById(prefix+'-uz');
+    var ul=document.getElementById(prefix+'-ul');
+    var uh=document.getElementById(prefix+'-uh');
+    uz.style.background='var(--GL)';uz.style.borderColor='var(--G)';
+    ul.textContent=file.name;ul.style.color='var(--G)';
     var sz=file.size<1048576?(file.size/1024).toFixed(1)+' KB':(file.size/1048576).toFixed(1)+' MB';
-    hint.innerHTML='<i class="ti ti-check" style="color:var(--brand)"></i> '+sz+' — <span style="color:var(--text3);cursor:pointer;text-decoration:underline" onclick="resetUp(\''+prefix+'\')">Xóa</span>';
+    uh.innerHTML='<span style="color:var(--G)">✓ '+sz+'</span> — <span style="color:var(--tx3);cursor:pointer;text-decoration:underline" onclick="rstUp(\''+prefix+'\')">Xóa</span>';
     toast('Đã chọn: '+file.name);
   };
   reader.readAsDataURL(file);
 }
-function resetUp(prefix){
-  upFiles[prefix]=null;
-  var fi=document.getElementById(prefix+'-file');if(fi)fi.value='';
-  var zone=document.getElementById(prefix+'-upzone');
-  var label=document.getElementById(prefix+'-uplabel');
-  var hint=document.getElementById(prefix+'-uphint');
-  if(zone){zone.style.background='';zone.style.borderColor='';}
-  if(label){label.textContent=prefix==='cm'?'Upload file hợp đồng':'Upload file báo giá';label.style.color='';}
-  if(hint){hint.textContent=prefix==='cm'?'PDF, Word — bấm để chọn':'PDF, Word, Excel — bấm để chọn';}
+function rstUp(prefix){
+  uf[prefix]=null;
+  var fi=document.getElementById(prefix+'-f');if(fi)fi.value='';
+  var uz=document.getElementById(prefix+'-uz');var ul=document.getElementById(prefix+'-ul');var uh=document.getElementById(prefix+'-uh');
+  if(uz){uz.style.background='';uz.style.borderColor='';}
+  if(ul){ul.textContent=prefix==='ctm'?'Upload file hợp đồng':'Upload file báo giá';ul.style.color='';}
+  if(uh){uh.textContent=prefix==='ctm'?'PDF, Word — bấm để chọn':'PDF, Word, Excel — bấm để chọn';}
 }
 
-// CREATE ORDER
-function genId(){var c='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';var s='AURA-';for(var i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
-function refreshOrderId(){document.getElementById('inp-orderid').value=genId();}
-function addStop(){
-  stopCount++;var si=stopCount;
-  var num=document.querySelectorAll('#stops-list .stop-row').length+1;
-  var div=document.createElement('div');div.className='stop-row';div.id='sr-'+si;
-  div.innerHTML='<div class="stop-num">'+num+'</div><div class="stop-fields"><input class="sinput" id="sn-'+si+'" placeholder="Tên khách hàng"><input class="sinput" id="sa-'+si+'" placeholder="Địa chỉ giao hàng"></div><button class="brem" onclick="remStop('+si+')"><i class="ti ti-x"></i></button>';
-  document.getElementById('stops-list').appendChild(div);updPrev();
+function oqm(){eqi=null;document.getElementById('qm-ttl').textContent='Tạo báo giá';['qm-p','qm-r','qm-pr','qm-n'].forEach(function(id){document.getElementById(id).value='';});document.getElementById('qm-v').value='';rstUp('qm');om('qm');}
+function saveQuote(){
+  if(!document.getElementById('qm-p').value){toast('Vui lòng nhập tên đối tác','r');return;}
+  var svc={transport:'Vận chuyển',lease:'Thuê xe',maintenance:'Bảo dưỡng',other:'Khác'};
+  var q={id:eqi!==null?db.quotes[eqi].id:'BG-'+Date.now(),type:document.getElementById('qm-tp').value,partner:document.getElementById('qm-p').value,vtype:document.getElementById('qm-vt').value,route:document.getElementById('qm-r').value,price:document.getElementById('qm-pr').value,valid:document.getElementById('qm-v').value,note:document.getElementById('qm-n').value,date:eqi!==null?db.quotes[eqi].date:new Date().toISOString(),fileUrl:eqi!==null?db.quotes[eqi].fileUrl:null,file:eqi!==null?db.quotes[eqi].file:'',fileData:eqi!==null?db.quotes[eqi].fileData:null};
+  if(uf.qm){q.file=uf.qm.name;q.fileData=uf.qm.data;q.fileUrl=null;}
+  if(eqi!==null)db.quotes[eqi]=q;else db.quotes.push(q);
+  eqi=null;rstUp('qm');rQuotes();cm('qm');toast('Đã lưu báo giá!');
 }
-function remStop(si){var el=document.getElementById('sr-'+si);if(el)el.remove();renum();updPrev();}
-function renum(){document.querySelectorAll('#stops-list .stop-row').forEach(function(r,i){var n=r.querySelector('.stop-num');if(n)n.textContent=i+1;});}
-function updPrev(){
-  var id=document.getElementById('inp-orderid').value;
-  var date=document.getElementById('inp-date').value;
-  var dEl=document.getElementById('inp-driver');
+function editQ(idx){
+  eqi=idx;var q=db.quotes[idx];if(!q)return;
+  document.getElementById('qm-ttl').textContent='Sửa báo giá';
+  document.getElementById('qm-tp').value=q.type||'out';document.getElementById('qm-p').value=q.partner||'';document.getElementById('qm-vt').value=q.vtype||'van_1t';document.getElementById('qm-r').value=q.route||'';document.getElementById('qm-pr').value=q.price||'';document.getElementById('qm-v').value=q.valid||'';document.getElementById('qm-n').value=q.note||'';
+  rstUp('qm');om('qm');
+}
+function delQ(idx){if(!confirm('Xóa báo giá này?'))return;db.quotes.splice(idx,1);rQuotes();toast('Đã xóa');}
+function rQuotes(){
+  var out=db.quotes.filter(function(q){return q.type==='out';});
+  var inp=db.quotes.filter(function(q){return q.type==='in';});
+  var vl=function(t){return t==='van_1t'?'Van 1T':t==='truck_2t'?'Tải 2T':'Cả hai';};
+  document.getElementById('qo-tb').innerHTML=out.length?out.map(function(q){var ri=db.quotes.indexOf(q);return'<tr><td class="tb2 tm">'+q.id+'</td><td class="tb2">'+q.partner+'</td><td style="font-size:12px">'+vl(q.vtype)+'</td><td style="font-size:12px">'+(q.route||'—')+'</td><td class="tm" style="font-size:12px">'+fM(q.price)+'</td><td style="font-size:12px">'+fD(q.date)+'</td><td style="font-size:12px">'+fD(q.valid)+'</td><td><span class="badge bg">Hiệu lực</span></td><td>'+fileTd(q)+'</td><td><div class="ab"><button class="bic" onclick="editQ('+ri+')" title="Sửa"><i class="ti ti-edit"></i></button><button class="bic dl" onclick="delQ('+ri+')" title="Xóa"><i class="ti ti-trash"></i></button></div></td></tr>';}).join(''):'<tr><td colspan="10" style="text-align:center;padding:2rem;color:var(--tx3)">Chưa có báo giá</td></tr>';
+  document.getElementById('qi-tb').innerHTML=inp.length?inp.map(function(q){var ri=db.quotes.indexOf(q);return'<tr><td class="tb2 tm">'+q.id+'</td><td class="tb2">'+q.partner+'</td><td style="font-size:12px">'+(q.route||'—')+'</td><td class="tm" style="font-size:12px">'+fM(q.price)+'</td><td style="font-size:12px">'+fD(q.valid)+'</td><td><span class="badge bg">Hiệu lực</span></td><td>'+fileTd(q)+'</td><td><div class="ab"><button class="bic" onclick="editQ('+ri+')" title="Sửa"><i class="ti ti-edit"></i></button><button class="bic dl" onclick="delQ('+ri+')" title="Xóa"><i class="ti ti-trash"></i></button></div></td></tr>';}).join(''):'<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--tx3)">Chưa có báo giá</td></tr>';
+}
+
+function ocm(){eci=null;document.getElementById('ctm-ttl').textContent='Thêm hợp đồng';['ctm-p','ctm-v','ctm-vp','ctm-tp2','ctm-n'].forEach(function(id){document.getElementById(id).value='';});['ctm-sg','ctm-ex'].forEach(function(id){document.getElementById(id).value='';});rstUp('ctm');om('ctm');}
+function saveContract(){
+  if(!document.getElementById('ctm-p').value){toast('Vui lòng nhập tên đối tác','r');return;}
+  var svc={transport:'Vận chuyển',lease:'Thuê xe',maintenance:'Bảo dưỡng',other:'Khác'};
+  var c={id:eci!==null?db.contracts[eci].id:'HD-'+Date.now(),type:document.getElementById('ctm-tp').value,partner:document.getElementById('ctm-p').value,service:svc[document.getElementById('ctm-sv').value]||'',value:document.getElementById('ctm-v').value,sign:document.getElementById('ctm-sg').value,expire:document.getElementById('ctm-ex').value,van:document.getElementById('ctm-vp').value,truck:document.getElementById('ctm-tp2').value,note:document.getElementById('ctm-n').value,fileUrl:eci!==null?db.contracts[eci].fileUrl:null,file:eci!==null?db.contracts[eci].file:'',fileData:eci!==null?db.contracts[eci].fileData:null};
+  if(uf.ctm){c.file=uf.ctm.name;c.fileData=uf.ctm.data;c.fileUrl=null;}
+  if(eci!==null)db.contracts[eci]=c;else db.contracts.push(c);
+  eci=null;rstUp('ctm');rContracts();cm('ctm');toast('Đã lưu hợp đồng!');
+}
+function editC(idx){
+  eci=idx;var c=db.contracts[idx];if(!c)return;
+  document.getElementById('ctm-ttl').textContent='Sửa hợp đồng';
+  document.getElementById('ctm-tp').value=c.type||'hard';document.getElementById('ctm-p').value=c.partner||'';
+  var sm={'Vận chuyển':'transport','Thuê xe':'lease','Bảo dưỡng':'maintenance','Khác':'other'};
+  document.getElementById('ctm-sv').value=sm[c.service]||'transport';document.getElementById('ctm-v').value=c.value||'';document.getElementById('ctm-sg').value=c.sign||'';document.getElementById('ctm-ex').value=c.expire||'';document.getElementById('ctm-vp').value=c.van||'';document.getElementById('ctm-tp2').value=c.truck||'';document.getElementById('ctm-n').value=c.note||'';
+  rstUp('ctm');om('ctm');
+}
+function delC(idx){if(!confirm('Xóa hợp đồng này?'))return;db.contracts.splice(idx,1);rContracts();toast('Đã xóa');}
+function rContracts(){
+  var hard=db.contracts.filter(function(c){return c.type==='hard';});
+  var soft=db.contracts.filter(function(c){return c.type==='soft';});
+  document.getElementById('ch-tb').innerHTML=hard.length?hard.map(function(c){var ri=db.contracts.indexOf(c);return'<tr><td class="tb2 tm">'+c.id+'</td><td class="tb2">'+c.partner+'</td><td style="font-size:12px">'+c.service+'</td><td style="font-size:12px">'+fD(c.sign)+'</td><td style="font-size:12px">'+fD(c.expire)+'</td><td class="tm" style="font-size:12px">'+fM(c.value)+'</td><td>'+expBadge(c)+'</td><td>'+fileTd(c)+'</td><td><div class="ab"><button class="bic" onclick="editC('+ri+')" title="Sửa"><i class="ti ti-edit"></i></button><button class="bic dl" onclick="delC('+ri+')" title="Xóa"><i class="ti ti-trash"></i></button></div></td></tr>';}).join(''):'<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--tx3)">Chưa có hợp đồng</td></tr>';
+  document.getElementById('cs-tb').innerHTML=soft.length?soft.map(function(c){var ri=db.contracts.indexOf(c);return'<tr><td class="tb2 tm">'+c.id+'</td><td class="tb2">'+c.partner+'</td><td style="font-size:12px">'+c.service+'</td><td class="tm" style="font-size:12px">'+fM(c.van)+'</td><td class="tm" style="font-size:12px">'+fM(c.truck)+'</td><td>—</td><td style="font-size:12px">'+fD(c.expire)+'</td><td>'+fileTd(c)+'</td><td><div class="ab"><button class="bic" onclick="editC('+ri+')" title="Sửa"><i class="ti ti-edit"></i></button><button class="bic dl" onclick="delC('+ri+')" title="Xóa"><i class="ti ti-trash"></i></button></div></td></tr>';}).join(''):'<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--tx3)">Chưa có dữ liệu</td></tr>';
+}
+
+function ocostm(){
+  document.getElementById('costm-d').value=new Date().toISOString().split('T')[0];
+  document.getElementById('costm-a').value='';document.getElementById('costm-n').value='';
+  var cv=document.getElementById('costm-v');cv.innerHTML='<option value="">-- Chọn xe --</option>'+db.vehicles.map(function(v){return'<option value="'+v.plate+'">'+v.plate+'</option>';}).join('');
+  fillDrv();om('costm');
+}
+function saveCost(){
+  if(!document.getElementById('costm-a').value){toast('Vui lòng nhập số tiền','r');return;}
+  var tl={fuel:'⛽ Xăng dầu',toll:'🛣️ Cầu đường',repair:'🔧 Sửa chữa',other:'📦 Khác'};
+  db.costs.push({date:document.getElementById('costm-d').value,type:document.getElementById('costm-t').value,tl:tl[document.getElementById('costm-t').value]||'',vehicle:document.getElementById('costm-v').value,driver:document.getElementById('costm-drv').value,amount:document.getElementById('costm-a').value,note:document.getElementById('costm-n').value});
+  rCosts();uCostStats();cm('costm');toast('Đã lưu chi phí');
+}
+function initCostF(){
+  var now=new Date();var sel=document.getElementById('cf-m');
+  if(sel&&sel.options.length<=1){sel.innerHTML='<option value="">Tất cả tháng</option>';for(var i=0;i<12;i++){var d=new Date(now.getFullYear(),now.getMonth()-i,1);var opt=document.createElement('option');opt.value=d.getMonth()+'-'+d.getFullYear();opt.textContent='Tháng '+(d.getMonth()+1)+'/'+d.getFullYear();sel.appendChild(opt);}}
+  var vsel=document.getElementById('cf-v');
+  if(vsel){var ex=[];for(var i=0;i<vsel.options.length;i++)ex.push(vsel.options[i].value);db.vehicles.forEach(function(v){if(v.plate&&ex.indexOf(v.plate)<0){var opt=document.createElement('option');opt.value=v.plate;opt.textContent=v.plate;vsel.appendChild(opt);}});}
+}
+function rCosts(){
+  initCostF();
+  var mf=document.getElementById('cf-m').value||'';
+  var tf=document.getElementById('cf-t').value||'';
+  var vf=document.getElementById('cf-v').value||'';
+  var list=db.costs.slice();
+  if(mf){var mp=mf.split('-');list=list.filter(function(c){var d=new Date(c.date);return d.getMonth()===+mp[0]&&d.getFullYear()===+mp[1];});}
+  if(tf)list=list.filter(function(c){return c.type===tf;});
+  if(vf)list=list.filter(function(c){return c.vehicle===vf;});
+  document.getElementById('cost-tb').innerHTML=list.length?list.slice().reverse().map(function(c){return'<tr><td style="font-size:12px">'+fD(c.date)+'</td><td><span class="badge bgr">'+(c.tl||c.type)+'</span></td><td class="tm" style="font-size:12px">'+(c.vehicle||'—')+'</td><td style="font-size:12px">'+(c.driver||'—')+'</td><td class="tm" style="color:var(--R);font-weight:600">'+fM(c.amount)+'</td><td style="font-size:12px;color:var(--tx3)">'+(c.note||'—')+'</td></tr>';}).join(''):'<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--tx3)">Không có dữ liệu</td></tr>';
+}
+function uCostStats(){
+  var now=new Date();
+  var tm=function(c){var d=new Date(c.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();};
+  var sm=function(t){return db.costs.filter(function(c){return c.type===t&&tm(c);}).reduce(function(a,c){return a+Number(c.amount||0);},0);};
+  document.getElementById('c-fuel').textContent=fM(sm('fuel'));document.getElementById('c-toll').textContent=fM(sm('toll'));document.getElementById('c-rep').textContent=fM(sm('repair'));
+  document.getElementById('c-tot').textContent=fM(db.costs.filter(tm).reduce(function(a,c){return a+Number(c.amount||0);},0));
+}
+
+function genId(){var c='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';var s='AURA-';for(var i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
+function rfId(){document.getElementById('i-oid').value=genId();}
+function addStop(){
+  sc++;var si=sc;var num=document.querySelectorAll('#sl .sr').length+1;
+  var div=document.createElement('div');div.className='sr';div.id='sr-'+si;
+  div.innerHTML='<div class="sn2">'+num+'</div><div class="sf2"><input class="si" id="sn-'+si+'" placeholder="Tên khách hàng"><input class="si" id="sa-'+si+'" placeholder="Địa chỉ giao hàng"></div><button class="brm" onclick="remStop('+si+')"><i class="ti ti-x"></i></button>';
+  document.getElementById('sl').appendChild(div);uPrev();
+}
+function remStop(si){var el=document.getElementById('sr-'+si);if(el)el.remove();renum();uPrev();}
+function renum(){document.querySelectorAll('#sl .sr').forEach(function(r,i){var n=r.querySelector('.sn2');if(n)n.textContent=i+1;});}
+function uPrev(){
+  var id=document.getElementById('i-oid').value;
+  var date=document.getElementById('i-date').value;
+  var dEl=document.getElementById('i-drv');
   var dn=dEl&&dEl.selectedIndex>=0?dEl.options[dEl.selectedIndex].text:'';
-  var drops=document.querySelectorAll('#stops-list .stop-row').length;
-  document.getElementById('order-preview').innerHTML='<div style="display:flex;flex-direction:column;gap:10px"><div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text3)">Mã đơn</span><strong style="font-family:\'DM Mono\',monospace;color:var(--brand);font-size:12px">'+(id||'—')+'</strong></div><div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text3)">Ngày giao</span><span>'+(date?fmtD(date):'—')+'</span></div><div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text3)">Tài xế</span><span>'+(dn&&dn.indexOf('Chọn')<0?dn:'Chưa gán')+'</span></div><div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text3)">Điểm giao</span><span><strong>'+drops+'</strong> điểm</span></div></div>';
+  var drops=document.querySelectorAll('#sl .sr').length;
+  document.getElementById('o-prev').innerHTML='<div style="display:flex;flex-direction:column;gap:10px"><div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--tx3)">Mã đơn</span><strong class="tm" style="color:var(--G);font-size:12px">'+(id||'—')+'</strong></div><div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--tx3)">Ngày giao</span><span>'+(date?fD(date):'—')+'</span></div><div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--tx3)">Tài xế</span><span>'+(dn&&dn.indexOf('Chọn')<0?dn:'Chưa gán')+'</span></div><div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--tx3)">Điểm giao</span><span><strong>'+drops+'</strong> điểm</span></div></div>';
 }
 function parsePaste(){
-  var raw=document.getElementById('paste-data').value.trim();
-  if(!raw){toast('Chưa có dữ liệu','w');return;}
+  var raw=document.getElementById('pm-d').value.trim();if(!raw){toast('Chưa có dữ liệu','w');return;}
   var lines=raw.split('\n').filter(function(l){return l.trim();});var added=0;
-  lines.forEach(function(line){
-    var p=line.indexOf('\t')>=0?line.split('\t'):line.split('|');
-    if(p.length>=2){stopCount++;var si=stopCount;var num=document.querySelectorAll('#stops-list .stop-row').length+1;var div=document.createElement('div');div.className='stop-row';div.id='sr-'+si;div.innerHTML='<div class="stop-num">'+num+'</div><div class="stop-fields"><input class="sinput" id="sn-'+si+'" value="'+p[0].trim()+'"><input class="sinput" id="sa-'+si+'" value="'+p[1].trim()+'"></div><button class="brem" onclick="remStop('+si+')"><i class="ti ti-x"></i></button>';document.getElementById('stops-list').appendChild(div);added++;}
-  });
-  document.getElementById('paste-data').value='';closeM('paste-modal');toast('Đã thêm '+added+' điểm giao');updPrev();
+  lines.forEach(function(line){var p=line.indexOf('\t')>=0?line.split('\t'):line.split('|');if(p.length>=2){sc++;var si=sc;var num=document.querySelectorAll('#sl .sr').length+1;var div=document.createElement('div');div.className='sr';div.id='sr-'+si;div.innerHTML='<div class="sn2">'+num+'</div><div class="sf2"><input class="si" id="sn-'+si+'" value="'+p[0].trim()+'"><input class="si" id="sa-'+si+'" value="'+p[1].trim()+'"></div><button class="brm" onclick="remStop('+si+')"><i class="ti ti-x"></i></button>';document.getElementById('sl').appendChild(div);added++;}});
+  document.getElementById('pm-d').value='';cm('pm');toast('Đã thêm '+added+' điểm giao');uPrev();
 }
-function submitOrder(){
-  var oid=document.getElementById('inp-orderid').value.trim();
-  var date=document.getElementById('inp-date').value;
-  var dc=document.getElementById('inp-driver').value;
-  var note=document.getElementById('inp-note').value.trim();
-  var pn=document.getElementById('pickup-name').value.trim();
-  var pa=document.getElementById('pickup-addr').value.trim();
+function subOrder(){
+  var oid=document.getElementById('i-oid').value.trim();
+  var date=document.getElementById('i-date').value;
+  var dc=document.getElementById('i-drv').value;
+  var note=document.getElementById('i-note').value.trim();
+  var pn=document.getElementById('pk-n').value.trim();
+  var pa=document.getElementById('pk-a').value.trim();
   if(!oid){toast('Lỗi sinh mã đơn','r');return;}
   if(!pn||!pa){toast('Vui lòng nhập điểm lấy hàng','r');return;}
   var stops=[{type:'pickup',name:pn,addr:pa,status:'pending'}];
-  var rows=document.querySelectorAll('#stops-list .stop-row');var ok=true;
+  var rows=document.querySelectorAll('#sl .sr');var ok=true;
   rows.forEach(function(r){var si=r.id.replace('sr-','');var sn=document.getElementById('sn-'+si);var sa=document.getElementById('sa-'+si);var n=sn?sn.value.trim():'';var a=sa?sa.value.trim():'';if(!n||!a){ok=false;return;}stops.push({type:'drop',name:n,addr:a,status:'pending'});});
   if(!ok){toast('Điền đầy đủ tên và địa chỉ','r');return;}
   if(stops.length<2){toast('Cần ít nhất 1 điểm giao','r');return;}
-  var d=db.drivers.find(function(x){return (x.driver_code||x.code)===dc;});
-  showL('Đang tạo đơn...');
-  apiPost({action:'createOrder',order_id:oid,date:date,driver_code:dc||'',driver_name:d?(d.driver_name||d.name||''):'',note:note,stops:stops}).then(function(r){
-    hideL();
-    if(r.success){toast('Tạo đơn '+oid+' thành công!');resetForm();loadOrders();goPage('orders');}
-    else toast(r.message||'Lỗi tạo đơn','r');
-  }).catch(function(){hideL();toast('Lỗi kết nối','r');});
+  var d=db.drivers.find(function(x){return(x.driver_code||x.code)===dc;});
+  sL('Đang tạo đơn...');
+  aPost({action:'createOrder',order_id:oid,date:date,driver_code:dc||'',driver_name:d?(d.driver_name||d.name||''):'',note:note,stops:stops}).then(function(r){
+    hL();if(r.success){toast('Tạo đơn '+oid+' thành công!');rstForm();loadOrders();gp('orders');}else toast(r.message||'Lỗi tạo đơn','r');
+  }).catch(function(){hL();toast('Lỗi kết nối','r');});
 }
-function resetForm(){
-  document.getElementById('inp-orderid').value=genId();
-  ['inp-note','pickup-name','pickup-addr'].forEach(function(id){document.getElementById(id).value='';});
-  document.getElementById('stops-list').innerHTML='';stopCount=0;addStop();updPrev();
-}
+function rstForm(){document.getElementById('i-oid').value=genId();['i-note','pk-n','pk-a'].forEach(function(id){document.getElementById(id).value='';});document.getElementById('sl').innerHTML='';sc=0;addStop();uPrev();}
 
-// INIT
 window.onload=function(){
-  document.getElementById('inp-date').value=new Date().toISOString().split('T')[0];
-  document.getElementById('inp-orderid').value=genId();
+  document.getElementById('i-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('i-oid').value=genId();
   document.getElementById('set-api').value=API;
-  renderDash();addStop();updPrev();updateCostStats();initCostFilters();
-  setTimeout(function(){loadAll();},200);
+  rDash();addStop();uPrev();uCostStats();initCostF();
+  setTimeout(function(){loadAll();},300);
 };
 </script>
 </body>
