@@ -305,7 +305,17 @@ function fileTd(obj){
 
 function loadAll(){
   sL('Đang tải...');
-  Promise.all([loadOrders(),loadDrivers()]).catch(function(){}).then(function(){hL();rDash();});
+  Promise.all([loadOrders(),loadDrivers(),loadQuotes(),loadContracts()]).catch(function(){}).then(function(){hL();rDash();});
+}
+function loadQuotes(){
+  return aGet({action:'getQuotes'}).then(function(r){
+    if(r.success){db.quotes=r.quotes||[];rQuotes();}
+  }).catch(function(){});
+}
+function loadContracts(){
+  return aGet({action:'getContracts'}).then(function(r){
+    if(r.success){db.contracts=r.contracts||[];rContracts();}
+  }).catch(function(){});
 }
 function loadOrders(){
   return aGet({action:'getAdminOrders'}).then(function(r){
@@ -464,11 +474,24 @@ function rstUp(prefix){
 function oqm(){eqi=null;document.getElementById('qm-ttl').textContent='Tạo báo giá';['qm-p','qm-r','qm-pr','qm-n'].forEach(function(id){document.getElementById(id).value='';});document.getElementById('qm-v').value='';rstUp('qm');om('qm');}
 function saveQuote(){
   if(!document.getElementById('qm-p').value){toast('Vui lòng nhập tên đối tác','r');return;}
-  var svc={transport:'Vận chuyển',lease:'Thuê xe',maintenance:'Bảo dưỡng',other:'Khác'};
-  var q={id:eqi!==null?db.quotes[eqi].id:'BG-'+Date.now(),type:document.getElementById('qm-tp').value,partner:document.getElementById('qm-p').value,vtype:document.getElementById('qm-vt').value,route:document.getElementById('qm-r').value,price:document.getElementById('qm-pr').value,valid:document.getElementById('qm-v').value,note:document.getElementById('qm-n').value,date:eqi!==null?db.quotes[eqi].date:new Date().toISOString(),fileUrl:eqi!==null?db.quotes[eqi].fileUrl:null,file:eqi!==null?db.quotes[eqi].file:'',fileData:eqi!==null?db.quotes[eqi].fileData:null};
-  if(uf.qm){q.file=uf.qm.name;q.fileData=uf.qm.data;q.fileUrl=null;}
-  if(eqi!==null)db.quotes[eqi]=q;else db.quotes.push(q);
-  eqi=null;rstUp('qm');rQuotes();cm('qm');toast('Đã lưu báo giá!');
+  var q={id:eqi!==null?db.quotes[eqi].id:'BG-'+Date.now(),type:document.getElementById('qm-tp').value,partner:document.getElementById('qm-p').value,vtype:document.getElementById('qm-vt').value,route:document.getElementById('qm-r').value,price:document.getElementById('qm-pr').value,valid:document.getElementById('qm-v').value,note:document.getElementById('qm-n').value,date:eqi!==null?db.quotes[eqi].date:new Date().toISOString(),fileUrl:eqi!==null?(db.quotes[eqi].fileUrl||null):null,file:eqi!==null?db.quotes[eqi].file:'',fileData:null};
+  var doSave=function(fileName,fileUrl){
+    if(fileName)q.file=fileName;
+    if(fileUrl)q.fileUrl=fileUrl;
+    if(eqi!==null)db.quotes[eqi]=q;else db.quotes.push(q);
+    eqi=null;rstUp('qm');rQuotes();cm('qm');
+    // Lưu lên Sheet
+    aPost({action:'saveQuote',id:q.id,type:q.type,partner:q.partner,vtype:q.vtype,route:q.route,price:q.price,valid:q.valid,note:q.note,date:q.date,fileName:q.file||'',fileUrl:q.fileUrl||''}).then(function(){toast('Đã lưu báo giá lên Sheet!');}).catch(function(){toast('Đã lưu cục bộ (lỗi Sheet)','w');});
+  };
+  if(uf.qm){
+    q.file=uf.qm.name;q.fileData=uf.qm.data;
+    sL('Đang upload file...');
+    aPost({action:'uploadFile',fileName:uf.qm.name,fileData:uf.qm.data,mimeType:uf.qm.type}).then(function(r){
+      hL();
+      if(r.success){q.fileUrl=r.viewUrl;q.file=r.fileName;q.fileData=null;toast('File đã lên Drive!');}
+      doSave(q.file,q.fileUrl);
+    }).catch(function(){hL();doSave(q.file,null);});
+  } else { doSave(null,null); }
 }
 function editQ(idx){
   eqi=idx;var q=db.quotes[idx];if(!q)return;
@@ -476,7 +499,13 @@ function editQ(idx){
   document.getElementById('qm-tp').value=q.type||'out';document.getElementById('qm-p').value=q.partner||'';document.getElementById('qm-vt').value=q.vtype||'van_1t';document.getElementById('qm-r').value=q.route||'';document.getElementById('qm-pr').value=q.price||'';document.getElementById('qm-v').value=q.valid||'';document.getElementById('qm-n').value=q.note||'';
   rstUp('qm');om('qm');
 }
-function delQ(idx){if(!confirm('Xóa báo giá này?'))return;db.quotes.splice(idx,1);rQuotes();toast('Đã xóa');}
+function delQ(idx){
+  if(!confirm('Xóa báo giá này?'))return;
+  var q=db.quotes[idx];
+  db.quotes.splice(idx,1);rQuotes();
+  if(q&&q.id)aPost({action:'deleteQuote',id:q.id}).catch(function(){});
+  toast('Đã xóa');
+}
 function rQuotes(){
   var out=db.quotes.filter(function(q){return q.type==='out';});
   var inp=db.quotes.filter(function(q){return q.type==='in';});
@@ -488,11 +517,23 @@ function rQuotes(){
 function ocm(){eci=null;document.getElementById('ctm-ttl').textContent='Thêm hợp đồng';['ctm-p','ctm-v','ctm-vp','ctm-tp2','ctm-n'].forEach(function(id){document.getElementById(id).value='';});['ctm-sg','ctm-ex'].forEach(function(id){document.getElementById(id).value='';});rstUp('ctm');om('ctm');}
 function saveContract(){
   if(!document.getElementById('ctm-p').value){toast('Vui lòng nhập tên đối tác','r');return;}
-  var svc={transport:'Vận chuyển',lease:'Thuê xe',maintenance:'Bảo dưỡng',other:'Khác'};
-  var c={id:eci!==null?db.contracts[eci].id:'HD-'+Date.now(),type:document.getElementById('ctm-tp').value,partner:document.getElementById('ctm-p').value,service:svc[document.getElementById('ctm-sv').value]||'',value:document.getElementById('ctm-v').value,sign:document.getElementById('ctm-sg').value,expire:document.getElementById('ctm-ex').value,van:document.getElementById('ctm-vp').value,truck:document.getElementById('ctm-tp2').value,note:document.getElementById('ctm-n').value,fileUrl:eci!==null?db.contracts[eci].fileUrl:null,file:eci!==null?db.contracts[eci].file:'',fileData:eci!==null?db.contracts[eci].fileData:null};
-  if(uf.ctm){c.file=uf.ctm.name;c.fileData=uf.ctm.data;c.fileUrl=null;}
-  if(eci!==null)db.contracts[eci]=c;else db.contracts.push(c);
-  eci=null;rstUp('ctm');rContracts();cm('ctm');toast('Đã lưu hợp đồng!');
+  var c={id:eci!==null?db.contracts[eci].id:'HD-'+Date.now(),type:document.getElementById('ctm-tp').value,partner:document.getElementById('ctm-p').value,service:document.getElementById('ctm-sv').value,value:document.getElementById('ctm-v').value,sign:document.getElementById('ctm-sg').value,expire:document.getElementById('ctm-ex').value,van:document.getElementById('ctm-vp').value,truck:document.getElementById('ctm-tp2').value,note:document.getElementById('ctm-n').value,fileUrl:eci!==null?(db.contracts[eci].fileUrl||null):null,file:eci!==null?db.contracts[eci].file:'',fileData:null};
+  var doSave=function(fileName,fileUrl){
+    if(fileName)c.file=fileName;
+    if(fileUrl)c.fileUrl=fileUrl;
+    if(eci!==null)db.contracts[eci]=c;else db.contracts.push(c);
+    eci=null;rstUp('ctm');rContracts();cm('ctm');
+    aPost({action:'saveContract',id:c.id,type:c.type,partner:c.partner,service:c.service,value:c.value,sign:c.sign,expire:c.expire,van:c.van,truck:c.truck,note:c.note,fileName:c.file||'',fileUrl:c.fileUrl||''}).then(function(){toast('Đã lưu hợp đồng lên Sheet!');}).catch(function(){toast('Đã lưu cục bộ (lỗi Sheet)','w');});
+  };
+  if(uf.ctm){
+    c.file=uf.ctm.name;c.fileData=uf.ctm.data;
+    sL('Đang upload file...');
+    aPost({action:'uploadFile',fileName:uf.ctm.name,fileData:uf.ctm.data,mimeType:uf.ctm.type}).then(function(r){
+      hL();
+      if(r.success){c.fileUrl=r.viewUrl;c.file=r.fileName;c.fileData=null;toast('File đã lên Drive!');}
+      doSave(c.file,c.fileUrl);
+    }).catch(function(){hL();doSave(c.file,null);});
+  } else { doSave(null,null); }
 }
 function editC(idx){
   eci=idx;var c=db.contracts[idx];if(!c)return;
@@ -502,7 +543,13 @@ function editC(idx){
   document.getElementById('ctm-sv').value=sm[c.service]||'transport';document.getElementById('ctm-v').value=c.value||'';document.getElementById('ctm-sg').value=c.sign||'';document.getElementById('ctm-ex').value=c.expire||'';document.getElementById('ctm-vp').value=c.van||'';document.getElementById('ctm-tp2').value=c.truck||'';document.getElementById('ctm-n').value=c.note||'';
   rstUp('ctm');om('ctm');
 }
-function delC(idx){if(!confirm('Xóa hợp đồng này?'))return;db.contracts.splice(idx,1);rContracts();toast('Đã xóa');}
+function delC(idx){
+  if(!confirm('Xóa hợp đồng này?'))return;
+  var c=db.contracts[idx];
+  db.contracts.splice(idx,1);rContracts();
+  if(c&&c.id)aPost({action:'deleteContract',id:c.id}).catch(function(){});
+  toast('Đã xóa');
+}
 function rContracts(){
   var hard=db.contracts.filter(function(c){return c.type==='hard';});
   var soft=db.contracts.filter(function(c){return c.type==='soft';});
