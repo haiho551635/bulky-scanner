@@ -256,7 +256,10 @@ tr:hover td{background:#fafbfc}
 <div class="page" id="page-orders">
   <div class="page-header">
     <div class="page-title"><i class="ti ti-clipboard-list ni"></i>Đơn hàng</div>
-    <button class="btn btn-primary" onclick="goPage('create-order')"><i class="ti ti-plus"></i> Tạo đơn mới</button>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-secondary" onclick="exportOrdersExcel()"><i class="ti ti-table-export"></i> Xuất Excel</button>
+      <button class="btn btn-primary" onclick="goPage('create-order')"><i class="ti ti-plus"></i> Tạo đơn mới</button>
+    </div>
   </div>
   <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
     <div class="stat-card"><div class="stat-num" id="o-total">0</div><div class="stat-label">Tổng đơn</div></div>
@@ -464,7 +467,24 @@ tr:hover td{background:#fafbfc}
     <div class="stat-card"><div class="stat-icon si-green"><i class="ti ti-calculator"></i></div><div class="stat-num" id="c-total">0đ</div><div class="stat-label">Tổng chi phí</div></div>
   </div>
   <div class="card">
-    <div class="card-header"><div class="card-title"><i class="ti ti-list ni"></i>Lịch sử chi phí</div></div>
+    <div class="card-header">
+      <div class="card-title"><i class="ti ti-list ni"></i>Lịch sử chi phí</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <select id="cf-month" onchange="renderCosts()" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;outline:none">
+          <option value="">Tất cả tháng</option>
+        </select>
+        <select id="cf-type" onchange="renderCosts()" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;outline:none">
+          <option value="">Tất cả loại</option>
+          <option value="fuel">⛽ Xăng dầu</option>
+          <option value="toll">🛣️ Cầu đường</option>
+          <option value="repair">🔧 Sửa chữa</option>
+          <option value="other">📦 Khác</option>
+        </select>
+        <select id="cf-vehicle" onchange="renderCosts()" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;outline:none">
+          <option value="">Tất cả xe</option>
+        </select>
+      </div>
+    </div>
     <div class="table-wrap"><table>
       <thead><tr><th>Ngày</th><th>Loại chi phí</th><th>Xe</th><th>Tài xế</th><th>Số tiền</th><th>Ghi chú</th></tr></thead>
       <tbody id="cost-tbody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có dữ liệu</td></tr></tbody>
@@ -726,14 +746,16 @@ function renderOrders() {
   tbody.innerHTML = list.map(o => {
     const id = o.order_id || o.id || '—';
     const drops = (o.stops || []).filter(s => s.type === 'drop').length;
-    return `<tr>
+    const isDone = o.status === 'done';
+    const action = isDone ? '<span class="badge b-green">✓ Xong</span>' : `<button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openAssign('${id}')"><i class="ti ti-user-plus"></i> Gán TX</button>`;
+    return `<tr style="cursor:pointer" onclick="viewOrder('${id}')">
       <td class="td-bold td-mono">${id}</td>
       <td style="font-size:12px;color:var(--text3)">${fmtDate(o.date)}</td>
       <td style="font-size:12px">${drops} điểm</td>
       <td>${o.driver_name ? `<strong style="font-size:13px">${o.driver_name}</strong>` : '<span class="text-gray" style="font-size:12px">Chưa gán</span>'}</td>
       <td>${sBadge(o.status)}</td>
       <td style="font-size:12px;color:var(--text3)">${o.note || '—'}</td>
-      <td><button class="btn btn-secondary btn-sm" onclick="openAssign('${id}')"><i class="ti ti-user-plus"></i> Gán TX</button></td>
+      <td>${action}</td>
     </tr>`;
   }).join('');
 }
@@ -872,8 +894,8 @@ function renderQuotes() {
   const out = db.quotes.filter(q => q.type === 'out');
   const inp = db.quotes.filter(q => q.type === 'in');
   const vtypeLabel = t => t === 'van_1t' ? 'Van 1T' : t === 'truck_2t' ? 'Tải 2T' : 'Cả hai';
-  document.getElementById('qout-tbody').innerHTML = out.length ? out.map(q => `<tr><td class="td-bold mono">${q.id}</td><td class="td-bold">${q.partner}</td><td style="font-size:12px">${vtypeLabel(q.vtype)}</td><td style="font-size:12px">${q.route || '—'}</td><td class="mono" style="font-size:12px">${fmtMoney(q.price)}</td><td style="font-size:12px">${fmtDate(q.date)}</td><td style="font-size:12px">${fmtDate(q.valid)}</td><td><span class="badge b-green">Hiệu lực</span></td><td>—</td></tr>`).join('') : '<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có báo giá</td></tr>';
-  document.getElementById('qin-tbody').innerHTML = inp.length ? inp.map(q => `<tr><td class="td-bold mono">${q.id}</td><td class="td-bold">${q.partner}</td><td style="font-size:12px">${q.route || '—'}</td><td class="mono" style="font-size:12px">${fmtMoney(q.price)}</td><td style="font-size:12px">${fmtDate(q.valid)}</td><td><span class="badge b-green">Hiệu lực</span></td><td>—</td></tr>`).join('') : '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có báo giá</td></tr>';
+  document.getElementById('qout-tbody').innerHTML = out.length ? out.map((q,qi) => `<tr><td class="td-bold mono">${q.id}</td><td class="td-bold">${q.partner}</td><td style="font-size:12px">${vtypeLabel(q.vtype)}</td><td style="font-size:12px">${q.route || '—'}</td><td class="mono" style="font-size:12px">${fmtMoney(q.price)}</td><td style="font-size:12px">${fmtDate(q.date)}</td><td style="font-size:12px">${fmtDate(q.valid)}</td><td><span class="badge b-green">Hiệu lực</span></td><td>—</td><td><button class="btn-icon" onclick="editQuote(${qi},'out')"><i class="ti ti-edit"></i></button></td></tr>`).join('') : '<tr><td colspan="10" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có báo giá</td></tr>';
+  document.getElementById('qin-tbody').innerHTML = inp.length ? inp.map((q,qi) => `<tr><td class="td-bold mono">${q.id}</td><td class="td-bold">${q.partner}</td><td style="font-size:12px">${q.route || '—'}</td><td class="mono" style="font-size:12px">${fmtMoney(q.price)}</td><td style="font-size:12px">${fmtDate(q.valid)}</td><td><span class="badge b-green">Hiệu lực</span></td><td>—</td><td><button class="btn-icon" onclick="editQuote(${qi},'in')"><i class="ti ti-edit"></i></button></td></tr>`).join('') : '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có báo giá</td></tr>';
 }
 
 // ==================== CONTRACTS ====================
@@ -887,8 +909,8 @@ function renderContracts() {
   const hard = db.contracts.filter(c => c.type === 'hard');
   const soft = db.contracts.filter(c => c.type === 'soft');
   const expBadge = c => isExpired(c.expire) ? '<span class="badge b-red">Hết hạn</span>' : isExpiringSoon(c.expire) ? '<span class="badge b-warn">Sắp hết</span>' : '<span class="badge b-green">Hiệu lực</span>';
-  document.getElementById('chard-tbody').innerHTML = hard.length ? hard.map(c => `<tr><td class="td-bold mono">${c.id}</td><td class="td-bold">${c.partner}</td><td style="font-size:12px">${c.service}</td><td style="font-size:12px">${fmtDate(c.sign)}</td><td style="font-size:12px">${fmtDate(c.expire)}</td><td class="mono" style="font-size:12px">${fmtMoney(c.value)}</td><td>${expBadge(c)}</td><td>—</td></tr>`).join('') : '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có hợp đồng</td></tr>';
-  document.getElementById('csoft-tbody').innerHTML = soft.length ? soft.map(c => `<tr><td class="td-bold mono">${c.id}</td><td class="td-bold">${c.partner}</td><td style="font-size:12px">${c.service}</td><td class="mono" style="font-size:12px">${fmtMoney(c.van)}</td><td class="mono" style="font-size:12px">${fmtMoney(c.truck)}</td><td>—</td><td style="font-size:12px">${fmtDate(c.expire)}</td></tr>`).join('') : '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có dữ liệu</td></tr>';
+  document.getElementById('chard-tbody').innerHTML = hard.length ? hard.map((c,ci) => `<tr><td class="td-bold mono">${c.id}</td><td class="td-bold">${c.partner}</td><td style="font-size:12px">${c.service}</td><td style="font-size:12px">${fmtDate(c.sign)}</td><td style="font-size:12px">${fmtDate(c.expire)}</td><td class="mono" style="font-size:12px">${fmtMoney(c.value)}</td><td>${expBadge(c)}</td><td>—</td><td><button class="btn-icon" onclick="editContract(${ci})"><i class="ti ti-edit"></i></button></td></tr>`).join('') : '<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có hợp đồng</td></tr>';
+  document.getElementById('csoft-tbody').innerHTML = soft.length ? soft.map((c,ci) => `<tr><td class="td-bold mono">${c.id}</td><td class="td-bold">${c.partner}</td><td style="font-size:12px">${c.service}</td><td class="mono" style="font-size:12px">${fmtMoney(c.van)}</td><td class="mono" style="font-size:12px">${fmtMoney(c.truck)}</td><td>—</td><td style="font-size:12px">${fmtDate(c.expire)}</td><td><button class="btn-icon" onclick="editContract(${ci})"><i class="ti ti-edit"></i></button></td></tr>`).join('') : '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có dữ liệu</td></tr>';
 }
 
 // ==================== COSTS ====================
@@ -1019,6 +1041,182 @@ window.onload = function() {
     loadAll().catch(function(e) { console.log('API not available (local mode):', e); });
   }, 100);
 };
+</script>
+
+<!-- MODAL CHI TIẾT ĐƠN HÀNG -->
+<div class="modal-bg" id="order-detail-modal">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-header">
+      <div class="modal-title"><i class="ti ti-clipboard-list" style="color:var(--brand)"></i> Chi tiết đơn hàng — <span class="mono text-green" id="od-id"></span></div>
+      <button class="modal-close" onclick="closeM('order-detail-modal')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem">
+        <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px">NGÀY GIAO</div>
+          <div style="font-weight:600" id="od-date"></div>
+        </div>
+        <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px">TÀI XẾ</div>
+          <div style="font-weight:600" id="od-driver"></div>
+        </div>
+        <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px">TRẠNG THÁI</div>
+          <div id="od-status"></div>
+        </div>
+        <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px">GHI CHÚ</div>
+          <div style="font-size:13px" id="od-note"></div>
+        </div>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;margin-bottom:8px">Các điểm giao hàng</div>
+      <div class="table-wrap">
+        <table><thead><tr><th>Loại</th><th>Tên điểm</th><th>Địa chỉ</th><th>Kết quả</th></tr></thead>
+        <tbody id="od-stops"></tbody></table>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeM('order-detail-modal')">Đóng</button></div>
+  </div>
+</div>
+
+<script>
+
+// ==================== VIEW ORDER DETAIL ====================
+function viewOrder(oid) {
+  const o = db.orders.find(x => (x.order_id || x.id) === oid);
+  if (!o) return;
+  const stops = o.stops || [];
+  const stopRows = stops.map((s, i) => {
+    const isPickup = s.type === 'pickup';
+    const icon = isPickup ? '🏭' : '📍';
+    const label = isPickup ? 'Lấy hàng' : `Điểm ${i}`;
+    const stBadge = s.status === 'done' ? '<span class="badge b-green">✓ Hoàn thành</span>' : s.status === 'fail' ? `<span class="badge b-red">✗ Thất bại${s.reason ? ' — ' + s.reason : ''}</span>` : '<span class="badge b-gray">Chờ</span>';
+    return `<tr><td style="font-size:12px">${icon} ${label}</td><td style="font-weight:500">${s.name || '—'}</td><td style="font-size:12px;color:var(--text3)">${s.addr || '—'}</td><td>${stBadge}</td></tr>`;
+  }).join('');
+  document.getElementById('od-id').textContent = oid;
+  document.getElementById('od-date').textContent = fmtDate(o.date);
+  document.getElementById('od-driver').textContent = o.driver_name || 'Chưa gán';
+  document.getElementById('od-status').innerHTML = sBadge(o.status);
+  document.getElementById('od-note').textContent = o.note || '—';
+  document.getElementById('od-stops').innerHTML = stopRows || '<tr><td colspan="4" style="text-align:center;color:var(--text3)">Không có dữ liệu</td></tr>';
+  document.getElementById('order-detail-modal').classList.add('open');
+}
+
+// ==================== EXPORT EXCEL ====================
+function exportOrdersExcel() {
+  if (!db.orders.length) { toast('Không có đơn hàng để xuất', 'warn'); return; }
+  const headers = ['Mã đơn', 'Ngày giao', 'Tài xế', 'Mã tài xế', 'Số điểm giao', 'Trạng thái', 'Ghi chú'];
+  const statusMap = { pending: 'Chờ giao', inprogress: 'Đang giao', done: 'Hoàn thành' };
+  const rows = db.orders.map(o => [
+    o.order_id || o.id || '',
+    o.date || '',
+    o.driver_name || '',
+    o.driver_code || '',
+    (o.stops || []).filter(s => s.type === 'drop').length,
+    statusMap[o.status] || o.status || '',
+    o.note || ''
+  ]);
+  let csv = headers.join(',') + '\n';
+  rows.forEach(r => { csv += r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',') + '\n'; });
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'AURA_DonHang_' + new Date().toLocaleDateString('vi-VN').replace(/\//g, '-') + '.csv';
+  a.click(); URL.revokeObjectURL(url);
+  toast('Đã xuất file Excel!');
+}
+
+// ==================== EDIT QUOTE ====================
+let editQuoteIdx = null, editQuoteType = null;
+function editQuote(idx, type) {
+  const list = type === 'out' ? db.quotes.filter(q => q.type === 'out') : db.quotes.filter(q => q.type === 'in');
+  const q = list[idx];
+  if (!q) return;
+  editQuoteIdx = db.quotes.indexOf(q); editQuoteType = type;
+  document.getElementById('qm-type').value = q.type === 'out' ? 'out' : 'in';
+  document.getElementById('qm-partner').value = q.partner || '';
+  document.getElementById('qm-vtype').value = q.vtype || '';
+  document.getElementById('qm-route').value = q.route || '';
+  document.getElementById('qm-price').value = q.price || '';
+  document.getElementById('qm-valid').value = q.valid || '';
+  document.getElementById('qm-note').value = q.note || '';
+  document.getElementById('quote-modal').classList.add('open');
+}
+
+// ==================== EDIT CONTRACT ====================
+let editContractIdx = null;
+function editContract(idx) {
+  const c = db.contracts[idx];
+  if (!c) return;
+  editContractIdx = idx;
+  document.getElementById('cm-type').value = c.type || 'hard';
+  document.getElementById('cm-partner').value = c.partner || '';
+  const svcMap = { 'Vận chuyển': 'transport', 'Thuê xe': 'lease', 'Bảo dưỡng': 'maintenance', 'Khác': 'other' };
+  document.getElementById('cm-service').value = svcMap[c.service] || 'transport';
+  document.getElementById('cm-value').value = c.value || '';
+  document.getElementById('cm-sign').value = c.sign || '';
+  document.getElementById('cm-expire').value = c.expire || '';
+  document.getElementById('cm-van').value = c.van || '';
+  document.getElementById('cm-truck').value = c.truck || '';
+  document.getElementById('cm-note').value = c.note || '';
+  document.getElementById('contract-modal').classList.add('open');
+}
+
+// ==================== COST FILTER ====================
+function initCostFilters() {
+  const now = new Date();
+  const sel = document.getElementById('cf-month');
+  if (sel && sel.options.length <= 1) {
+    for (let i = 0; i < 12; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const opt = document.createElement('option');
+      opt.value = d.getMonth() + '-' + d.getFullYear();
+      opt.textContent = 'Tháng ' + (d.getMonth() + 1) + '/' + d.getFullYear();
+      sel.appendChild(opt);
+    }
+  }
+}
+
+// ==================== OVERRIDE renderCosts WITH FILTER ====================
+const _origRenderCosts = renderCosts;
+renderCosts = function() {
+  initCostFilters();
+  const mf = (document.getElementById('cf-month') || {}).value || '';
+  const tf = (document.getElementById('cf-type') || {}).value || '';
+  const vf = (document.getElementById('cf-vehicle') || {}).value || '';
+  let list = db.costs.slice();
+  if (mf) { const [m, y] = mf.split('-'); list = list.filter(c => { const d = new Date(c.date); return d.getMonth() === +m && d.getFullYear() === +y; }); }
+  if (tf) list = list.filter(c => c.type === tf);
+  if (vf) list = list.filter(c => c.vehicle === vf);
+  const tbody = document.getElementById('cost-tbody');
+  tbody.innerHTML = list.length ? list.slice().reverse().map(c => `<tr><td style="font-size:12px">${fmtDate(c.date)}</td><td><span class="badge b-gray">${c.typeLabel || c.type}</span></td><td class="mono" style="font-size:12px">${c.vehicle || '—'}</td><td style="font-size:12px">${c.driver || '—'}</td><td class="mono text-red" style="font-weight:600">${fmtMoney(c.amount)}</td><td style="font-size:12px;color:var(--text3)">${c.note || '—'}</td></tr>`).join('') : '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text3)">Không có dữ liệu</td></tr>';
+  // Update vehicle filter
+  const vsel = document.getElementById('cf-vehicle');
+  if (vsel && vsel.options.length <= 1) {
+    const plates = [...new Set(db.vehicles.map(v => v.plate).filter(Boolean))];
+    plates.forEach(p => { const opt = document.createElement('option'); opt.value = p; opt.textContent = p; vsel.appendChild(opt); });
+  }
+};
+
+// Override saveQuote to handle edit
+const _origSaveQuote = saveQuote;
+saveQuote = function() {
+  if (!document.getElementById('qm-partner').value) { toast('Vui lòng nhập tên đối tác', 'error'); return; }
+  const q = { id: editQuoteIdx !== null ? db.quotes[editQuoteIdx].id : 'BG-' + Date.now(), type: document.getElementById('qm-type').value, partner: document.getElementById('qm-partner').value, vtype: document.getElementById('qm-vtype').value, route: document.getElementById('qm-route').value, price: document.getElementById('qm-price').value, valid: document.getElementById('qm-valid').value, note: document.getElementById('qm-note').value, date: editQuoteIdx !== null ? db.quotes[editQuoteIdx].date : new Date().toISOString(), status: 'active' };
+  if (editQuoteIdx !== null) { db.quotes[editQuoteIdx] = q; editQuoteIdx = null; } else { db.quotes.push(q); }
+  renderQuotes(); closeM('quote-modal'); toast('Đã lưu báo giá');
+};
+
+// Override saveContract to handle edit
+const _origSaveContract = saveContract;
+saveContract = function() {
+  if (!document.getElementById('cm-partner').value) { toast('Vui lòng nhập tên đối tác', 'error'); return; }
+  const svc = { transport: 'Vận chuyển', lease: 'Thuê xe', maintenance: 'Bảo dưỡng', other: 'Khác' };
+  const c = { id: editContractIdx !== null ? db.contracts[editContractIdx].id : 'HD-' + Date.now(), type: document.getElementById('cm-type').value, partner: document.getElementById('cm-partner').value, service: svc[document.getElementById('cm-service').value] || '', value: document.getElementById('cm-value').value, sign: document.getElementById('cm-sign').value, expire: document.getElementById('cm-expire').value, van: document.getElementById('cm-van').value, truck: document.getElementById('cm-truck').value, note: document.getElementById('cm-note').value };
+  if (editContractIdx !== null) { db.contracts[editContractIdx] = c; editContractIdx = null; } else { db.contracts.push(c); }
+  renderContracts(); closeM('contract-modal'); toast('Đã lưu hợp đồng');
+};
+
 </script>
 </body>
 </html>
