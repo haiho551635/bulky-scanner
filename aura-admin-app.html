@@ -564,8 +564,12 @@ tr:hover td{background:#fafbfc}
         <div class="field"><label>Hiệu lực đến</label><input id="qm-valid" type="date"></div>
       </div>
       <div class="field" style="margin-bottom:12px"><label>Ghi chú</label><textarea id="qm-note" placeholder="Điều khoản, ghi chú..."></textarea></div>
-      <div class="upload-zone" onclick="document.getElementById('qm-file').click()"><i class="ti ti-cloud-upload ni"></i><strong>Upload file báo giá</strong><p style="font-size:12px;margin-top:4px">PDF, Word, Excel</p></div>
-      <input type="file" id="qm-file" style="display:none" accept=".pdf,.doc,.docx,.xls,.xlsx">
+      <div class="upload-zone" id="qm-upload-zone" onclick="document.getElementById('qm-file').click()">
+        <i class="ti ti-cloud-upload ni" id="qm-upload-icon"></i>
+        <strong id="qm-upload-label">Upload file báo giá</strong>
+        <p style="font-size:12px;margin-top:4px" id="qm-upload-hint">PDF, Word, Excel — bấm để chọn file</p>
+      </div>
+      <input type="file" id="qm-file" style="display:none" accept=".pdf,.doc,.docx,.xls,.xlsx" onchange="handleFileUpload(this,'qm')">
     </div>
     <div class="modal-footer"><button class="btn btn-secondary" onclick="closeM('quote-modal')">Hủy</button><button class="btn btn-primary" onclick="saveQuote()"><i class="ti ti-check"></i> Lưu báo giá</button></div>
   </div>
@@ -587,8 +591,12 @@ tr:hover td{background:#fafbfc}
         <div class="field"><label>Đơn giá Tải 2T (VNĐ)</label><input id="cm-truck" type="number" placeholder="Giá/chuyến"></div>
       </div>
       <div class="field" style="margin-bottom:12px"><label>Ghi chú</label><textarea id="cm-note" placeholder="Điều khoản..."></textarea></div>
-      <div class="upload-zone" onclick="document.getElementById('cm-file').click()"><i class="ti ti-cloud-upload ni"></i><strong>Upload file hợp đồng</strong><p style="font-size:12px;margin-top:4px">PDF, Word</p></div>
-      <input type="file" id="cm-file" style="display:none" accept=".pdf,.doc,.docx">
+      <div class="upload-zone" id="cm-upload-zone" onclick="document.getElementById('cm-file').click()">
+        <i class="ti ti-cloud-upload ni" id="cm-upload-icon"></i>
+        <strong id="cm-upload-label">Upload file hợp đồng</strong>
+        <p style="font-size:12px;margin-top:4px" id="cm-upload-hint">PDF, Word — bấm để chọn file</p>
+      </div>
+      <input type="file" id="cm-file" style="display:none" accept=".pdf,.doc,.docx" onchange="handleFileUpload(this,'cm')">
     </div>
     <div class="modal-footer"><button class="btn btn-secondary" onclick="closeM('contract-modal')">Hủy</button><button class="btn btn-primary" onclick="saveContract()"><i class="ti ti-check"></i> Lưu hợp đồng</button></div>
   </div>
@@ -894,8 +902,14 @@ function renderQuotes() {
   const out = db.quotes.filter(q => q.type === 'out');
   const inp = db.quotes.filter(q => q.type === 'in');
   const vtypeLabel = t => t === 'van_1t' ? 'Van 1T' : t === 'truck_2t' ? 'Tải 2T' : 'Cả hai';
-  document.getElementById('qout-tbody').innerHTML = out.length ? out.map((q,qi) => `<tr><td class="td-bold mono">${q.id}</td><td class="td-bold">${q.partner}</td><td style="font-size:12px">${vtypeLabel(q.vtype)}</td><td style="font-size:12px">${q.route || '—'}</td><td class="mono" style="font-size:12px">${fmtMoney(q.price)}</td><td style="font-size:12px">${fmtDate(q.date)}</td><td style="font-size:12px">${fmtDate(q.valid)}</td><td><span class="badge b-green">Hiệu lực</span></td><td>—</td><td><button class="btn-icon" onclick="editQuote(${qi},'out')"><i class="ti ti-edit"></i></button></td></tr>`).join('') : '<tr><td colspan="10" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có báo giá</td></tr>';
-  document.getElementById('qin-tbody').innerHTML = inp.length ? inp.map((q,qi) => `<tr><td class="td-bold mono">${q.id}</td><td class="td-bold">${q.partner}</td><td style="font-size:12px">${q.route || '—'}</td><td class="mono" style="font-size:12px">${fmtMoney(q.price)}</td><td style="font-size:12px">${fmtDate(q.valid)}</td><td><span class="badge b-green">Hiệu lực</span></td><td>—</td><td><button class="btn-icon" onclick="editQuote(${qi},'in')"><i class="ti ti-edit"></i></button></td></tr>`).join('') : '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có báo giá</td></tr>';
+  document.getElementById('qout-tbody').innerHTML = out.length ? out.map((q,qi) => {
+    const realIdx = db.quotes.indexOf(q);
+    return `<tr><td class="td-bold mono">${q.id}</td><td class="td-bold">${q.partner}</td><td style="font-size:12px">${vtypeLabel(q.vtype)}</td><td style="font-size:12px">${q.route || '—'}</td><td class="mono" style="font-size:12px">${fmtMoney(q.price)}</td><td style="font-size:12px">${fmtDate(q.date)}</td><td style="font-size:12px">${fmtDate(q.valid)}</td><td><span class="badge b-green">Hiệu lực</span></td><td>—</td><td style="display:flex;gap:4px"><button class="btn-icon" onclick="editQuote(${qi},'out')" title="Sửa"><i class="ti ti-edit"></i></button><button class="btn-icon" style="color:var(--danger)" onclick="deleteQuote(${realIdx})" title="Xóa"><i class="ti ti-trash"></i></button></td></tr>`;
+  }).join('') : '<tr><td colspan="10" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có báo giá</td></tr>';
+  document.getElementById('qin-tbody').innerHTML = inp.length ? inp.map((q,qi) => {
+    const realIdx = db.quotes.indexOf(q);
+    return `<tr><td class="td-bold mono">${q.id}</td><td class="td-bold">${q.partner}</td><td style="font-size:12px">${q.route || '—'}</td><td class="mono" style="font-size:12px">${fmtMoney(q.price)}</td><td style="font-size:12px">${fmtDate(q.valid)}</td><td><span class="badge b-green">Hiệu lực</span></td><td>—</td><td style="display:flex;gap:4px"><button class="btn-icon" onclick="editQuote(${qi},'in')" title="Sửa"><i class="ti ti-edit"></i></button><button class="btn-icon" style="color:var(--danger)" onclick="deleteQuote(${realIdx})" title="Xóa"><i class="ti ti-trash"></i></button></td></tr>`;
+  }).join('') : '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có báo giá</td></tr>';
 }
 
 // ==================== CONTRACTS ====================
@@ -909,8 +923,14 @@ function renderContracts() {
   const hard = db.contracts.filter(c => c.type === 'hard');
   const soft = db.contracts.filter(c => c.type === 'soft');
   const expBadge = c => isExpired(c.expire) ? '<span class="badge b-red">Hết hạn</span>' : isExpiringSoon(c.expire) ? '<span class="badge b-warn">Sắp hết</span>' : '<span class="badge b-green">Hiệu lực</span>';
-  document.getElementById('chard-tbody').innerHTML = hard.length ? hard.map((c,ci) => `<tr><td class="td-bold mono">${c.id}</td><td class="td-bold">${c.partner}</td><td style="font-size:12px">${c.service}</td><td style="font-size:12px">${fmtDate(c.sign)}</td><td style="font-size:12px">${fmtDate(c.expire)}</td><td class="mono" style="font-size:12px">${fmtMoney(c.value)}</td><td>${expBadge(c)}</td><td>—</td><td><button class="btn-icon" onclick="editContract(${ci})"><i class="ti ti-edit"></i></button></td></tr>`).join('') : '<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có hợp đồng</td></tr>';
-  document.getElementById('csoft-tbody').innerHTML = soft.length ? soft.map((c,ci) => `<tr><td class="td-bold mono">${c.id}</td><td class="td-bold">${c.partner}</td><td style="font-size:12px">${c.service}</td><td class="mono" style="font-size:12px">${fmtMoney(c.van)}</td><td class="mono" style="font-size:12px">${fmtMoney(c.truck)}</td><td>—</td><td style="font-size:12px">${fmtDate(c.expire)}</td><td><button class="btn-icon" onclick="editContract(${ci})"><i class="ti ti-edit"></i></button></td></tr>`).join('') : '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có dữ liệu</td></tr>';
+  document.getElementById('chard-tbody').innerHTML = hard.length ? hard.map((c,ci) => {
+    const realIdx = db.contracts.indexOf(c);
+    return `<tr><td class="td-bold mono">${c.id}</td><td class="td-bold">${c.partner}</td><td style="font-size:12px">${c.service}</td><td style="font-size:12px">${fmtDate(c.sign)}</td><td style="font-size:12px">${fmtDate(c.expire)}</td><td class="mono" style="font-size:12px">${fmtMoney(c.value)}</td><td>${expBadge(c)}</td><td>—</td><td style="display:flex;gap:4px"><button class="btn-icon" onclick="editContract(${realIdx})" title="Sửa"><i class="ti ti-edit"></i></button><button class="btn-icon" style="color:var(--danger)" onclick="deleteContract(${realIdx})" title="Xóa"><i class="ti ti-trash"></i></button></td></tr>`;
+  }).join('') : '<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có hợp đồng</td></tr>';
+  document.getElementById('csoft-tbody').innerHTML = soft.length ? soft.map((c,ci) => {
+    const realIdx = db.contracts.indexOf(c);
+    return `<tr><td class="td-bold mono">${c.id}</td><td class="td-bold">${c.partner}</td><td style="font-size:12px">${c.service}</td><td class="mono" style="font-size:12px">${fmtMoney(c.van)}</td><td class="mono" style="font-size:12px">${fmtMoney(c.truck)}</td><td>—</td><td style="font-size:12px">${fmtDate(c.expire)}</td><td style="display:flex;gap:4px"><button class="btn-icon" onclick="editContract(${realIdx})" title="Sửa"><i class="ti ti-edit"></i></button><button class="btn-icon" style="color:var(--danger)" onclick="deleteContract(${realIdx})" title="Xóa"><i class="ti ti-trash"></i></button></td></tr>`;
+  }).join('') : '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text3)">Chưa có dữ liệu</td></tr>';
 }
 
 // ==================== COSTS ====================
@@ -1021,6 +1041,77 @@ function resetForm() {
 
 // ==================== SETTINGS ====================
 function saveSettings() { const url = document.getElementById('set-api').value.trim(); if (url) { toast('Đã lưu cài đặt'); } }
+
+
+
+// ==================== DELETE ====================
+function deleteContract(idx) {
+  const c = db.contracts[idx];
+  if (!c) return;
+  if (!confirm('Xóa hợp đồng ' + c.id + ' của ' + c.partner + '?\nHành động này không thể hoàn tác!')) return;
+  db.contracts.splice(idx, 1);
+  renderContracts();
+  toast('Đã xóa hợp đồng ' + c.id);
+}
+
+function deleteQuote(idx) {
+  const q = db.quotes[idx];
+  if (!q) return;
+  if (!confirm('Xóa báo giá ' + q.id + ' của ' + q.partner + '?\nHành động này không thể hoàn tác!')) return;
+  db.quotes.splice(idx, 1);
+  renderQuotes();
+  toast('Đã xóa báo giá ' + q.id);
+}
+
+// ==================== FILE UPLOAD HANDLER ====================
+let uploadedFiles = { cm: null, qm: null };
+
+function handleFileUpload(input, prefix) {
+  const file = input.files[0];
+  if (!file) return;
+  uploadedFiles[prefix] = file;
+  const zone = document.getElementById(prefix + '-upload-zone');
+  const icon = document.getElementById(prefix + '-upload-icon');
+  const label = document.getElementById(prefix + '-upload-label');
+  const hint = document.getElementById(prefix + '-upload-hint');
+  // Hiển thị file đã chọn
+  const ext = file.name.split('.').pop().toLowerCase();
+  const extIcon = ext === 'pdf' ? 'ti-file-type-pdf' : ext.includes('doc') ? 'ti-file-type-doc' : 'ti-file-spreadsheet';
+  zone.style.background = 'var(--brand-light)';
+  zone.style.borderColor = 'var(--brand)';
+  icon.className = 'ti ' + extIcon + ' ni';
+  icon.style.color = 'var(--brand)';
+  label.textContent = file.name;
+  label.style.color = 'var(--brand)';
+  hint.innerHTML = formatFileSize(file.size) + ' — <span style="color:var(--brand);text-decoration:underline;cursor:pointer" onclick="clearFile('' + prefix + '')">Xóa file</span>';
+  toast('Đã chọn file: ' + file.name);
+}
+
+function clearFile(prefix) {
+  uploadedFiles[prefix] = null;
+  document.getElementById(prefix + '-file').value = '';
+  const zone = document.getElementById(prefix + '-upload-zone');
+  const icon = document.getElementById(prefix + '-upload-icon');
+  const label = document.getElementById(prefix + '-upload-label');
+  const hint = document.getElementById(prefix + '-upload-hint');
+  zone.style.background = '';
+  zone.style.borderColor = '';
+  icon.className = 'ti ti-cloud-upload ni';
+  icon.style.color = '';
+  label.textContent = prefix === 'cm' ? 'Upload file hợp đồng' : 'Upload file báo giá';
+  label.style.color = '';
+  hint.textContent = 'PDF, Word — bấm để chọn file';
+}
+
+function formatFileSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / 1048576).toFixed(1) + ' MB';
+}
+
+function resetUploadZone(prefix) {
+  clearFile(prefix);
+}
 
 // ==================== INIT ====================
 window.onload = function() {
