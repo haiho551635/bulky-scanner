@@ -361,7 +361,8 @@ function rOrders(){
     var id=o.order_id||o.id||'—';
     var drops=(o.stops||[]).filter(function(s){return s.type==='drop';}).length;
     var isDone=o.status==='done';
-    var act=isDone?'<span class="badge bg">✓ Xong</span>':'<button class="btn bs bsm" onclick="event.stopPropagation();oAssign(\''+id+'\')"><i class="ti ti-user-plus"></i> Gán TX</button>';
+    var hasDriver=!!(o.driver_code||o.driver_name);
+    var act=isDone?'<span class="badge bg">✓ Xong</span>':hasDriver?'<span class="badge bb" style="font-size:11px">Đang giao</span>':'<button class="btn bs bsm" onclick="event.stopPropagation();oAssign(\''+id+'\')"><i class="ti ti-user-plus"></i> Gán TX</button>';
     return'<tr style="cursor:pointer" onclick="viewOrder(\''+id+'\')"><td class="tb2 tm">'+id+'</td><td style="font-size:12px;color:var(--tx3)">'+fD(o.date)+'</td><td style="font-size:12px">'+drops+' điểm</td><td>'+(o.driver_name?'<strong style="font-size:13px">'+o.driver_name+'</strong>':'<span style="color:var(--tx3);font-size:12px">Chưa gán</span>')+'</td><td>'+sBadge(o.status)+'</td><td style="font-size:12px;color:var(--tx3)">'+(o.note||'—')+'</td><td>'+act+'</td></tr>';
   }).join('');
 }
