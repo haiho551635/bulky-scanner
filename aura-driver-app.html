@@ -6,109 +6,137 @@
 <title>AURA — Ứng dụng tài xế</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f4f4f4; }
-:root {
-  --brand: #1D9E75; --brand-light: #E1F5EE; --brand-dark: #085041;
-  --danger: #E24B4A; --danger-light: #FCEBEB;
-  --warn: #BA7517; --warn-light: #FAEEDA;
-  --gray: #f4f4f4; --border: #e0e0e0;
-  --text: #1a1a1a; --text-sub: #666;
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f4f4}
+:root{
+  --brand:#1D9E75;--brand-light:#E1F5EE;--brand-dark:#085041;
+  --danger:#E24B4A;--danger-light:#FCEBEB;
+  --warn:#BA7517;--warn-light:#FAEEDA;
+  --gray:#f4f4f4;--border:#e0e0e0;
+  --text:#1a1a1a;--text-sub:#666;
 }
-.app { max-width: 430px; margin: 0 auto; min-height: 100vh; background: white; display: flex; flex-direction: column; position: relative; }
-.screen { display: none; flex-direction: column; flex: 1; min-height: 100vh; }
-.screen.active { display: flex; }
+.app{max-width:430px;margin:0 auto;min-height:100vh;background:white;display:flex;flex-direction:column;position:relative}
+.screen{display:none;flex-direction:column;flex:1;min-height:100vh}
+.screen.active{display:flex}
 
 /* LOGIN */
-.login-header { background: var(--brand); padding: 3rem 1.5rem 2.5rem; text-align: center; }
-.brand-name { font-size: 28px; font-weight: 700; color: white; letter-spacing: 0.1em; margin-top: 12px; }
-.brand-sub { font-size: 14px; color: rgba(255,255,255,0.85); margin-top: 6px; }
-.login-body { padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; flex: 1; }
-.field label { font-size: 13px; color: var(--text-sub); display: block; margin-bottom: 6px; font-weight: 500; }
-.field input { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 15px; outline: none; color: var(--text); }
-.field input:focus { border-color: var(--brand); }
-.btn-primary { width: 100%; padding: 14px; background: var(--brand); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
-.btn-primary:active { opacity: 0.85; transform: scale(0.98); }
-.error-msg { background: var(--danger-light); color: var(--danger); padding: 10px 14px; border-radius: 8px; font-size: 13px; display: none; }
+.login-header{background:var(--brand);padding:3rem 1.5rem 2.5rem;text-align:center}
+.brand-name{font-size:28px;font-weight:700;color:white;letter-spacing:.1em;margin-top:12px}
+.brand-sub{font-size:14px;color:rgba(255,255,255,.85);margin-top:6px}
+.login-body{padding:2rem 1.5rem;display:flex;flex-direction:column;gap:1.25rem;flex:1}
+.field label{font-size:13px;color:var(--text-sub);display:block;margin-bottom:6px;font-weight:500}
+.field input{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:15px;outline:none;color:var(--text)}
+.field input:focus{border-color:var(--brand)}
+.btn-primary{width:100%;padding:14px;background:var(--brand);color:white;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-primary:active{opacity:.85;transform:scale(.98)}
+.error-msg{background:var(--danger-light);color:var(--danger);padding:10px 14px;border-radius:8px;font-size:13px;display:none}
 
 /* TOPBAR */
-.topbar { background: var(--brand); padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; }
-.topbar-left .topbar-title { font-size: 16px; font-weight: 600; color: white; }
-.topbar-left .topbar-sub { font-size: 12px; color: rgba(255,255,255,0.8); margin-top: 2px; }
-.topbar-right { color: white; font-size: 22px; cursor: pointer; padding: 4px; }
+.topbar{background:var(--brand);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-left .topbar-title{font-size:16px;font-weight:600;color:white}
+.topbar-left .topbar-sub{font-size:12px;color:rgba(255,255,255,.8);margin-top:2px}
+.topbar-right{color:white;font-size:22px;cursor:pointer;padding:4px}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.4);transition:background .3s}
+.sync-dot.active{background:rgba(255,255,255,.95)}
+
+/* TABS */
+.tab-bar{display:flex;background:white;border-bottom:2px solid var(--border);flex-shrink:0}
+.tab-btn{flex:1;padding:12px 8px;font-size:13px;font-weight:500;color:var(--text-sub);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.tab-btn.active{color:var(--brand);border-bottom-color:var(--brand)}
+.tab-badge{background:var(--danger);color:white;font-size:10px;font-weight:700;padding:1px 5px;border-radius:10px;min-width:16px;text-align:center}
 
 /* HOME */
-.home-body { padding: 1rem; flex: 1; background: var(--gray); }
-.section-label { font-size: 12px; color: var(--text-sub); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; }
-.order-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.25rem; cursor: pointer; margin-bottom: 10px; }
-.order-card:active { background: #f9f9f9; }
-.order-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-.order-id { font-size: 15px; font-weight: 600; color: var(--text); }
-.badge { font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 600; }
-.badge-active { background: var(--brand-light); color: var(--brand-dark); }
-.badge-done { background: #EAF3DE; color: #27500A; }
-.badge-pending { background: var(--warn-light); color: var(--warn); }
-.order-meta { font-size: 13px; color: var(--text-sub); display: flex; gap: 14px; }
-.progress-bar { height: 5px; background: #eee; border-radius: 3px; margin-top: 12px; overflow: hidden; }
-.progress-fill { height: 100%; background: var(--brand); border-radius: 3px; transition: width 0.3s; }
-.empty-state { text-align: center; padding: 4rem 1rem; color: var(--text-sub); }
-.empty-state i { font-size: 48px; color: #ccc; display: block; margin-bottom: 12px; }
+.home-body{padding:1rem;flex:1;background:var(--gray);overflow-y:auto}
+.section-label{font-size:12px;color:var(--text-sub);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+.order-card{background:white;border:1px solid var(--border);border-radius:14px;padding:1rem 1.25rem;cursor:pointer;margin-bottom:10px;transition:all .15s}
+.order-card:active{background:#f9f9f9;transform:scale(.99)}
+.order-card.done-card{border-left:4px solid #639922;opacity:.85}
+.order-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.order-id{font-size:15px;font-weight:600;color:var(--text)}
+.badge{font-size:11px;padding:4px 10px;border-radius:20px;font-weight:600}
+.badge-active{background:var(--brand-light);color:var(--brand-dark)}
+.badge-done{background:#EAF3DE;color:#27500A}
+.badge-pending{background:var(--warn-light);color:var(--warn)}
+.badge-fail{background:var(--danger-light);color:#791F1F}
+.order-meta{font-size:13px;color:var(--text-sub);display:flex;gap:14px;flex-wrap:wrap}
+.order-note{font-size:12px;color:var(--text-sub);margin-top:6px;padding:6px 8px;background:#f9f9f9;border-radius:6px}
+.progress-bar{height:5px;background:#eee;border-radius:3px;margin-top:12px;overflow:hidden}
+.progress-fill{height:100%;background:var(--brand);border-radius:3px;transition:width .3s}
+.empty-state{text-align:center;padding:4rem 1rem;color:var(--text-sub)}
+.empty-state i{font-size:48px;color:#ccc;display:block;margin-bottom:12px}
 
 /* DETAIL */
-.detail-header { background: var(--brand); padding: 1rem 1.25rem; }
-.back-btn { color: white; font-size: 13px; display: flex; align-items: center; gap: 4px; cursor: pointer; margin-bottom: 10px; opacity: 0.9; }
-.detail-title { font-size: 18px; font-weight: 700; color: white; }
-.detail-sub { font-size: 13px; color: rgba(255,255,255,0.8); margin-top: 4px; }
-.detail-body { padding: 1rem; display: flex; flex-direction: column; gap: 10px; flex: 1; background: var(--gray); }
-.stop-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 1rem; }
-.stop-card.done-card { border-color: #639922; border-left: 4px solid #639922; }
-.stop-card.fail-card { border-color: var(--danger); border-left: 4px solid var(--danger); }
-.stop-card.active-card { border-color: var(--brand); border-left: 4px solid var(--brand); }
-.stop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.stop-label { font-size: 12px; color: var(--text-sub); font-weight: 600; display: flex; align-items: center; gap: 4px; }
-.stop-name { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-.stop-addr { font-size: 13px; color: var(--text-sub); }
-.stop-actions { display: flex; gap: 8px; margin-top: 14px; }
-.btn-success { flex: 1; padding: 11px; background: var(--brand-light); color: var(--brand-dark); border: 1px solid #9FE1CB; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
-.btn-fail { flex: 1; padding: 11px; background: var(--danger-light); color: #791F1F; border: 1px solid #F7C1C1; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
-.status-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
-.dot-done { background: #639922; } .dot-fail { background: var(--danger); }
-.dot-pending { background: #ccc; } .dot-active { background: var(--brand); }
-.finish-btn { margin: 0 1rem 1.5rem; padding: 15px; background: var(--brand); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.detail-topbar{background:var(--brand);padding:.85rem 1.25rem;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.back-btn{color:white;cursor:pointer;padding:4px 6px;border-radius:8px;display:flex;align-items:center;gap:4px;font-size:14px;font-weight:500;background:rgba(255,255,255,.15);flex-shrink:0}
+.back-btn:active{background:rgba(255,255,255,.25)}
+.detail-info{flex:1;min-width:0}
+.detail-title{font-size:16px;font-weight:700;color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.detail-sub{font-size:12px;color:rgba(255,255,255,.8);margin-top:2px}
+.detail-body{padding:1rem;display:flex;flex-direction:column;gap:10px;flex:1;background:var(--gray);overflow-y:auto}
+
+/* STOP CARDS */
+.stop-card{background:white;border:1px solid var(--border);border-radius:14px;padding:1rem}
+.stop-card.done-card{border-color:#639922;border-left:4px solid #639922}
+.stop-card.fail-card{border-color:var(--danger);border-left:4px solid var(--danger)}
+.stop-card.active-card{border-color:var(--brand);border-left:4px solid var(--brand)}
+.stop-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.stop-label{font-size:12px;color:var(--text-sub);font-weight:600;display:flex;align-items:center;gap:4px}
+.stop-name{font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px}
+.stop-addr{font-size:13px;color:var(--text-sub)}
+.stop-actions{display:flex;gap:8px;margin-top:14px}
+.btn-success{flex:1;padding:11px;background:var(--brand-light);color:var(--brand-dark);border:1px solid #9FE1CB;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-success:active{opacity:.8}
+.btn-fail{flex:1;padding:11px;background:var(--danger-light);color:#791F1F;border:1px solid #F7C1C1;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-fail:active{opacity:.8}
+.status-dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex-shrink:0}
+.dot-done{background:#639922}.dot-fail{background:var(--danger)}
+.dot-pending{background:#ccc}.dot-active{background:var(--brand)}
+.stop-result{margin-top:8px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:5px}
+.stop-result.ok{color:#3B6D11}.stop-result.fail{color:var(--danger)}
+
+/* FINISH BTN */
+.finish-btn{margin:0 1rem 1.5rem;padding:15px;background:var(--brand);color:white;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;flex-shrink:0}
+.finish-btn:active{opacity:.85}
 
 /* MODAL */
-.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 200; background: rgba(0,0,0,0.5); align-items: flex-end; justify-content: center; }
-.modal-sheet { background: white; border-radius: 20px 20px 0 0; padding: 1.5rem; width: 100%; max-width: 430px; }
-.modal-handle { width: 40px; height: 4px; background: #ddd; border-radius: 2px; margin: 0 auto 1.25rem; }
-.modal-title { font-size: 17px; font-weight: 700; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px; }
-.field select { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 15px; outline: none; color: var(--text); background: white; }
-.photo-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 2rem; text-align: center; cursor: pointer; color: var(--text-sub); font-size: 14px; margin: 12px 0; }
-.photo-zone i { font-size: 32px; display: block; margin-bottom: 8px; color: #aaa; }
-.photo-preview { width: 100%; border-radius: 12px; margin: 12px 0; display: none; max-height: 200px; object-fit: cover; }
-.modal-actions { display: flex; gap: 10px; margin-top: 4px; }
-.btn-cancel { flex: 1; padding: 12px; background: #f4f4f4; border: none; border-radius: 10px; font-size: 15px; cursor: pointer; color: var(--text); }
-.btn-confirm { flex: 1; padding: 12px; background: var(--danger); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:200;background:rgba(0,0,0,.5);align-items:flex-end;justify-content:center}
+.modal-sheet{background:white;border-radius:20px 20px 0 0;padding:1.5rem;width:100%;max-width:430px}
+.modal-handle{width:40px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 1.25rem}
+.modal-title{font-size:17px;font-weight:700;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
+.field select{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:15px;outline:none;color:var(--text);background:white}
+.photo-zone{border:2px dashed var(--border);border-radius:12px;padding:2rem;text-align:center;cursor:pointer;color:var(--text-sub);font-size:14px;margin:12px 0}
+.photo-zone i{font-size:32px;display:block;margin-bottom:8px;color:#aaa}
+.photo-preview{width:100%;border-radius:12px;margin:12px 0;display:none;max-height:200px;object-fit:cover}
+.modal-actions{display:flex;gap:10px;margin-top:4px}
+.btn-cancel{flex:1;padding:12px;background:#f4f4f4;border:none;border-radius:10px;font-size:15px;cursor:pointer;color:var(--text)}
+.btn-confirm{flex:1;padding:12px;background:var(--danger);color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer}
 
 /* LOADING */
-.loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 300; background: rgba(255,255,255,0.85); align-items: center; justify-content: center; flex-direction: column; gap: 12px; }
-.spinner { width: 36px; height: 36px; border: 3px solid #eee; border-top-color: var(--brand); border-radius: 50%; animation: spin 0.8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-text { font-size: 14px; color: var(--text-sub); }
+.loading-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:300;background:rgba(255,255,255,.85);align-items:center;justify-content:center;flex-direction:column;gap:12px}
+.spinner{width:36px;height:36px;border:3px solid #eee;border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:14px;color:var(--text-sub)}
+
+/* TOAST */
+.toast-bar{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#1a1a1a;color:white;padding:10px 18px;border-radius:20px;font-size:13px;font-weight:500;z-index:9999;display:none;align-items:center;gap:8px;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.2)}
+.toast-bar.show{display:flex}
+.toast-bar.ok{background:#1D9E75}
+.toast-bar.err{background:#E24B4A}
 </style>
 </head>
 <body>
 <div class="app" id="app">
 
-  <!-- LOADING -->
   <div class="loading-overlay" id="loading">
     <div class="spinner"></div>
     <div class="loading-text" id="loading-text">Đang xử lý...</div>
   </div>
+  <div class="toast-bar" id="toast-bar"></div>
 
   <!-- LOGIN -->
   <div class="screen active" id="screen-login">
     <div class="login-header">
-      <i class="ti ti-truck-delivery" style="font-size:52px;color:white;opacity:0.95;display:block;margin:0 auto"></i>
+      <i class="ti ti-truck-delivery" style="font-size:52px;color:white;opacity:.95;display:block;margin:0 auto"></i>
       <div class="brand-name">AURA</div>
       <div class="brand-sub">Ứng dụng tài xế</div>
     </div>
@@ -116,7 +144,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
       <div id="login-error" class="error-msg"></div>
       <div class="field">
         <label>Mã tài xế</label>
-        <input type="text" id="inp-code" placeholder="VD: TX001" autocomplete="off" />
+        <input type="text" id="inp-code" placeholder="VD: TX001" autocomplete="off"
+          onkeydown="if(event.key==='Enter')doLogin()" />
       </div>
       <div style="flex:1"></div>
       <button class="btn-primary" onclick="doLogin()">
@@ -132,23 +161,38 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
         <div class="topbar-title" id="home-name">Tài xế</div>
         <div class="topbar-sub" id="home-date"></div>
       </div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <div id="sync-dot" style="width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.5)" title="Tự động đồng bộ mỗi 20 giây"></div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="sync-dot" id="sync-dot" title="Tự động đồng bộ mỗi 20 giây"></div>
+        <i class="ti ti-refresh topbar-right" onclick="refreshOrders()" title="Làm mới" style="font-size:20px"></i>
         <i class="ti ti-logout topbar-right" onclick="doLogout()" title="Đăng xuất"></i>
       </div>
     </div>
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tab-active" onclick="switchTab('active')">
+        <i class="ti ti-truck" style="font-size:15px"></i> Đang giao
+        <span class="tab-badge" id="badge-active" style="display:none">0</span>
+      </button>
+      <button class="tab-btn" id="tab-done" onclick="switchTab('done')">
+        <i class="ti ti-circle-check" style="font-size:15px"></i> Đã hoàn thành
+        <span class="tab-badge" style="background:#639922;display:none" id="badge-done">0</span>
+      </button>
+    </div>
     <div class="home-body">
-      <div class="section-label">Đơn hàng hôm nay</div>
       <div id="order-list"></div>
     </div>
   </div>
 
   <!-- ORDER DETAIL -->
   <div class="screen" id="screen-detail">
-    <div class="detail-header">
-      <div class="back-btn" onclick="goHome()"><i class="ti ti-arrow-left"></i> Quay lại</div>
-      <div class="detail-title" id="detail-id"></div>
-      <div class="detail-sub" id="detail-stops-sum"></div>
+    <div class="detail-topbar">
+      <div class="back-btn" onclick="goHome()">
+        <i class="ti ti-arrow-left" style="font-size:18px"></i> Quay lại
+      </div>
+      <div class="detail-info">
+        <div class="detail-title" id="detail-id"></div>
+        <div class="detail-sub" id="detail-stops-sum"></div>
+      </div>
+      <i class="ti ti-refresh" style="color:white;font-size:20px;cursor:pointer;padding:4px" onclick="refreshDetail()" title="Làm mới"></i>
     </div>
     <div class="detail-body" id="detail-body"></div>
     <button class="finish-btn" id="finish-btn" onclick="finishOrder()" style="display:none">
@@ -173,7 +217,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
       </div>
       <div class="photo-zone" id="photo-zone" onclick="triggerPhoto()">
         <i class="ti ti-camera"></i>
-        Chụp ảnh bằng chứng
+        Chụp ảnh bằng chứng (không bắt buộc)
       </div>
       <img id="photo-preview" class="photo-preview" />
       <input type="file" id="file-inp" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto(this)" />
@@ -191,40 +235,16 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbxwuqIuNnPbL5PAoOF3opMT
 
 let state = {
   driver: null,
-  orders: [],
+  orders: [],       // tất cả đơn (cả done)
   currentOrder: null,
   pendingStop: null,
-  pollTimer: null
+  pollTimer: null,
+  currentTab: 'active'
 };
 
-// ---- AUTO POLL ----
-function startPoll() {
-  stopPoll();
-  state.pollTimer = setInterval(async function() {
-    if (!state.driver) return;
-    var dot = document.getElementById('sync-dot');
-    if (dot) dot.style.background = 'rgba(255,255,255,0.9)';
-    try {
-      const res = await apiGet({ action: 'pollOrders', code: state.driver.code });
-      if (res.success && res.orders) {
-        const changed = JSON.stringify(res.orders) !== JSON.stringify(state.orders);
-        if (changed) {
-          state.orders = res.orders;
-          renderOrders();
-          if (state.currentOrder !== null && document.getElementById('screen-detail').classList.contains('active')) {
-            renderDetail();
-          }
-        }
-      }
-    } catch(e) {}
-    if (dot) setTimeout(function(){ dot.style.background = 'rgba(255,255,255,0.4)'; }, 600);
-  }, 20000);
-}
-function stopPoll() {
-  if (state.pollTimer) { clearInterval(state.pollTimer); state.pollTimer = null; }
-}
-
-// ---- UTILS ----
+// ============================================================
+// UTILS
+// ============================================================
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -236,24 +256,66 @@ function showLoading(text) {
 function hideLoading() {
   document.getElementById('loading').style.display = 'none';
 }
+function showToast(msg, type) {
+  const el = document.getElementById('toast-bar');
+  el.textContent = msg;
+  el.className = 'toast-bar show' + (type === 'ok' ? ' ok' : type === 'err' ? ' err' : '');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2500);
+}
 async function apiGet(params) {
   const url = API_URL + '?' + new URLSearchParams(params);
   const res = await fetch(url);
   return res.json();
 }
 async function apiPost(body) {
-  const res = await fetch(API_URL, {
-    method: 'POST',
-    body: JSON.stringify(body)
-  });
+  const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(body) });
   return res.json();
 }
 
-// ---- LOGIN ----
-async function doLogin() {
-  const code = document.getElementById('inp-code').value.trim();
-  if (!code) { showError('Vui lòng nhập mã tài xế'); return; }
+// ============================================================
+// AUTO POLL
+// ============================================================
+function startPoll() {
+  stopPoll();
+  state.pollTimer = setInterval(async () => {
+    if (!state.driver) return;
+    const dot = document.getElementById('sync-dot');
+    if (dot) dot.classList.add('active');
+    try {
+      const res = await apiGet({ action: 'pollOrders', code: state.driver.code });
+      if (res.success && res.orders) {
+        const oldJson = JSON.stringify(state.orders);
+        const newJson = JSON.stringify(res.orders);
+        if (oldJson !== newJson) {
+          state.orders = res.orders;
+          renderOrders();
+          // Nếu đang xem detail thì cập nhật luôn
+          if (state.currentOrder !== null && document.getElementById('screen-detail').classList.contains('active')) {
+            // Tìm lại index theo order_id để tránh lệch
+            const curId = state.orders[state.currentOrder] ? state.orders[state.currentOrder].id : null;
+            if (curId) {
+              const newIdx = state.orders.findIndex(o => o.id === curId);
+              if (newIdx >= 0) { state.currentOrder = newIdx; renderDetail(); }
+            }
+          }
+          showToast('Đã đồng bộ đơn hàng mới', 'ok');
+        }
+      }
+    } catch(e) {}
+    if (dot) setTimeout(() => dot.classList.remove('active'), 700);
+  }, 20000);
+}
+function stopPoll() {
+  if (state.pollTimer) { clearInterval(state.pollTimer); state.pollTimer = null; }
+}
 
+// ============================================================
+// LOGIN / LOGOUT
+// ============================================================
+async function doLogin() {
+  const code = document.getElementById('inp-code').value.trim().toUpperCase();
+  if (!code) { showError('Vui lòng nhập mã tài xế'); return; }
   showLoading('Đang đăng nhập...');
   try {
     const res = await apiGet({ action: 'login', code });
@@ -276,94 +338,153 @@ async function doLogin() {
 }
 function showError(msg) {
   const el = document.getElementById('login-error');
-  el.textContent = msg;
-  el.style.display = 'block';
+  el.textContent = msg; el.style.display = 'block';
 }
 function doLogout() {
+  if (!confirm('Đăng xuất?')) return;
   stopPoll();
-  state.driver = null;
-  state.orders = [];
+  state.driver = null; state.orders = []; state.currentOrder = null;
   document.getElementById('inp-code').value = '';
   document.getElementById('login-error').style.display = 'none';
   show('screen-login');
 }
 
-// ---- ORDERS ----
+// ============================================================
+// ORDERS
+// ============================================================
 async function loadOrders() {
   showLoading('Đang tải đơn hàng...');
   try {
-    const res = await apiGet({ action: 'getOrders', code: state.driver.code });
+    // Lấy TẤT CẢ đơn (kể cả done) để hiển thị lịch sử
+    const res = await apiGet({ action: 'pollOrders', code: state.driver.code });
     hideLoading();
-    if (res.success) {
-      state.orders = res.orders || [];
-    }
-  } catch (e) {
-    hideLoading();
-  }
+    if (res.success) state.orders = res.orders || [];
+  } catch (e) { hideLoading(); }
   renderOrders();
 }
 
+async function refreshOrders() {
+  showToast('Đang làm mới...');
+  await loadOrders();
+  showToast('Đã cập nhật!', 'ok');
+}
+
 function getProgress(o) {
-  const t = o.stops.length;
-  const d = o.stops.filter(s => s.status === 'done' || s.status === 'fail').length;
+  const t = (o.stops||[]).length;
+  const d = (o.stops||[]).filter(s => s.status === 'done' || s.status === 'fail').length;
   return { done: d, total: t };
 }
-function getStatus(o) {
+function getOrderStatus(o) {
   const { done, total } = getProgress(o);
-  return done === 0 ? 'pending' : done === total ? 'done' : 'active';
+  if (total === 0) return 'pending';
+  if (done === 0) return 'pending';
+  if (done === total) return 'done';
+  return 'active';
+}
+
+function switchTab(tab) {
+  state.currentTab = tab;
+  document.getElementById('tab-active').classList.toggle('active', tab === 'active');
+  document.getElementById('tab-done').classList.toggle('active', tab === 'done');
+  renderOrders();
 }
 
 function renderOrders() {
+  const all = state.orders || [];
+  const active = all.filter(o => getOrderStatus(o) !== 'done');
+  const done   = all.filter(o => getOrderStatus(o) === 'done');
+
+  // Cập nhật badge
+  const ba = document.getElementById('badge-active');
+  const bd = document.getElementById('badge-done');
+  ba.textContent = active.length; ba.style.display = active.length ? 'inline-flex' : 'none';
+  bd.textContent = done.length;   bd.style.display = done.length   ? 'inline-flex' : 'none';
+
   const list = document.getElementById('order-list');
-  if (!state.orders || state.orders.length === 0) {
-    list.innerHTML = `<div class="empty-state"><i class="ti ti-inbox"></i><p>Không có đơn hàng hôm nay</p></div>`;
+  const show = state.currentTab === 'done' ? done : active;
+
+  if (!show.length) {
+    list.innerHTML = `<div class="empty-state"><i class="ti ti-inbox"></i><p>${state.currentTab === 'done' ? 'Chưa có đơn hoàn thành' : 'Không có đơn đang giao'}</p></div>`;
     return;
   }
-  list.innerHTML = state.orders.map((o, i) => {
-    const { done, total } = getProgress(o);
-    const st = getStatus(o);
-    const pct = Math.round(done / total * 100);
+
+  list.innerHTML = show.map((o, i) => {
+    const { done: d, total } = getProgress(o);
+    const st = getOrderStatus(o);
+    const pct = total ? Math.round(d / total * 100) : 0;
+    const realIdx = all.indexOf(o);
     const bc = st === 'done' ? 'badge-done' : st === 'active' ? 'badge-active' : 'badge-pending';
     const bt = st === 'done' ? 'Hoàn thành' : st === 'active' ? 'Đang giao' : 'Chờ giao';
-    return `<div class="order-card" onclick="openOrder(${i})">
-      <div class="order-top"><span class="order-id">${o.id}</span><span class="badge ${bc}">${bt}</span></div>
-      <div class="order-meta">
-        <span><i class="ti ti-map-pin" style="font-size:13px"></i> ${total - 1} điểm giao</span>
-        <span><i class="ti ti-check" style="font-size:13px"></i> ${done}/${total} điểm</span>
+    const drops = (o.stops||[]).filter(s => s.type === 'drop').length;
+    const failCt = (o.stops||[]).filter(s => s.status === 'fail').length;
+    const failTag = failCt ? `<span style="color:var(--danger);font-size:12px"><i class="ti ti-x" style="font-size:11px"></i> ${failCt} thất bại</span>` : '';
+    return `<div class="order-card ${st==='done'?'done-card':''}" onclick="openOrder(${realIdx})">
+      <div class="order-top">
+        <span class="order-id">${o.id}</span>
+        <span class="badge ${bc}">${bt}</span>
       </div>
+      <div class="order-meta">
+        <span><i class="ti ti-map-pin" style="font-size:13px"></i> ${drops} điểm giao</span>
+        <span><i class="ti ti-check" style="font-size:13px"></i> ${d}/${total} điểm</span>
+        ${failTag}
+      </div>
+      ${o.date ? `<div style="font-size:11px;color:var(--text-sub);margin-top:5px">📅 ${o.date}</div>` : ''}
       <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
     </div>`;
   }).join('');
 }
 
+// ============================================================
+// DETAIL
+// ============================================================
 function openOrder(idx) {
   state.currentOrder = idx;
   renderDetail();
   show('screen-detail');
 }
 function goHome() {
-  renderOrders();
   show('screen-home');
+  renderOrders();
+}
+async function refreshDetail() {
+  if (state.currentOrder === null) return;
+  const curId = (state.orders[state.currentOrder]||{}).id;
+  if (!curId) return;
+  showToast('Đang cập nhật...');
+  try {
+    const res = await apiGet({ action: 'getOrderDetail', order_id: curId });
+    if (res.success && res.order) {
+      const newIdx = state.orders.findIndex(o => o.id === curId);
+      if (newIdx >= 0) {
+        state.orders[newIdx] = { id: res.order.order_id, date: res.order.date, stops: res.order.stops, status: res.order.status };
+        state.currentOrder = newIdx;
+        renderDetail();
+        renderOrders();
+        showToast('Đã cập nhật!', 'ok');
+      }
+    }
+  } catch(e) { showToast('Lỗi kết nối', 'err'); }
 }
 
-// ---- DETAIL ----
 function renderDetail() {
   const order = state.orders[state.currentOrder];
+  if (!order) { goHome(); return; }
+  const stops = order.stops || [];
   const { done, total } = getProgress(order);
   document.getElementById('detail-id').textContent = order.id;
   document.getElementById('detail-stops-sum').textContent = `${done}/${total} điểm hoàn thành`;
-  document.getElementById('finish-btn').style.display = done === total ? 'flex' : 'none';
-  const firstPending = order.stops.findIndex(s => s.status === 'pending');
+  const allDone = done === total && total > 0;
+  document.getElementById('finish-btn').style.display = (allDone && getOrderStatus(order) !== 'done') ? 'flex' : 'none';
+  const firstPending = stops.findIndex(s => s.status === 'pending');
 
-  document.getElementById('detail-body').innerHTML = order.stops.map((stop, si) => {
+  document.getElementById('detail-body').innerHTML = stops.map((stop, si) => {
     const isActive = si === firstPending;
     const isDone = stop.status === 'done';
     const isFail = stop.status === 'fail';
     const isPickup = stop.type === 'pickup';
     const cc = isDone ? 'done-card' : isFail ? 'fail-card' : isActive ? 'active-card' : '';
     const dc = isDone ? 'dot-done' : isFail ? 'dot-fail' : isActive ? 'dot-active' : 'dot-pending';
-    const lbl = isPickup ? 'Điểm lấy hàng' : `Điểm giao ${si}`;
-    const ico = isPickup ? 'ti-building-warehouse' : 'ti-map-pin';
+    const lbl = isPickup ? '🏭 Điểm lấy hàng' : `📍 Điểm giao ${si}`;
 
     let actions = '';
     if (isActive && isPickup) {
@@ -375,32 +496,35 @@ function renderDetail() {
       </div>`;
     }
 
-    let sl = '';
-    if (isDone) sl = `<div style="margin-top:8px;font-size:12px;color:#3B6D11;font-weight:600"><i class="ti ti-circle-check"></i> Hoàn thành</div>`;
-    else if (isFail) sl = `<div style="margin-top:8px;font-size:12px;color:var(--danger);font-weight:600"><i class="ti ti-circle-x"></i> Thất bại${stop.reason ? ' — ' + stop.reason : ''}</div>`;
-    else if (!isActive) sl = `<div style="margin-top:8px;font-size:12px;color:var(--text-sub)">Chờ giao</div>`;
+    let result = '';
+    if (isDone) result = `<div class="stop-result ok"><i class="ti ti-circle-check"></i> Hoàn thành</div>`;
+    else if (isFail) result = `<div class="stop-result fail"><i class="ti ti-circle-x"></i> Thất bại${stop.reason ? ' — ' + stop.reason : ''}</div>`;
+    else if (!isActive) result = `<div style="margin-top:8px;font-size:12px;color:var(--text-sub)">⏳ Chờ giao</div>`;
 
     return `<div class="stop-card ${cc}">
       <div class="stop-header">
-        <span class="stop-label"><i class="ti ${ico}" style="font-size:14px"></i>${lbl}</span>
+        <span class="stop-label">${lbl}</span>
         <span class="status-dot ${dc}"></span>
       </div>
-      <div class="stop-name">${stop.name}</div>
-      <div class="stop-addr">${stop.addr}</div>
-      ${sl}${actions}
+      <div class="stop-name">${stop.name||'—'}</div>
+      <div class="stop-addr">${stop.addr||'—'}</div>
+      ${result}${actions}
     </div>`;
-  }).join('');
+  }).join('') || '<div style="text-align:center;padding:2rem;color:var(--text-sub)">Không có điểm giao</div>';
 }
 
+// ============================================================
+// MARK STOP
+// ============================================================
 async function markStop(si, status, extra) {
   const order = state.orders[state.currentOrder];
+  if (!order) return;
   order.stops[si].status = status;
   if (extra) Object.assign(order.stops[si], extra);
   renderDetail();
-
-  // Gửi lên Apps Script
+  renderOrders();
   try {
-    await apiPost({
+    const r = await apiPost({
       action: 'updateStop',
       driver_code: state.driver.code,
       driver_name: state.driver.name,
@@ -413,16 +537,21 @@ async function markStop(si, status, extra) {
       reason: extra ? extra.reason || '' : '',
       photo_url: extra ? extra.photo_url || '' : ''
     });
+    if (r.success) showToast('Đã cập nhật!', 'ok');
+    else showToast('Lỗi lưu dữ liệu', 'err');
   } catch (e) {
-    console.log('Lỗi gửi update:', e);
+    showToast('Lỗi kết nối — sẽ thử lại', 'err');
   }
 }
 
+// ============================================================
+// FINISH ORDER
+// ============================================================
 async function finishOrder() {
   const order = state.orders[state.currentOrder];
-  const done = order.stops.filter(s => s.status === 'done').length;
-  const fail = order.stops.filter(s => s.status === 'fail').length;
-
+  if (!confirm(`Kết thúc đơn ${order.id}?`)) return;
+  const doneCt = (order.stops||[]).filter(s => s.status === 'done').length;
+  const failCt = (order.stops||[]).filter(s => s.status === 'fail').length;
   showLoading('Đang kết thúc đơn...');
   try {
     await apiPost({
@@ -430,18 +559,20 @@ async function finishOrder() {
       driver_code: state.driver.code,
       driver_name: state.driver.name,
       order_id: order.id,
-      done_count: done,
-      fail_count: fail
+      done_count: doneCt,
+      fail_count: failCt
     });
   } catch (e) {}
   hideLoading();
-
-  alert(`Đơn ${order.id} đã kết thúc!\n✅ Hoàn thành: ${done} điểm\n❌ Thất bại: ${fail} điểm`);
-  order.finished = true;
-  goHome();
+  order.status = 'done';
+  showToast(`✅ Xong! ${doneCt} hoàn thành, ${failCt} thất bại`, 'ok');
+  renderDetail();
+  setTimeout(goHome, 1200);
 }
 
-// ---- MODAL THẤT BẠI ----
+// ============================================================
+// MODAL THẤT BẠI
+// ============================================================
 function openFail(si) {
   state.pendingStop = si;
   document.getElementById('photo-preview').style.display = 'none';
@@ -453,16 +584,13 @@ function closeModal() {
   document.getElementById('fail-modal').style.display = 'none';
   state.pendingStop = null;
 }
-function triggerPhoto() {
-  document.getElementById('file-inp').click();
-}
+function triggerPhoto() { document.getElementById('file-inp').click(); }
 function handlePhoto(inp) {
   if (!inp.files[0]) return;
   const reader = new FileReader();
   reader.onload = e => {
     const p = document.getElementById('photo-preview');
-    p.src = e.target.result;
-    p.style.display = 'block';
+    p.src = e.target.result; p.style.display = 'block';
     document.getElementById('photo-zone').style.display = 'none';
   };
   reader.readAsDataURL(inp.files[0]);
@@ -470,7 +598,7 @@ function handlePhoto(inp) {
 function confirmFail() {
   const reason = document.getElementById('fail-reason').value;
   const photo = document.getElementById('photo-preview').src;
-  markStop(state.pendingStop, 'fail', { reason, photo_url: photo ? 'photo_attached' : '' });
+  markStop(state.pendingStop, 'fail', { reason, photo_url: photo && photo.startsWith('data:') ? 'photo_attached' : '' });
   closeModal();
 }
 </script>
