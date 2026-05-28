@@ -527,26 +527,16 @@ function renderDetail() {
 async function markStop(si, status, extra) {
   const order = state.orders[state.currentOrder];
   if (!order) return;
-  // Cập nhật local ngay lập tức
+  // Cập nhật local ngay
   order.stops[si].status = status;
   if (extra) Object.assign(order.stops[si], extra);
   renderDetail();
   renderOrders();
 
-  // Nếu có ảnh base64 → upload lên Drive trước
-  let photoUrl = (extra && extra.photo_url) || '';
-  if (photoUrl && photoUrl.startsWith('data:')) {
-    try {
-      showToast('Đang upload ảnh...');
-      const mime = photoUrl.split(';')[0].split(':')[1];
-      const fname = 'fail_' + order.id + '_stop' + si + '_' + Date.now() + '.jpg';
-      const upRes = await apiPost({ action: 'uploadFile', fileName: fname, fileData: photoUrl, mimeType: mime });
-      if (upRes.success) { photoUrl = upRes.viewUrl; order.stops[si].photo_url = photoUrl; }
-    } catch(e) { photoUrl = 'photo_attached'; }
-  }
+  const photoUrl = (extra && extra.photo_url) || '';
 
-  // Gửi updateStop lên server
   try {
+    showToast(photoUrl ? 'Đang lưu + upload ảnh...' : 'Đang lưu...');
     const r = await apiPost({
       action: 'updateStop',
       driver_code: state.driver.code,
@@ -558,15 +548,20 @@ async function markStop(si, status, extra) {
       stop_addr: order.stops[si].addr,
       status: status,
       reason: extra ? extra.reason || '' : '',
-      photo_url: photoUrl
+      photo_url: photoUrl  // gửi base64 thẳng, Apps Script tự upload Drive
     });
-    if (r.success) showToast(status === 'done' ? '✅ Hoàn thành điểm giao' : '❌ Đã ghi nhận thất bại', 'ok');
-    else showToast('Lỗi lưu: ' + (r.message||''), 'err');
+    if (r.success) {
+      // Cập nhật lại photo_url từ Drive nếu server trả về
+      if (r.photo_url && r.photo_url !== photoUrl) {
+        order.stops[si].photo_url = r.photo_url;
+      }
+      showToast(status === 'done' ? '✅ Hoàn thành điểm giao' : '❌ Đã ghi nhận thất bại', 'ok');
+    } else {
+      showToast('Lỗi: ' + (r.message||''), 'err');
+    }
   } catch (e) {
-    showToast('Mất kết nối — dữ liệu lưu tạm', 'err');
+    showToast('Mất kết nối — thử lại sau', 'err');
   }
-
-  // Re-render để cập nhật nút Kết thúc đơn
   renderDetail();
   renderOrders();
 }
