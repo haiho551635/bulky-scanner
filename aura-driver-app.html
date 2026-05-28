@@ -476,7 +476,10 @@ function renderDetail() {
   // Hiện nút kết thúc khi TẤT CẢ điểm đã có kết quả (done hoặc fail)
   const allFinished = total > 0 && d === total;
   const alreadyDone = getOrderStatus(order) === 'done' || order.status === 'done';
-  document.getElementById('finish-btn').style.display = (allFinished && !alreadyDone) ? 'flex' : 'none';
+  const finBtn = document.getElementById('finish-btn');
+  finBtn.style.display = (allFinished && !alreadyDone) ? 'flex' : 'none';
+  finBtn.textContent = '';
+  finBtn.innerHTML = '<i class="ti ti-flag-check"></i> Kết thúc đơn';
   const firstPending = stops.findIndex(s => s.status === 'pending');
 
   document.getElementById('detail-body').innerHTML = stops.map((stop, si) => {
@@ -490,7 +493,10 @@ function renderDetail() {
 
     let actions = '';
     if (isActive && isPickup) {
-      actions = `<div class="stop-actions"><button class="btn-success" style="flex:1" onclick="markStop(${si},'done')"><i class="ti ti-check"></i> Đã lấy hàng</button></div>`;
+      actions = `<div class="stop-actions">
+        <button class="btn-success" style="flex:1" onclick="markStop(${si},'done')"><i class="ti ti-check"></i> Đã lấy hàng</button>
+        <button class="btn-fail" onclick="openFail(${si})"><i class="ti ti-x"></i> Thất bại</button>
+      </div>`;
     } else if (isActive) {
       actions = `<div class="stop-actions">
         <button class="btn-success" onclick="markStop(${si},'done')"><i class="ti ti-check"></i> Hoàn thành</button>
@@ -527,7 +533,19 @@ async function markStop(si, status, extra) {
   renderDetail();
   renderOrders();
 
-  // Gửi lên server
+  // Nếu có ảnh base64 → upload lên Drive trước
+  let photoUrl = (extra && extra.photo_url) || '';
+  if (photoUrl && photoUrl.startsWith('data:')) {
+    try {
+      showToast('Đang upload ảnh...');
+      const mime = photoUrl.split(';')[0].split(':')[1];
+      const fname = 'fail_' + order.id + '_stop' + si + '_' + Date.now() + '.jpg';
+      const upRes = await apiPost({ action: 'uploadFile', fileName: fname, fileData: photoUrl, mimeType: mime });
+      if (upRes.success) { photoUrl = upRes.viewUrl; order.stops[si].photo_url = photoUrl; }
+    } catch(e) { photoUrl = 'photo_attached'; }
+  }
+
+  // Gửi updateStop lên server
   try {
     const r = await apiPost({
       action: 'updateStop',
@@ -540,20 +558,17 @@ async function markStop(si, status, extra) {
       stop_addr: order.stops[si].addr,
       status: status,
       reason: extra ? extra.reason || '' : '',
-      photo_url: extra ? extra.photo_url || '' : ''
+      photo_url: photoUrl
     });
-    if (r.success) showToast(status === 'done' ? '✅ Đã hoàn thành điểm giao' : '❌ Đã ghi nhận thất bại', 'ok');
+    if (r.success) showToast(status === 'done' ? '✅ Hoàn thành điểm giao' : '❌ Đã ghi nhận thất bại', 'ok');
     else showToast('Lỗi lưu: ' + (r.message||''), 'err');
   } catch (e) {
     showToast('Mất kết nối — dữ liệu lưu tạm', 'err');
   }
 
-  // Kiểm tra tất cả điểm xong chưa
-  const { done: d, total } = getProgress(order);
-  if (d === total && total > 0 && order.status !== 'done') {
-    // Tất cả điểm có kết quả → re-render để hiện nút Kết thúc đơn
-    renderDetail();
-  }
+  // Re-render để cập nhật nút Kết thúc đơn
+  renderDetail();
+  renderOrders();
 }
 
 // ============================================================
@@ -609,8 +624,9 @@ function handlePhoto(inp) {
 }
 function confirmFail() {
   const reason = document.getElementById('fail-reason').value;
-  const photo = document.getElementById('photo-preview').src;
-  markStop(state.pendingStop, 'fail', { reason, photo_url: photo && photo.startsWith('data:') ? 'photo_attached' : '' });
+  const previewEl = document.getElementById('photo-preview');
+  const photoData = (previewEl.style.display !== 'none' && previewEl.src && previewEl.src.startsWith('data:')) ? previewEl.src : '';
+  markStop(state.pendingStop, 'fail', { reason, photo_url: photoData });
   closeModal();
 }
 </script>
