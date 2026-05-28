@@ -470,11 +470,13 @@ function renderDetail() {
   const order = state.orders[state.currentOrder];
   if (!order) { goHome(); return; }
   const stops = order.stops || [];
-  const { done, total } = getProgress(order);
+  const { done: d, total } = getProgress(order);
   document.getElementById('detail-id').textContent = order.id;
-  document.getElementById('detail-stops-sum').textContent = `${done}/${total} điểm hoàn thành`;
-  const allDone = done === total && total > 0;
-  document.getElementById('finish-btn').style.display = (allDone && getOrderStatus(order) !== 'done') ? 'flex' : 'none';
+  document.getElementById('detail-stops-sum').textContent = `${d}/${total} điểm hoàn thành`;
+  // Hiện nút kết thúc khi TẤT CẢ điểm đã có kết quả (done hoặc fail)
+  const allFinished = total > 0 && d === total;
+  const alreadyDone = getOrderStatus(order) === 'done' || order.status === 'done';
+  document.getElementById('finish-btn').style.display = (allFinished && !alreadyDone) ? 'flex' : 'none';
   const firstPending = stops.findIndex(s => s.status === 'pending');
 
   document.getElementById('detail-body').innerHTML = stops.map((stop, si) => {
@@ -519,10 +521,13 @@ function renderDetail() {
 async function markStop(si, status, extra) {
   const order = state.orders[state.currentOrder];
   if (!order) return;
+  // Cập nhật local ngay lập tức
   order.stops[si].status = status;
   if (extra) Object.assign(order.stops[si], extra);
   renderDetail();
   renderOrders();
+
+  // Gửi lên server
   try {
     const r = await apiPost({
       action: 'updateStop',
@@ -537,10 +542,17 @@ async function markStop(si, status, extra) {
       reason: extra ? extra.reason || '' : '',
       photo_url: extra ? extra.photo_url || '' : ''
     });
-    if (r.success) showToast('Đã cập nhật!', 'ok');
-    else showToast('Lỗi lưu dữ liệu', 'err');
+    if (r.success) showToast(status === 'done' ? '✅ Đã hoàn thành điểm giao' : '❌ Đã ghi nhận thất bại', 'ok');
+    else showToast('Lỗi lưu: ' + (r.message||''), 'err');
   } catch (e) {
-    showToast('Lỗi kết nối — sẽ thử lại', 'err');
+    showToast('Mất kết nối — dữ liệu lưu tạm', 'err');
+  }
+
+  // Kiểm tra tất cả điểm xong chưa
+  const { done: d, total } = getProgress(order);
+  if (d === total && total > 0 && order.status !== 'done') {
+    // Tất cả điểm có kết quả → re-render để hiện nút Kết thúc đơn
+    renderDetail();
   }
 }
 
