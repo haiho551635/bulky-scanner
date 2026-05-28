@@ -399,6 +399,8 @@ function renderOdStops(stops){
   document.getElementById('od-stops').innerHTML=stops.map(function(s,i){
     var isP=s.type==='pickup';
     var lbl=isP?'🏭 Lấy hàng':'📍 Điểm '+(isP?'':i);
+
+    // Badge trạng thái
     var stb;
     if(s.status==='done'){
       stb='<span class="badge bg"><span class="bdot"></span>Hoàn thành</span>';
@@ -408,25 +410,34 @@ function renderOdStops(stops){
     }else{
       stb='<span class="badge bgr"><span class="bdot"></span>Chờ giao</span>';
     }
-    // Xử lý ảnh
+
+    // Thời gian cập nhật
+    var timeStr='';
+    if(s.updated_at){
+      try{
+        var d=new Date(s.updated_at);
+        timeStr='<div style="font-size:11px;color:var(--tx3);margin-top:4px">🕐 '+d.toLocaleString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})+'</div>';
+      }catch(e){}
+    }
+
+    // Ảnh
     var photoCell='<span style="color:var(--tx3);font-size:12px">—</span>';
     if(s.photo_url){
       var pu=s.photo_url;
-      if(pu.startsWith('https://')){
-        // Drive link hoặc URL thật → có thể bấm xem
+      if(pu.startsWith('https://drive.google.com')||pu.startsWith('https://')){
         photoCell='<a href="'+pu+'" target="_blank" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--B);font-weight:500;padding:4px 8px;background:var(--BL);border-radius:6px;text-decoration:none"><i class="ti ti-photo" style="font-size:14px"></i> Xem ảnh</a>';
       }else if(pu.startsWith('data:image')){
-        // base64 → hiện thumbnail nhỏ click được
-        photoCell='<a href="'+pu+'" target="_blank"><img src="'+pu+'" style="height:36px;border-radius:4px;cursor:pointer;object-fit:cover" title="Click để xem ảnh"></a>';
+        photoCell='<img src="'+pu+'" style="height:48px;width:64px;object-fit:cover;border-radius:6px;cursor:pointer" onclick="window.open(\''+pu+'\')" title="Click để xem ảnh">';
       }else if(pu==='photo_attached'){
-        photoCell='<span style="font-size:12px;color:var(--tx3)"><i class="ti ti-photo" style="font-size:13px"></i> Có ảnh</span>';
+        photoCell='<span style="font-size:12px;color:var(--tx3)"><i class="ti ti-photo"></i> Có ảnh</span>';
       }
     }
+
     return'<tr>'
       +'<td style="font-size:12px;white-space:nowrap">'+lbl+'</td>'
       +'<td style="font-weight:500;font-size:13px">'+(s.name||'—')+'</td>'
       +'<td style="font-size:12px;color:var(--tx3)">'+(s.addr||'—')+'</td>'
-      +'<td>'+stb+'</td>'
+      +'<td>'+stb+timeStr+'</td>'
       +'<td>'+photoCell+'</td>'
       +'</tr>';
   }).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--tx3)">Không có dữ liệu</td></tr>';
