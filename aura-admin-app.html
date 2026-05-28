@@ -411,9 +411,14 @@ function renderOdStops(stops){
     // Xử lý ảnh
     var photoCell='<span style="color:var(--tx3);font-size:12px">—</span>';
     if(s.photo_url){
-      if(s.photo_url.startsWith('data:image')||s.photo_url.startsWith('http')){
-        photoCell='<a href="'+s.photo_url+'" target="_blank" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--B);font-weight:500"><i class="ti ti-photo" style="font-size:14px"></i> Xem ảnh</a>';
-      }else if(s.photo_url==='photo_attached'){
+      var pu=s.photo_url;
+      if(pu.startsWith('https://')){
+        // Drive link hoặc URL thật → có thể bấm xem
+        photoCell='<a href="'+pu+'" target="_blank" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--B);font-weight:500;padding:4px 8px;background:var(--BL);border-radius:6px;text-decoration:none"><i class="ti ti-photo" style="font-size:14px"></i> Xem ảnh</a>';
+      }else if(pu.startsWith('data:image')){
+        // base64 → hiện thumbnail nhỏ click được
+        photoCell='<a href="'+pu+'" target="_blank"><img src="'+pu+'" style="height:36px;border-radius:4px;cursor:pointer;object-fit:cover" title="Click để xem ảnh"></a>';
+      }else if(pu==='photo_attached'){
         photoCell='<span style="font-size:12px;color:var(--tx3)"><i class="ti ti-photo" style="font-size:13px"></i> Có ảnh</span>';
       }
     }
