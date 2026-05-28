@@ -129,7 +129,7 @@ tr:hover td{background:#fafbfc}
 <div class="tb">
   <div class="tb-brand"><i class="ti ti-truck-delivery" style="font-size:22px"></i>AURA <span>LOGISTICS</span></div>
   <div class="sbar"><i class="ti ti-search" style="color:var(--tx3)"></i><input type="text" placeholder="Tìm kiếm..."></div>
-  <div class="tb-r"><div class="pill"><i class="ti ti-circle-filled" style="font-size:8px"></i> Online</div><div class="av">AD</div></div>
+  <div class="tb-r"><div class="pill"><i class="ti ti-circle-filled" style="font-size:8px"></i> Online</div><div id="refresh-indicator" style="font-size:11px;color:var(--tx3);display:none"><i class="ti ti-refresh" style="font-size:12px"></i> Đang cập nhật...</div><div class="av">AD</div></div>
 </div>
 
 <div class="sb">
@@ -248,7 +248,7 @@ tr:hover td{background:#fafbfc}
 <!-- MODALS -->
 <div class="mbg" id="m-assign"><div class="mb"><div class="mh"><div class="mt2"><i class="ti ti-user-check" style="color:var(--G)"></i> Gán tài xế</div><button class="mc" onclick="cm('m-assign')"><i class="ti ti-x"></i></button></div><div class="mbdy"><div style="padding:10px 14px;background:var(--sf2);border-radius:var(--rs);font-size:13px;margin-bottom:14px">Đơn: <strong style="font-family:'DM Mono',monospace;color:var(--G)" id="m-aoid"></strong></div><div class="fd"><label>Chọn tài xế</label><select id="m-adrv" style="width:100%;padding:10px;border:1px solid var(--bd);border-radius:var(--rs);font-size:14px;font-family:inherit"></select></div></div><div class="mft"><button class="btn bs" onclick="cm('m-assign')">Hủy</button><button class="btn bp" onclick="cfAssign()"><i class="ti ti-check"></i> Xác nhận</button></div></div></div>
 
-<div class="mbg" id="m-odetail"><div class="mb mblg"><div class="mh"><div class="mt2"><i class="ti ti-clipboard-list" style="color:var(--G)"></i> Chi tiết đơn — <span style="font-family:'DM Mono',monospace;color:var(--G)" id="od-id"></span></div><button class="mc" onclick="cm('m-odetail')"><i class="ti ti-x"></i></button></div><div class="mbdy"><div class="ib"><div class="ib-i"><div class="ib-l">Ngày giao</div><div class="ib-v" id="od-date"></div></div><div class="ib-i"><div class="ib-l">Tài xế</div><div class="ib-v" id="od-drv"></div></div><div class="ib-i"><div class="ib-l">Trạng thái</div><div id="od-st"></div></div><div class="ib-i"><div class="ib-l">Ghi chú</div><div style="font-size:13px" id="od-note"></div></div></div><div style="font-size:12px;font-weight:600;color:var(--tx3);text-transform:uppercase;margin-bottom:8px">Các điểm giao hàng</div><div class="tw"><table><thead><tr><th>Loại</th><th>Tên điểm</th><th>Địa chỉ</th><th>Kết quả</th></tr></thead><tbody id="od-stops"></tbody></table></div></div><div class="mft"><button class="btn bs" onclick="cm('m-odetail')">Đóng</button></div></div></div>
+<div class="mbg" id="m-odetail"><div class="mb mblg"><div class="mh"><div class="mt2"><i class="ti ti-clipboard-list" style="color:var(--G)"></i> Chi tiết đơn — <span style="font-family:'DM Mono',monospace;color:var(--G)" id="od-id"></span></div><button class="mc" onclick="cm('m-odetail')"><i class="ti ti-x"></i></button></div><div class="mbdy"><div class="ib"><div class="ib-i"><div class="ib-l">Ngày giao</div><div class="ib-v" id="od-date"></div></div><div class="ib-i"><div class="ib-l">Tài xế</div><div class="ib-v" id="od-drv"></div></div><div class="ib-i"><div class="ib-l">Trạng thái</div><div id="od-st"></div></div><div class="ib-i"><div class="ib-l">Ghi chú</div><div style="font-size:13px" id="od-note"></div></div></div><div style="font-size:12px;font-weight:600;color:var(--tx3);text-transform:uppercase;margin-bottom:8px">Các điểm giao hàng</div><div class="tw"><table><thead><tr><th>Loại</th><th>Tên điểm</th><th>Địa chỉ</th><th>Kết quả</th></tr></thead><tbody id="od-stops"></tbody></table></div></div><div class="mft"><div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--tx3)"><span id="od-last-update"></span></div><div style="display:flex;gap:8px"><button class="btn bs bsm" id="od-refresh-btn"><i class="ti ti-refresh"></i> Cập nhật</button><button class="btn bs" onclick="cm('m-odetail')">Đóng</button></div></div></div></div>
 
 <div class="mbg" id="vm"><div class="mb"><div class="mh"><div class="mt2"><i class="ti ti-truck" style="color:var(--G)"></i> Thêm / sửa xe</div><button class="mc" onclick="cm('vm')"><i class="ti ti-x"></i></button></div><div class="mbdy"><div class="fg fg2"><div class="fd"><label>Biển số *</label><input id="vm-p" placeholder="51A-12345" style="text-transform:uppercase"></div><div class="fd"><label>Loại xe *</label><select id="vm-t"><option value="van_1t">Van 1 tấn</option><option value="truck_2t">Xe tải 2 tấn</option></select></div><div class="fd"><label>Năm sản xuất</label><input id="vm-y" type="number" placeholder="2020"></div><div class="fd"><label>Màu xe</label><input id="vm-c" placeholder="Trắng"></div><div class="fd"><label>Hạn đăng kiểm</label><input id="vm-ins" type="date"></div><div class="fd"><label>Hạn bảo hiểm</label><input id="vm-bh" type="date"></div><div class="fd"><label>Km hiện tại</label><input id="vm-km" type="number" placeholder="50000"></div><div class="fd"><label>Tài xế phụ trách</label><select id="vm-d"><option value="">-- Chưa gán --</option></select></div><div class="fd"><label>Trạng thái</label><select id="vm-s"><option value="active">Hoạt động</option><option value="maintenance">Bảo dưỡng</option><option value="inactive">Không hoạt động</option></select></div><div class="fd"><label>Ghi chú</label><input id="vm-n" placeholder="Ghi chú thêm"></div></div></div><div class="mft"><button class="btn bs" onclick="cm('vm')">Hủy</button><button class="btn bp" onclick="saveVehicle()"><i class="ti ti-check"></i> Lưu xe</button></div></div></div>
 
@@ -319,9 +319,12 @@ function loadContracts(){
   }).catch(function(){});
 }
 function loadOrders(){
+  var ind=document.getElementById('refresh-indicator');
+  if(ind)ind.style.display='flex';
   return aGet({action:'getAdminOrders'}).then(function(r){
+    if(ind)ind.style.display='none';
     if(r.success){db.orders=r.orders||[];rOrders();uoStats();}
-  }).catch(function(){});
+  }).catch(function(){if(ind)ind.style.display='none';});
 }
 function loadDrivers(){
   return aGet({action:'getDrivers'}).then(function(r){
@@ -369,14 +372,44 @@ function viewOrder(oid){
   document.getElementById('od-drv').textContent=o.driver_name||'Chưa gán';
   document.getElementById('od-st').innerHTML=sBadge(o.status);
   document.getElementById('od-note').textContent=o.note||'—';
-  var stops=o.stops||[];
+  renderOdStops(o.stops||[]);
+  // Nút refresh live trong modal
+  var rfBtn=document.getElementById('od-refresh-btn');
+  if(rfBtn)rfBtn.onclick=function(){
+    sL('Đang cập nhật...');
+    aGet({action:'getOrderDetail',order_id:oid}).then(function(r){
+      hL();
+      if(r.success&&r.order){
+        var ord=r.order;
+        var stops=ord.stops||[];
+        document.getElementById('od-st').innerHTML=sBadge(ord.status);
+        renderOdStops(stops);
+        // cập nhật vào db local
+        var idx=db.orders.findIndex(function(x){return(x.order_id||x.id)===oid;});
+        if(idx>=0){db.orders[idx].stops=stops;db.orders[idx].status=ord.status;}
+        rOrders();uoStats();rDash();
+        toast('Đã cập nhật!');
+      }else toast('Lỗi cập nhật','r');
+    }).catch(function(){hL();toast('Lỗi kết nối','r');});
+  };
+  om('m-odetail');
+}
+function renderOdStops(stops){
   document.getElementById('od-stops').innerHTML=stops.map(function(s,i){
     var isP=s.type==='pickup';
-    var lbl=isP?'🏭 Lấy hàng':'📍 Điểm '+i;
-    var stb=s.status==='done'?'<span class="badge bg">✓ Hoàn thành</span>':s.status==='fail'?'<span class="badge br">✗ Thất bại'+(s.reason?' — '+s.reason:'')+'</span>':'<span class="badge bgr">Chờ</span>';
-    return'<tr><td style="font-size:12px">'+lbl+'</td><td style="font-weight:500">'+(s.name||'—')+'</td><td style="font-size:12px;color:var(--tx3)">'+(s.addr||'—')+'</td><td>'+stb+'</td></tr>';
+    var lbl=isP?'🏭 Lấy hàng':'📍 Điểm '+(isP?'':i);
+    var stb;
+    if(s.status==='done'){
+      stb='<span class="badge bg"><span class="bdot"></span>Hoàn thành</span>';
+    }else if(s.status==='fail'){
+      var reason=s.reason?(' — <span style="font-weight:400">'+s.reason+'</span>'):'';
+      stb='<span class="badge br"><span class="bdot"></span>Thất bại'+reason+'</span>';
+    }else{
+      stb='<span class="badge bgr"><span class="bdot"></span>Chờ giao</span>';
+    }
+    var photo=s.photo_url&&s.photo_url!=='photo_attached'?'<br><a href="'+s.photo_url+'" target="_blank" style="font-size:11px;color:var(--B)"><i class="ti ti-photo"></i> Xem ảnh</a>':'';
+    return'<tr><td style="font-size:12px">'+lbl+'</td><td style="font-weight:500">'+(s.name||'—')+'</td><td style="font-size:12px;color:var(--tx3)">'+(s.addr||'—')+'</td><td>'+stb+photo+'</td></tr>';
   }).join('')||'<tr><td colspan="4" style="text-align:center;color:var(--tx3)">Không có dữ liệu</td></tr>';
-  om('m-odetail');
 }
 function oAssign(oid){
   aoid=oid;document.getElementById('m-aoid').textContent=oid;fillDrv();
@@ -813,6 +846,11 @@ window.onload=function(){
   document.getElementById('set-api').value=API;
   rDash();addStop();uPrev();uCostStats();initCostF();
   setTimeout(function(){loadAll();},300);
+  // Auto-refresh mỗi 30 giây
+  setInterval(function(){
+    loadOrders();
+    loadDrivers();
+  }, 30000);
 };
 </script>
 </body>
