@@ -215,15 +215,36 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           <option>Khác</option>
         </select>
       </div>
-      <div class="photo-zone" id="photo-zone" onclick="triggerPhoto()">
+      <div class="photo-zone" id="fail-photo-zone" onclick="triggerPhoto('fail')">
         <i class="ti ti-camera"></i>
         Chụp ảnh bằng chứng (không bắt buộc)
       </div>
-      <img id="photo-preview" class="photo-preview" />
-      <input type="file" id="file-inp" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto(this)" />
+      <img id="fail-photo-preview" class="photo-preview" />
+      <input type="file" id="fail-file-inp" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto(this,'fail')" />
       <div class="modal-actions">
-        <button class="btn-cancel" onclick="closeModal()">Hủy</button>
+        <button class="btn-cancel" onclick="closeModal('fail')">Hủy</button>
         <button class="btn-confirm" onclick="confirmFail()">Xác nhận thất bại</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL HOÀN THÀNH (lấy hàng + giao hàng) -->
+  <div id="success-modal" class="modal-overlay">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="success-modal-title"><i class="ti ti-circle-check" style="color:var(--brand)"></i> Xác nhận hoàn thành</div>
+      <div class="photo-zone" id="success-photo-zone" onclick="triggerPhoto('success')" style="border-color:#9FE1CB">
+        <i class="ti ti-camera" style="color:var(--brand)"></i>
+        <span style="color:var(--brand-dark)">Chụp ảnh bằng chứng</span>
+        <p style="font-size:12px;color:var(--text-sub);margin-top:4px">Bắt buộc — chụp ảnh hàng/chữ ký</p>
+      </div>
+      <img id="success-photo-preview" class="photo-preview" />
+      <input type="file" id="success-file-inp" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto(this,'success')" />
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal('success')">Hủy</button>
+        <button class="btn-confirm" id="success-confirm-btn" style="background:var(--brand)" onclick="confirmSuccess()">
+          <span id="success-confirm-label">✓ Xác nhận</span>
+        </button>
       </div>
     </div>
   </div>
@@ -494,12 +515,12 @@ function renderDetail() {
     let actions = '';
     if (isActive && isPickup) {
       actions = `<div class="stop-actions">
-        <button class="btn-success" style="flex:1" onclick="markStop(${si},'done')"><i class="ti ti-check"></i> Đã lấy hàng</button>
+        <button class="btn-success" style="flex:1" onclick="openSuccess(${si},'pickup')"><i class="ti ti-camera"></i> Đã lấy hàng + Chụp ảnh</button>
         <button class="btn-fail" onclick="openFail(${si})"><i class="ti ti-x"></i> Thất bại</button>
       </div>`;
     } else if (isActive) {
       actions = `<div class="stop-actions">
-        <button class="btn-success" onclick="markStop(${si},'done')"><i class="ti ti-check"></i> Hoàn thành</button>
+        <button class="btn-success" onclick="openSuccess(${si},'drop')"><i class="ti ti-camera"></i> Hoàn thành + Ảnh</button>
         <button class="btn-fail" onclick="openFail(${si})"><i class="ti ti-x"></i> Thất bại</button>
       </div>`;
     }
@@ -593,36 +614,70 @@ async function finishOrder() {
 }
 
 // ============================================================
+// MODAL HOÀN THÀNH (chụp ảnh bắt buộc)
+// ============================================================
+function openSuccess(si, type) {
+  state.pendingStop = si;
+  state.pendingStopType = type;
+  const title = type === 'pickup' ? '🏭 Xác nhận lấy hàng' : '📍 Xác nhận giao hàng';
+  document.getElementById('success-modal-title').innerHTML = '<i class="ti ti-circle-check" style="color:var(--brand)"></i> ' + title;
+  document.getElementById('success-confirm-label').textContent = type === 'pickup' ? '✓ Đã lấy hàng' : '✓ Đã giao xong';
+  document.getElementById('success-photo-preview').style.display = 'none';
+  document.getElementById('success-photo-preview').src = '';
+  document.getElementById('success-photo-zone').style.display = 'block';
+  document.getElementById('success-modal').style.display = 'flex';
+}
+function confirmSuccess() {
+  const previewEl = document.getElementById('success-photo-preview');
+  const photoData = (previewEl.style.display !== 'none' && previewEl.src && previewEl.src.startsWith('data:')) ? previewEl.src : '';
+  if (!photoData) {
+    const zone = document.getElementById('success-photo-zone');
+    zone.style.borderColor = 'var(--danger)';
+    zone.style.background = 'var(--danger-light)';
+    setTimeout(() => { zone.style.borderColor = '#9FE1CB'; zone.style.background = ''; }, 1200);
+    showToast('Vui lòng chụp ảnh trước khi xác nhận', 'err');
+    return;
+  }
+  markStop(state.pendingStop, 'done', { photo_url: photoData });
+  closeModal('success');
+}
+
+// ============================================================
 // MODAL THẤT BẠI
 // ============================================================
 function openFail(si) {
   state.pendingStop = si;
-  document.getElementById('photo-preview').style.display = 'none';
-  document.getElementById('photo-preview').src = '';
-  document.getElementById('photo-zone').style.display = 'block';
+  document.getElementById('fail-photo-preview').style.display = 'none';
+  document.getElementById('fail-photo-preview').src = '';
+  document.getElementById('fail-photo-zone').style.display = 'block';
   document.getElementById('fail-modal').style.display = 'flex';
-}
-function closeModal() {
-  document.getElementById('fail-modal').style.display = 'none';
-  state.pendingStop = null;
-}
-function triggerPhoto() { document.getElementById('file-inp').click(); }
-function handlePhoto(inp) {
-  if (!inp.files[0]) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const p = document.getElementById('photo-preview');
-    p.src = e.target.result; p.style.display = 'block';
-    document.getElementById('photo-zone').style.display = 'none';
-  };
-  reader.readAsDataURL(inp.files[0]);
 }
 function confirmFail() {
   const reason = document.getElementById('fail-reason').value;
-  const previewEl = document.getElementById('photo-preview');
+  const previewEl = document.getElementById('fail-photo-preview');
   const photoData = (previewEl.style.display !== 'none' && previewEl.src && previewEl.src.startsWith('data:')) ? previewEl.src : '';
   markStop(state.pendingStop, 'fail', { reason, photo_url: photoData });
-  closeModal();
+  closeModal('fail');
+}
+
+function closeModal(type) {
+  if (type === 'success') document.getElementById('success-modal').style.display = 'none';
+  else document.getElementById('fail-modal').style.display = 'none';
+  state.pendingStop = null;
+}
+function triggerPhoto(type) {
+  document.getElementById((type === 'success' ? 'success' : 'fail') + '-file-inp').click();
+}
+function handlePhoto(inp, type) {
+  if (!inp.files[0]) return;
+  const prefix = type === 'success' ? 'success' : 'fail';
+  const reader = new FileReader();
+  reader.onload = e => {
+    const p = document.getElementById(prefix + '-photo-preview');
+    p.src = e.target.result; p.style.display = 'block';
+    document.getElementById(prefix + '-photo-zone').style.display = 'none';
+  };
+  reader.readAsDataURL(inp.files[0]);
 }
 </script>
 </body>
