@@ -413,16 +413,23 @@ function switchTab(tab) {
 function renderOrders() {
   const all = state.orders || [];
   const active = all.filter(o => getOrderStatus(o) !== 'done');
-  const done   = all.filter(o => getOrderStatus(o) === 'done');
+  // Sắp xếp mới nhất lên trên (theo date, nếu không có date thì giữ nguyên thứ tự)
+  const sortByDate = arr => [...arr].sort((a, b) => {
+    const da = a.date || a.id || '';
+    const db = b.date || b.id || '';
+    return db.localeCompare(da);
+  });
+  const activeSorted = sortByDate(active);
+  const doneSorted   = sortByDate(all.filter(o => getOrderStatus(o) === 'done'));
 
   // Cập nhật badge
   const ba = document.getElementById('badge-active');
   const bd = document.getElementById('badge-done');
-  ba.textContent = active.length; ba.style.display = active.length ? 'inline-flex' : 'none';
-  bd.textContent = done.length;   bd.style.display = done.length   ? 'inline-flex' : 'none';
+  ba.textContent = activeSorted.length; ba.style.display = activeSorted.length ? 'inline-flex' : 'none';
+  bd.textContent = doneSorted.length;   bd.style.display = doneSorted.length   ? 'inline-flex' : 'none';
 
   const list = document.getElementById('order-list');
-  const show = state.currentTab === 'done' ? done : active;
+  const show = state.currentTab === 'done' ? doneSorted : activeSorted;
 
   if (!show.length) {
     list.innerHTML = `<div class="empty-state"><i class="ti ti-inbox"></i><p>${state.currentTab === 'done' ? 'Chưa có đơn hoàn thành' : 'Không có đơn đang giao'}</p></div>`;
@@ -526,8 +533,24 @@ function renderDetail() {
     }
 
     let result = '';
-    if (isDone) result = `<div class="stop-result ok"><i class="ti ti-circle-check"></i> Hoàn thành</div>`;
-    else if (isFail) result = `<div class="stop-result fail"><i class="ti ti-circle-x"></i> Thất bại${stop.reason ? ' — ' + stop.reason : ''}</div>`;
+    const timeStr = stop.updated_at ? (() => {
+      const d = new Date(stop.updated_at);
+      return d.toLocaleString('vi-VN', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+    })() : '';
+    const timeTag = timeStr ? `<span style="font-size:11px;color:var(--text-sub);margin-left:6px">🕐 ${timeStr}</span>` : '';
+
+    // Hiển thị ảnh nếu có
+    let photoTag = '';
+    if (stop.photo_url) {
+      if (stop.photo_url.startsWith('data:image')) {
+        photoTag = `<div style="margin-top:8px"><img src="${stop.photo_url}" style="width:100%;max-height:160px;object-fit:cover;border-radius:8px;cursor:pointer" onclick="viewPhoto('${si}')" title="Click để xem ảnh"></div>`;
+      } else if (stop.photo_url.startsWith('https://')) {
+        photoTag = `<div style="margin-top:8px"><a href="${stop.photo_url}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--brand);font-weight:500;padding:5px 10px;background:var(--brand-light);border-radius:6px;text-decoration:none"><i class="ti ti-photo" style="font-size:14px"></i> Xem ảnh Drive</a></div>`;
+      }
+    }
+
+    if (isDone) result = `<div class="stop-result ok"><i class="ti ti-circle-check"></i> Hoàn thành${timeTag}</div>${photoTag}`;
+    else if (isFail) result = `<div class="stop-result fail"><i class="ti ti-circle-x"></i> Thất bại${stop.reason ? ' — ' + stop.reason : ''}${timeTag}</div>${photoTag}`;
     else if (!isActive) result = `<div style="margin-top:8px;font-size:12px;color:var(--text-sub)">⏳ Chờ giao</div>`;
 
     return `<div class="stop-card ${cc}">
@@ -548,8 +571,10 @@ function renderDetail() {
 async function markStop(si, status, extra) {
   const order = state.orders[state.currentOrder];
   if (!order) return;
-  // Cập nhật local ngay
+  // Cập nhật local ngay + ghi timestamp
+  const now = new Date();
   order.stops[si].status = status;
+  order.stops[si].updated_at = now.toISOString();
   if (extra) Object.assign(order.stops[si], extra);
   renderDetail();
   renderOrders();
@@ -611,6 +636,17 @@ async function finishOrder() {
   showToast(`✅ Xong! ${doneCt} hoàn thành, ${failCt} thất bại`, 'ok');
   renderDetail();
   setTimeout(goHome, 1200);
+}
+
+function viewPhoto(si) {
+  const order = state.orders[state.currentOrder];
+  if (!order) return;
+  const stop = order.stops[si];
+  if (!stop || !stop.photo_url) return;
+  const w = window.open('');
+  w.document.write(`<html><body style="margin:0;background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh">
+    <img src="${stop.photo_url}" style="max-width:100%;max-height:100vh;object-fit:contain">
+  </body></html>`);
 }
 
 // ============================================================
