@@ -14,13 +14,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   --warn: #BA7517; --warn-light: #FAEEDA;
   --gray: #f4f4f4; --border: #e0e0e0;
   --text: #1a1a1a; --text-sub: #666;
-  --tab-h: 62px;
 }
 .app { max-width: 430px; margin: 0 auto; min-height: 100vh; background: white; display: flex; flex-direction: column; position: relative; }
 .screen { display: none; flex-direction: column; flex: 1; min-height: 100vh; }
 .screen.active { display: flex; }
 
-/* ---- LOGIN ---- */
+/* LOGIN */
 .login-header { background: var(--brand); padding: 3rem 1.5rem 2.5rem; text-align: center; }
 .brand-name { font-size: 28px; font-weight: 700; color: white; letter-spacing: 0.1em; margin-top: 12px; }
 .brand-sub { font-size: 14px; color: rgba(255,255,255,0.85); margin-top: 6px; }
@@ -32,29 +31,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .btn-primary:active { opacity: 0.85; transform: scale(0.98); }
 .error-msg { background: var(--danger-light); color: var(--danger); padding: 10px 14px; border-radius: 8px; font-size: 13px; display: none; }
 
-/* ---- TOPBAR ---- */
-.topbar { background: var(--brand); padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+/* TOPBAR */
+.topbar { background: var(--brand); padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; }
 .topbar-left .topbar-title { font-size: 16px; font-weight: 600; color: white; }
 .topbar-left .topbar-sub { font-size: 12px; color: rgba(255,255,255,0.8); margin-top: 2px; }
 .topbar-right { color: white; font-size: 22px; cursor: pointer; padding: 4px; }
 
-/* ---- BOTTOM TAB BAR ---- */
-.tab-bar {
-  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-  width: 100%; max-width: 430px;
-  background: white; border-top: 1px solid var(--border);
-  display: none; /* shown when logged in */
-  height: var(--tab-h);
-  z-index: 100;
-}
-.tab-bar.visible { display: flex; }
-.tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #aaa; font-size: 11px; font-weight: 600; padding-bottom: 4px; transition: color 0.15s; }
-.tab-item i { font-size: 22px; }
-.tab-item.active { color: var(--brand); }
-.tab-spacer { height: var(--tab-h); flex-shrink: 0; } /* pushes content above tab bar */
-
-/* ---- HOME ---- */
-.home-body { padding: 1rem; flex: 1; background: var(--gray); overflow-y: auto; }
+/* HOME */
+.home-body { padding: 1rem; flex: 1; background: var(--gray); }
 .section-label { font-size: 12px; color: var(--text-sub); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; }
 .order-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.25rem; cursor: pointer; margin-bottom: 10px; }
 .order-card:active { background: #f9f9f9; }
@@ -64,54 +48,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .badge-active { background: var(--brand-light); color: var(--brand-dark); }
 .badge-done { background: #EAF3DE; color: #27500A; }
 .badge-pending { background: var(--warn-light); color: var(--warn); }
-.order-meta { font-size: 13px; color: var(--text-sub); display: flex; gap: 14px; flex-wrap: wrap; }
+.order-meta { font-size: 13px; color: var(--text-sub); display: flex; gap: 14px; }
 .progress-bar { height: 5px; background: #eee; border-radius: 3px; margin-top: 12px; overflow: hidden; }
 .progress-fill { height: 100%; background: var(--brand); border-radius: 3px; transition: width 0.3s; }
 .empty-state { text-align: center; padding: 4rem 1rem; color: var(--text-sub); }
 .empty-state i { font-size: 48px; color: #ccc; display: block; margin-bottom: 12px; }
 
-/* ---- HISTORY ---- */
-.history-body { padding: 1rem; flex: 1; background: var(--gray); overflow-y: auto; }
-.hist-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.25rem; cursor: pointer; margin-bottom: 10px; }
-.hist-card:active { background: #f9f9f9; }
-.hist-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
-.hist-id { font-size: 15px; font-weight: 600; color: var(--text); }
-.hist-date { font-size: 12px; color: var(--text-sub); margin-bottom: 6px; }
-.hist-summary { display: flex; gap: 10px; font-size: 12px; }
-.hist-done { color: #3B6D11; font-weight: 600; }
-.hist-fail { color: var(--danger); font-weight: 600; }
-
-/* ---- HISTORY DETAIL ---- */
-.hd-header { background: var(--brand); padding: 1rem 1.25rem; flex-shrink: 0; }
-.hd-back { color: white; font-size: 13px; display: flex; align-items: center; gap: 4px; cursor: pointer; margin-bottom: 10px; opacity: 0.9; }
-.hd-title { font-size: 18px; font-weight: 700; color: white; }
-.hd-sub { font-size: 13px; color: rgba(255,255,255,0.8); margin-top: 4px; }
-.hd-body { padding: 1rem; flex: 1; background: var(--gray); overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-.hd-stop-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 1rem; }
-.hd-stop-card.hd-done { border-left: 4px solid #639922; }
-.hd-stop-card.hd-fail { border-left: 4px solid var(--danger); }
-.hd-stop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-.hd-stop-lbl { font-size: 12px; color: var(--text-sub); font-weight: 600; display: flex; align-items: center; gap: 4px; }
-.hd-stop-name { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
-.hd-stop-addr { font-size: 13px; color: var(--text-sub); }
-.hd-stop-phone { font-size: 13px; color: var(--brand-dark); font-weight: 600; margin-top: 4px; }
-.hd-status-row { margin-top: 8px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-.hd-status-done { color: #3B6D11; }
-.hd-status-fail { color: var(--danger); }
-.hd-proof-thumb { width: 72px; height: 72px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); cursor: pointer; margin-top: 8px; }
-.hd-summary-bar { background: white; border-radius: 14px; border: 1px solid var(--border); padding: 1rem; display: flex; justify-content: space-around; text-align: center; }
-.hd-sum-item .hd-sum-num { font-size: 22px; font-weight: 700; }
-.hd-sum-item .hd-sum-lbl { font-size: 11px; color: var(--text-sub); margin-top: 2px; }
-.hd-sum-done .hd-sum-num { color: #3B6D11; }
-.hd-sum-fail .hd-sum-num { color: var(--danger); }
-.hd-sum-total .hd-sum-num { color: var(--brand); }
-
-/* ---- DETAIL (active order) ---- */
-.detail-header { background: var(--brand); padding: 1rem 1.25rem; flex-shrink: 0; }
+/* DETAIL */
+.detail-header { background: var(--brand); padding: 1rem 1.25rem; }
 .back-btn { color: white; font-size: 13px; display: flex; align-items: center; gap: 4px; cursor: pointer; margin-bottom: 10px; opacity: 0.9; }
 .detail-title { font-size: 18px; font-weight: 700; color: white; }
 .detail-sub { font-size: 13px; color: rgba(255,255,255,0.8); margin-top: 4px; }
-.detail-body { padding: 1rem; display: flex; flex-direction: column; gap: 10px; flex: 1; background: var(--gray); overflow-y: auto; }
+.detail-body { padding: 1rem; display: flex; flex-direction: column; gap: 10px; flex: 1; background: var(--gray); }
 .stop-card { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 1rem; }
 .stop-card.done-card { border-color: #639922; border-left: 4px solid #639922; }
 .stop-card.fail-card { border-color: var(--danger); border-left: 4px solid var(--danger); }
@@ -119,55 +67,33 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .stop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .stop-label { font-size: 12px; color: var(--text-sub); font-weight: 600; display: flex; align-items: center; gap: 4px; }
 .stop-name { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-.stop-addr { font-size: 13px; color: var(--text-sub); margin-bottom: 4px; }
-.stop-phone-row { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
-.stop-phone-num { font-size: 14px; font-weight: 600; color: var(--brand-dark); }
-.btn-call { display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; background: var(--brand-light); color: var(--brand-dark); border: 1px solid #9FE1CB; border-radius: 20px; font-size: 12px; font-weight: 600; text-decoration: none; }
+.stop-addr { font-size: 13px; color: var(--text-sub); }
 .stop-actions { display: flex; gap: 8px; margin-top: 14px; }
 .btn-success { flex: 1; padding: 11px; background: var(--brand-light); color: var(--brand-dark); border: 1px solid #9FE1CB; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
-.btn-success:active { opacity: 0.8; }
 .btn-fail { flex: 1; padding: 11px; background: var(--danger-light); color: #791F1F; border: 1px solid #F7C1C1; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
-.btn-fail:active { opacity: 0.8; }
 .status-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
 .dot-done { background: #639922; } .dot-fail { background: var(--danger); }
 .dot-pending { background: #ccc; } .dot-active { background: var(--brand); }
-.finish-btn { margin: 0 1rem 1rem; padding: 15px; background: var(--brand); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; flex-shrink: 0; }
-.proof-thumb { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; margin-top: 8px; border: 1px solid var(--border); cursor: pointer; }
+.finish-btn { margin: 0 1rem 1.5rem; padding: 15px; background: var(--brand); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
-/* ---- MODAL ---- */
+/* MODAL */
 .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 200; background: rgba(0,0,0,0.5); align-items: flex-end; justify-content: center; }
-.modal-sheet { background: white; border-radius: 20px 20px 0 0; padding: 1.5rem; width: 100%; max-width: 430px; max-height: 92vh; overflow-y: auto; }
+.modal-sheet { background: white; border-radius: 20px 20px 0 0; padding: 1.5rem; width: 100%; max-width: 430px; }
 .modal-handle { width: 40px; height: 4px; background: #ddd; border-radius: 2px; margin: 0 auto 1.25rem; }
 .modal-title { font-size: 17px; font-weight: 700; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px; }
-.modal-info-box { background: var(--gray); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; }
-.modal-info-box .info-label { font-size: 11px; color: var(--text-sub); font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
-.modal-info-box .info-name { font-size: 15px; font-weight: 600; color: var(--text); }
-.modal-info-box .info-phone { font-size: 13px; color: var(--brand-dark); margin-top: 2px; }
 .field select { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 15px; outline: none; color: var(--text); background: white; }
-.photo-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; cursor: pointer; color: var(--text-sub); font-size: 14px; margin: 12px 0; }
-.photo-zone:active { background: #f9f9f9; border-color: var(--brand); }
+.photo-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 2rem; text-align: center; cursor: pointer; color: var(--text-sub); font-size: 14px; margin: 12px 0; }
 .photo-zone i { font-size: 32px; display: block; margin-bottom: 8px; color: #aaa; }
-.photo-preview-wrap { position: relative; margin: 12px 0; }
-.photo-preview { width: 100%; border-radius: 12px; display: none; max-height: 220px; object-fit: cover; }
-.photo-retake { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.55); color: white; border: none; border-radius: 8px; padding: 5px 10px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
-.photo-required-hint { font-size: 12px; color: var(--danger); text-align: center; display: none; margin-top: -8px; margin-bottom: 4px; }
-.modal-actions { display: flex; gap: 10px; margin-top: 12px; }
+.photo-preview { width: 100%; border-radius: 12px; margin: 12px 0; display: none; max-height: 200px; object-fit: cover; }
+.modal-actions { display: flex; gap: 10px; margin-top: 4px; }
 .btn-cancel { flex: 1; padding: 12px; background: #f4f4f4; border: none; border-radius: 10px; font-size: 15px; cursor: pointer; color: var(--text); }
-.btn-confirm-success { flex: 2; padding: 12px; background: var(--brand); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
-.btn-confirm-fail { flex: 2; padding: 12px; background: var(--danger); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
-.photo-zone.required-flash { border-color: var(--danger); background: var(--danger-light); animation: flash 0.4s ease; }
-@keyframes flash { 0%,100%{opacity:1} 50%{opacity:0.5} }
+.btn-confirm { flex: 1; padding: 12px; background: var(--danger); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
 
-/* ---- LOADING ---- */
+/* LOADING */
 .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 300; background: rgba(255,255,255,0.85); align-items: center; justify-content: center; flex-direction: column; gap: 12px; }
 .spinner { width: 36px; height: 36px; border: 3px solid #eee; border-top-color: var(--brand); border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .loading-text { font-size: 14px; color: var(--text-sub); }
-
-/* ---- IMG VIEWER ---- */
-.img-viewer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 400; align-items: center; justify-content: center; }
-.img-viewer img { max-width: 96%; max-height: 92vh; border-radius: 10px; }
-.img-viewer-close { position: absolute; top: 16px; right: 16px; color: white; font-size: 28px; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -179,13 +105,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     <div class="loading-text" id="loading-text">Đang xử lý...</div>
   </div>
 
-  <!-- IMG VIEWER -->
-  <div class="img-viewer" id="img-viewer" onclick="closeImgViewer()">
-    <i class="ti ti-x img-viewer-close"></i>
-    <img id="img-viewer-src" src="" />
-  </div>
-
-  <!-- ==================== LOGIN ==================== -->
+  <!-- LOGIN -->
   <div class="screen active" id="screen-login">
     <div class="login-header">
       <i class="ti ti-truck-delivery" style="font-size:52px;color:white;opacity:0.95;display:block;margin:0 auto"></i>
@@ -205,52 +125,25 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     </div>
   </div>
 
-  <!-- ==================== HOME (đơn hôm nay) ==================== -->
+  <!-- HOME -->
   <div class="screen" id="screen-home">
     <div class="topbar">
       <div class="topbar-left">
         <div class="topbar-title" id="home-name">Tài xế</div>
         <div class="topbar-sub" id="home-date"></div>
       </div>
-      <i class="ti ti-logout topbar-right" onclick="doLogout()" title="Đăng xuất"></i>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div id="sync-dot" style="width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.5)" title="Tự động đồng bộ mỗi 20 giây"></div>
+        <i class="ti ti-logout topbar-right" onclick="doLogout()" title="Đăng xuất"></i>
+      </div>
     </div>
     <div class="home-body">
       <div class="section-label">Đơn hàng hôm nay</div>
       <div id="order-list"></div>
     </div>
-    <div class="tab-spacer"></div>
   </div>
 
-  <!-- ==================== HISTORY ==================== -->
-  <div class="screen" id="screen-history">
-    <div class="topbar">
-      <div class="topbar-left">
-        <div class="topbar-title">Lịch sử đơn hàng</div>
-        <div class="topbar-sub" id="hist-driver-name"></div>
-      </div>
-      <i class="ti ti-logout topbar-right" onclick="doLogout()" title="Đăng xuất"></i>
-    </div>
-    <div class="history-body">
-      <div class="section-label">Đơn đã hoàn thành</div>
-      <div id="hist-list"></div>
-    </div>
-    <div class="tab-spacer"></div>
-  </div>
-
-  <!-- ==================== HISTORY DETAIL ==================== -->
-  <div class="screen" id="screen-hist-detail">
-    <div class="hd-header">
-      <div class="hd-back" id="hd-back-btn" onclick="goBackFromHistDetail()">
-        <i class="ti ti-arrow-left"></i> Quay lại
-      </div>
-      <div class="hd-title" id="hd-title"></div>
-      <div class="hd-sub" id="hd-sub"></div>
-    </div>
-    <div class="hd-body" id="hd-body"></div>
-    <div class="tab-spacer"></div>
-  </div>
-
-  <!-- ==================== ORDER DETAIL (active) ==================== -->
+  <!-- ORDER DETAIL -->
   <div class="screen" id="screen-detail">
     <div class="detail-header">
       <div class="back-btn" onclick="goHome()"><i class="ti ti-arrow-left"></i> Quay lại</div>
@@ -263,179 +156,150 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     </button>
   </div>
 
-  <!-- ==================== BOTTOM TAB BAR ==================== -->
-  <div class="tab-bar" id="tab-bar">
-    <div class="tab-item active" id="tab-today" onclick="switchTab('today')">
-      <i class="ti ti-clipboard-list"></i>
-      Hôm nay
-    </div>
-    <div class="tab-item" id="tab-history" onclick="switchTab('history')">
-      <i class="ti ti-history"></i>
-      Lịch sử
-    </div>
-  </div>
-
-  <!-- ==================== MODAL CHỤP ẢNH ==================== -->
-  <div id="photo-modal" class="modal-overlay">
+  <!-- MODAL THẤT BẠI -->
+  <div id="fail-modal" class="modal-overlay">
     <div class="modal-sheet">
       <div class="modal-handle"></div>
-      <div class="modal-title" id="modal-title-text"></div>
-      <div class="modal-info-box" id="modal-info-box">
-        <div class="info-label" id="modal-info-label"></div>
-        <div class="info-name" id="modal-info-name"></div>
-        <div class="info-phone" id="modal-info-phone"></div>
-      </div>
-      <div class="field" id="reason-field" style="display:none;margin-bottom:12px">
+      <div class="modal-title"><i class="ti ti-alert-circle" style="color:var(--danger)"></i> Giao thất bại</div>
+      <div class="field" style="margin-bottom:4px">
         <label>Lý do thất bại</label>
         <select id="fail-reason">
           <option>Khách không có nhà</option>
           <option>Khách hủy</option>
           <option>Sai địa chỉ</option>
-          <option>Khách không nhận hàng</option>
-          <option>Hàng bị lỗi / hư</option>
-          <option>Không liên lạc được</option>
+          <option>Khách không nhận</option>
           <option>Khác</option>
         </select>
       </div>
       <div class="photo-zone" id="photo-zone" onclick="triggerPhoto()">
         <i class="ti ti-camera"></i>
-        <span id="photo-zone-text">Chụp ảnh bằng chứng <span style="color:var(--danger)">*</span></span>
+        Chụp ảnh bằng chứng
       </div>
-      <div class="photo-preview-wrap">
-        <img id="photo-preview" class="photo-preview" onclick="viewImg(this.src)" />
-        <button class="photo-retake" id="photo-retake" style="display:none" onclick="retakePhoto()">
-          <i class="ti ti-refresh"></i> Chụp lại
-        </button>
-      </div>
-      <div class="photo-required-hint" id="photo-hint">⚠️ Vui lòng chụp ảnh bằng chứng trước khi xác nhận</div>
-      <input type="file" id="file-inp" accept="image/*" style="display:none" onchange="handlePhoto(this)" />
+      <img id="photo-preview" class="photo-preview" />
+      <input type="file" id="file-inp" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto(this)" />
       <div class="modal-actions">
         <button class="btn-cancel" onclick="closeModal()">Hủy</button>
-        <button id="modal-confirm-btn" onclick="confirmModal()">Xác nhận</button>
+        <button class="btn-confirm" onclick="confirmFail()">Xác nhận thất bại</button>
       </div>
     </div>
   </div>
 
-</div><!-- /app -->
+</div>
 
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbxwuqIuNnPbL5PAoOF3opMT2gltYG6a1NKHY2ovqHj4t0XbHQmNOtwn2EcAGRe4wnvMaw/exec';
 
 let state = {
   driver: null,
-  orders: [],          // đơn đang giao (chưa done)
-  histOrders: [],      // đơn đã done
-  histLoaded: false,
-  currentOrder: null,  // index trong state.orders
-  histDetailOrder: null, // object đơn lịch sử đang xem
-  histDetailFrom: 'history', // để biết back về đâu
-  modal: { stopIndex: null, resultStatus: null, photoData: null }
+  orders: [],
+  currentOrder: null,
+  pendingStop: null,
+  pollTimer: null
 };
+
+// ---- AUTO POLL ----
+function startPoll() {
+  stopPoll();
+  state.pollTimer = setInterval(async function() {
+    if (!state.driver) return;
+    var dot = document.getElementById('sync-dot');
+    if (dot) dot.style.background = 'rgba(255,255,255,0.9)';
+    try {
+      const res = await apiGet({ action: 'pollOrders', code: state.driver.code });
+      if (res.success && res.orders) {
+        const changed = JSON.stringify(res.orders) !== JSON.stringify(state.orders);
+        if (changed) {
+          state.orders = res.orders;
+          renderOrders();
+          if (state.currentOrder !== null && document.getElementById('screen-detail').classList.contains('active')) {
+            renderDetail();
+          }
+        }
+      }
+    } catch(e) {}
+    if (dot) setTimeout(function(){ dot.style.background = 'rgba(255,255,255,0.4)'; }, 600);
+  }, 20000);
+}
+function stopPoll() {
+  if (state.pollTimer) { clearInterval(state.pollTimer); state.pollTimer = null; }
+}
 
 // ---- UTILS ----
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
-function showLoading(t) {
-  document.getElementById('loading-text').textContent = t || 'Đang xử lý...';
+function showLoading(text) {
+  document.getElementById('loading-text').textContent = text || 'Đang xử lý...';
   document.getElementById('loading').style.display = 'flex';
 }
-function hideLoading() { document.getElementById('loading').style.display = 'none'; }
-async function apiGet(p) {
-  const res = await fetch(API_URL + '?' + new URLSearchParams(p));
+function hideLoading() {
+  document.getElementById('loading').style.display = 'none';
+}
+async function apiGet(params) {
+  const url = API_URL + '?' + new URLSearchParams(params);
+  const res = await fetch(url);
   return res.json();
 }
 async function apiPost(body) {
-  const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(body) });
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    body: JSON.stringify(body)
+  });
   return res.json();
 }
-function viewImg(src) {
-  document.getElementById('img-viewer-src').src = src;
-  document.getElementById('img-viewer').style.display = 'flex';
-}
-function closeImgViewer() { document.getElementById('img-viewer').style.display = 'none'; }
-
-// ---- TAB BAR ----
-function showTabBar() { document.getElementById('tab-bar').classList.add('visible'); }
-function hideTabBar() { document.getElementById('tab-bar').classList.remove('visible'); }
-function switchTab(tab) {
-  document.getElementById('tab-today').classList.toggle('active', tab === 'today');
-  document.getElementById('tab-history').classList.toggle('active', tab === 'history');
-  if (tab === 'today') {
-    renderOrders();
-    show('screen-home');
-  } else {
-    loadHistory();
-    show('screen-history');
-  }
-}
-
-// ---- AUTO LOGIN khi reload ----
-window.addEventListener("load", async () => {
-  const saved = localStorage.getItem("aura_driver");
-  if (saved) {
-    try {
-      const driver = JSON.parse(saved);
-      state.driver = driver;
-      document.getElementById("home-name").textContent = driver.name;
-      document.getElementById("hist-driver-name").textContent = driver.name;
-      const now = new Date();
-      document.getElementById("home-date").textContent = now.toLocaleDateString("vi-VN", { weekday: "long", day: "2-digit", month: "2-digit" });
-      await loadOrders();
-      showTabBar();
-      show("screen-home");
-    } catch(e) { localStorage.removeItem("aura_driver"); }
-  }
-});
 
 // ---- LOGIN ----
 async function doLogin() {
   const code = document.getElementById('inp-code').value.trim();
-  if (!code) { showLoginError('Vui lòng nhập mã tài xế'); return; }
+  if (!code) { showError('Vui lòng nhập mã tài xế'); return; }
+
   showLoading('Đang đăng nhập...');
   try {
     const res = await apiGet({ action: 'login', code });
     hideLoading();
     if (res.success) {
       state.driver = res.driver;
-      localStorage.setItem("aura_driver", JSON.stringify(res.driver));
       document.getElementById('home-name').textContent = res.driver.name;
-      document.getElementById('hist-driver-name').textContent = res.driver.name;
       const now = new Date();
       document.getElementById('home-date').textContent = now.toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit' });
       await loadOrders();
-      showTabBar();
       show('screen-home');
+      startPoll();
     } else {
-      showLoginError(res.message || 'Đăng nhập thất bại');
+      showError(res.message || 'Đăng nhập thất bại');
     }
   } catch (e) {
     hideLoading();
-    showLoginError('Lỗi kết nối, vui lòng thử lại');
+    showError('Lỗi kết nối, vui lòng thử lại');
   }
 }
-function showLoginError(msg) {
+function showError(msg) {
   const el = document.getElementById('login-error');
-  el.textContent = msg; el.style.display = 'block';
+  el.textContent = msg;
+  el.style.display = 'block';
 }
 function doLogout() {
-  localStorage.removeItem("aura_driver");
-  state = { driver: null, orders: [], histOrders: [], histLoaded: false, currentOrder: null, histDetailOrder: null, histDetailFrom: 'history', modal: { stopIndex: null, resultStatus: null, photoData: null } };
+  stopPoll();
+  state.driver = null;
+  state.orders = [];
   document.getElementById('inp-code').value = '';
   document.getElementById('login-error').style.display = 'none';
-  hideTabBar();
   show('screen-login');
 }
 
-// ---- LOAD ORDERS (active) ----
+// ---- ORDERS ----
 async function loadOrders() {
   showLoading('Đang tải đơn hàng...');
   try {
     const res = await apiGet({ action: 'getOrders', code: state.driver.code });
     hideLoading();
-    if (res.success) state.orders = res.orders || [];
-  } catch (e) { hideLoading(); }
+    if (res.success) {
+      state.orders = res.orders || [];
+    }
+  } catch (e) {
+    hideLoading();
+  }
   renderOrders();
 }
 
@@ -461,14 +325,11 @@ function renderOrders() {
     const pct = Math.round(done / total * 100);
     const bc = st === 'done' ? 'badge-done' : st === 'active' ? 'badge-active' : 'badge-pending';
     const bt = st === 'done' ? 'Hoàn thành' : st === 'active' ? 'Đang giao' : 'Chờ giao';
-    const pickups = o.stops.filter(s => s.type === 'pickup').length;
-    const drops = o.stops.filter(s => s.type === 'drop').length;
     return `<div class="order-card" onclick="openOrder(${i})">
       <div class="order-top"><span class="order-id">${o.id}</span><span class="badge ${bc}">${bt}</span></div>
       <div class="order-meta">
-        <span><i class="ti ti-building-warehouse" style="font-size:13px"></i> ${pickups} lấy</span>
-        <span><i class="ti ti-map-pin" style="font-size:13px"></i> ${drops} giao</span>
-        <span><i class="ti ti-check" style="font-size:13px"></i> ${done}/${total}</span>
+        <span><i class="ti ti-map-pin" style="font-size:13px"></i> ${total - 1} điểm giao</span>
+        <span><i class="ti ti-check" style="font-size:13px"></i> ${done}/${total} điểm</span>
       </div>
       <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
     </div>`;
@@ -478,18 +339,14 @@ function renderOrders() {
 function openOrder(idx) {
   state.currentOrder = idx;
   renderDetail();
-  hideTabBar();
   show('screen-detail');
 }
 function goHome() {
   renderOrders();
-  showTabBar();
-  document.getElementById('tab-today').classList.add('active');
-  document.getElementById('tab-history').classList.remove('active');
   show('screen-home');
 }
 
-// ---- ORDER DETAIL ----
+// ---- DETAIL ----
 function renderDetail() {
   const order = state.orders[state.currentOrder];
   const { done, total } = getProgress(order);
@@ -505,35 +362,23 @@ function renderDetail() {
     const isPickup = stop.type === 'pickup';
     const cc = isDone ? 'done-card' : isFail ? 'fail-card' : isActive ? 'active-card' : '';
     const dc = isDone ? 'dot-done' : isFail ? 'dot-fail' : isActive ? 'dot-active' : 'dot-pending';
-    const lbl = isPickup ? `Điểm lấy hàng ${si + 1}` : `Điểm giao hàng ${si}`;
+    const lbl = isPickup ? 'Điểm lấy hàng' : `Điểm giao ${si}`;
     const ico = isPickup ? 'ti-building-warehouse' : 'ti-map-pin';
-    const phone = stop.phone || stop.sdt || '';
-    const phoneHtml = phone ? `<div class="stop-phone-row">
-      <i class="ti ti-phone" style="font-size:14px;color:var(--brand)"></i>
-      <span class="stop-phone-num">${phone}</span>
-      <a class="btn-call" href="tel:${phone}"><i class="ti ti-phone-call" style="font-size:12px"></i> Gọi</a>
-    </div>` : '';
 
     let actions = '';
-    if (isActive) {
-      const sl = isPickup ? 'Đã lấy hàng' : 'Đã giao hàng';
-      const fl = isPickup ? 'Lấy thất bại' : 'Giao thất bại';
+    if (isActive && isPickup) {
+      actions = `<div class="stop-actions"><button class="btn-success" style="flex:1" onclick="markStop(${si},'done')"><i class="ti ti-check"></i> Đã lấy hàng</button></div>`;
+    } else if (isActive) {
       actions = `<div class="stop-actions">
-        <button class="btn-success" onclick="openPhotoModal(${si},'done')"><i class="ti ti-camera"></i> ${sl}</button>
-        <button class="btn-fail" onclick="openPhotoModal(${si},'fail')"><i class="ti ti-camera"></i> ${fl}</button>
+        <button class="btn-success" onclick="markStop(${si},'done')"><i class="ti ti-check"></i> Hoàn thành</button>
+        <button class="btn-fail" onclick="openFail(${si})"><i class="ti ti-x"></i> Thất bại</button>
       </div>`;
     }
 
-    let sl2 = '';
-    if (isDone) {
-      const th = stop.photo_data ? `<img class="proof-thumb" src="${stop.photo_data}" onclick="viewImg(this.src)" />` : '';
-      sl2 = `<div style="margin-top:8px;font-size:12px;color:#3B6D11;font-weight:600"><i class="ti ti-circle-check"></i> Hoàn thành</div>${th}`;
-    } else if (isFail) {
-      const th = stop.photo_data ? `<img class="proof-thumb" src="${stop.photo_data}" onclick="viewImg(this.src)" />` : '';
-      sl2 = `<div style="margin-top:8px;font-size:12px;color:var(--danger);font-weight:600"><i class="ti ti-circle-x"></i> Thất bại${stop.reason ? ' — ' + stop.reason : ''}</div>${th}`;
-    } else if (!isActive) {
-      sl2 = `<div style="margin-top:8px;font-size:12px;color:var(--text-sub)">Chờ xử lý</div>`;
-    }
+    let sl = '';
+    if (isDone) sl = `<div style="margin-top:8px;font-size:12px;color:#3B6D11;font-weight:600"><i class="ti ti-circle-check"></i> Hoàn thành</div>`;
+    else if (isFail) sl = `<div style="margin-top:8px;font-size:12px;color:var(--danger);font-weight:600"><i class="ti ti-circle-x"></i> Thất bại${stop.reason ? ' — ' + stop.reason : ''}</div>`;
+    else if (!isActive) sl = `<div style="margin-top:8px;font-size:12px;color:var(--text-sub)">Chờ giao</div>`;
 
     return `<div class="stop-card ${cc}">
       <div class="stop-header">
@@ -541,8 +386,8 @@ function renderDetail() {
         <span class="status-dot ${dc}"></span>
       </div>
       <div class="stop-name">${stop.name}</div>
-      <div class="stop-addr">${stop.addr || ''}</div>
-      ${phoneHtml}${sl2}${actions}
+      <div class="stop-addr">${stop.addr}</div>
+      ${sl}${actions}
     </div>`;
   }).join('');
 }
@@ -552,6 +397,8 @@ async function markStop(si, status, extra) {
   order.stops[si].status = status;
   if (extra) Object.assign(order.stops[si], extra);
   renderDetail();
+
+  // Gửi lên Apps Script
   try {
     await apiPost({
       action: 'updateStop',
@@ -561,221 +408,70 @@ async function markStop(si, status, extra) {
       stop_index: si,
       stop_type: order.stops[si].type,
       stop_name: order.stops[si].name,
-      stop_addr: order.stops[si].addr || '',
-      status,
+      stop_addr: order.stops[si].addr,
+      status: status,
       reason: extra ? extra.reason || '' : '',
-      photo_url: extra && extra.photo_data ? 'photo_attached' : ''
+      photo_url: extra ? extra.photo_url || '' : ''
     });
-  } catch (e) { console.log('Lỗi gửi update:', e); }
+  } catch (e) {
+    console.log('Lỗi gửi update:', e);
+  }
 }
 
 async function finishOrder() {
   const order = state.orders[state.currentOrder];
   const done = order.stops.filter(s => s.status === 'done').length;
   const fail = order.stops.filter(s => s.status === 'fail').length;
+
   showLoading('Đang kết thúc đơn...');
   try {
-    await apiPost({ action: 'finishOrder', driver_code: state.driver.code, driver_name: state.driver.name, order_id: order.id, done_count: done, fail_count: fail });
+    await apiPost({
+      action: 'finishOrder',
+      driver_code: state.driver.code,
+      driver_name: state.driver.name,
+      order_id: order.id,
+      done_count: done,
+      fail_count: fail
+    });
   } catch (e) {}
   hideLoading();
-  // move to history
-  order.status = 'done';
-  state.histOrders.unshift(order); // prepend vào lịch sử local
-  state.orders.splice(state.currentOrder, 1);
+
   alert(`Đơn ${order.id} đã kết thúc!\n✅ Hoàn thành: ${done} điểm\n❌ Thất bại: ${fail} điểm`);
+  order.finished = true;
   goHome();
 }
 
-// ---- HISTORY ----
-async function loadHistory() {
-  if (state.histLoaded) { renderHistory(); return; }
-  showLoading('Đang tải lịch sử...');
-  try {
-    const res = await apiGet({ action: 'getOrders', code: state.driver.code, includeAll: '1' });
-    hideLoading();
-    // API hiện tại chỉ trả đơn chưa done — lịch sử local từ finishOrder()
-    // Nếu sau này API hỗ trợ includeAll thì merge vào đây
-    if (res.success && res.orders) {
-      // Lấy đơn done từ API nếu có
-      const apiDone = res.orders.filter(o => o.status === 'done');
-      // Merge với local (tránh trùng)
-      const existing = new Set(state.histOrders.map(o => o.id || o.order_id));
-      apiDone.forEach(o => { if (!existing.has(o.id || o.order_id)) state.histOrders.push(o); });
-    }
-    state.histLoaded = true;
-  } catch (e) { hideLoading(); state.histLoaded = true; }
-  renderHistory();
-}
-
-function renderHistory() {
-  const list = document.getElementById('hist-list');
-  if (!state.histOrders || state.histOrders.length === 0) {
-    list.innerHTML = `<div class="empty-state"><i class="ti ti-history"></i><p>Chưa có đơn nào hoàn thành</p></div>`;
-    return;
-  }
-  list.innerHTML = state.histOrders.map((o, i) => {
-    const stops = o.stops || [];
-    const doneCount = stops.filter(s => s.status === 'done').length;
-    const failCount = stops.filter(s => s.status === 'fail').length;
-    const dateStr = o.date ? o.date : (o.created_at ? new Date(o.created_at).toLocaleDateString('vi-VN') : '');
-    return `<div class="hist-card" onclick="openHistDetail(${i})">
-      <div class="hist-top">
-        <span class="hist-id">${o.id || o.order_id}</span>
-        <span class="badge badge-done">Hoàn thành</span>
-      </div>
-      <div class="hist-date"><i class="ti ti-calendar" style="font-size:12px"></i> ${dateStr}</div>
-      <div class="hist-summary">
-        <span><i class="ti ti-map-pin" style="font-size:12px"></i> ${stops.length} điểm</span>
-        <span class="hist-done"><i class="ti ti-circle-check" style="font-size:12px"></i> ${doneCount} thành công</span>
-        ${failCount > 0 ? `<span class="hist-fail"><i class="ti ti-circle-x" style="font-size:12px"></i> ${failCount} thất bại</span>` : ''}
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function openHistDetail(idx) {
-  state.histDetailOrder = state.histOrders[idx];
-  state.histDetailFrom = 'history';
-  renderHistDetail();
-  hideTabBar();
-  show('screen-hist-detail');
-}
-
-function goBackFromHistDetail() {
-  showTabBar();
-  document.getElementById('tab-history').classList.add('active');
-  document.getElementById('tab-today').classList.remove('active');
-  show('screen-history');
-}
-
-function renderHistDetail() {
-  const o = state.histDetailOrder;
-  const stops = o.stops || [];
-  const doneCount = stops.filter(s => s.status === 'done').length;
-  const failCount = stops.filter(s => s.status === 'fail').length;
-  const dateStr = o.date || (o.created_at ? new Date(o.created_at).toLocaleDateString('vi-VN') : '');
-
-  document.getElementById('hd-title').textContent = o.id || o.order_id;
-  document.getElementById('hd-sub').textContent = `Ngày ${dateStr} · ${stops.length} điểm`;
-
-  // Summary bar
-  const summaryHtml = `<div class="hd-summary-bar">
-    <div class="hd-sum-item hd-sum-total"><div class="hd-sum-num">${stops.length}</div><div class="hd-sum-lbl">Tổng điểm</div></div>
-    <div class="hd-sum-item hd-sum-done"><div class="hd-sum-num">${doneCount}</div><div class="hd-sum-lbl">Thành công</div></div>
-    <div class="hd-sum-item hd-sum-fail"><div class="hd-sum-num">${failCount}</div><div class="hd-sum-lbl">Thất bại</div></div>
-  </div>`;
-
-  // Stops
-  const stopsHtml = stops.map((stop, si) => {
-    const isDone = stop.status === 'done';
-    const isFail = stop.status === 'fail';
-    const isPickup = stop.type === 'pickup';
-    const cardClass = isDone ? 'hd-done' : isFail ? 'hd-fail' : '';
-    const ico = isPickup ? 'ti-building-warehouse' : 'ti-map-pin';
-    const lbl = isPickup ? `Điểm lấy hàng ${si + 1}` : `Điểm giao hàng ${si}`;
-    const phone = stop.phone || stop.sdt || '';
-
-    let statusHtml = '';
-    if (isDone) {
-      statusHtml = `<div class="hd-status-row hd-status-done"><i class="ti ti-circle-check"></i> Hoàn thành</div>`;
-    } else if (isFail) {
-      statusHtml = `<div class="hd-status-row hd-status-fail"><i class="ti ti-circle-x"></i> Thất bại${stop.reason ? ' — ' + stop.reason : ''}</div>`;
-    }
-
-    const thumbHtml = stop.photo_data
-      ? `<img class="hd-proof-thumb" src="${stop.photo_data}" onclick="viewImg(this.src)" title="Xem ảnh bằng chứng" />`
-      : '';
-
-    return `<div class="hd-stop-card ${cardClass}">
-      <div class="hd-stop-header">
-        <span class="hd-stop-lbl"><i class="ti ${ico}" style="font-size:14px"></i>${lbl}</span>
-      </div>
-      <div class="hd-stop-name">${stop.name}</div>
-      ${stop.addr ? `<div class="hd-stop-addr">${stop.addr}</div>` : ''}
-      ${phone ? `<div class="hd-stop-phone"><i class="ti ti-phone" style="font-size:12px"></i> ${phone}</div>` : ''}
-      ${statusHtml}${thumbHtml}
-    </div>`;
-  }).join('');
-
-  document.getElementById('hd-body').innerHTML = summaryHtml + stopsHtml;
-}
-
-// ---- PHOTO MODAL ----
-function openPhotoModal(si, resultStatus) {
-  const order = state.orders[state.currentOrder];
-  const stop = order.stops[si];
-  const isPickup = stop.type === 'pickup';
-  const isFail = resultStatus === 'fail';
-  state.modal = { stopIndex: si, resultStatus, photoData: null };
-
-  const titleEl = document.getElementById('modal-title-text');
-  if (isFail) {
-    titleEl.innerHTML = `<i class="ti ti-alert-circle" style="color:var(--danger)"></i> ${isPickup ? 'Lấy hàng thất bại' : 'Giao hàng thất bại'}`;
-  } else {
-    titleEl.innerHTML = `<i class="ti ti-camera" style="color:var(--brand)"></i> ${isPickup ? 'Xác nhận lấy hàng' : 'Xác nhận giao hàng'}`;
-  }
-
-  document.getElementById('modal-info-label').textContent = isPickup ? 'Người giao / kho' : 'Người nhận hàng';
-  document.getElementById('modal-info-name').textContent = stop.name || '—';
-  const phone = stop.phone || stop.sdt || '';
-  document.getElementById('modal-info-phone').textContent = phone ? '📞 ' + phone : '';
-  document.getElementById('reason-field').style.display = isFail ? 'block' : 'none';
-
-  const zone = document.getElementById('photo-zone');
-  zone.className = 'photo-zone';
-  zone.style.display = 'block';
-  document.getElementById('photo-preview').src = '';
+// ---- MODAL THẤT BẠI ----
+function openFail(si) {
+  state.pendingStop = si;
   document.getElementById('photo-preview').style.display = 'none';
-  document.getElementById('photo-retake').style.display = 'none';
-  document.getElementById('photo-hint').style.display = 'none';
-  document.getElementById('file-inp').value = '';
-
-  const btn = document.getElementById('modal-confirm-btn');
-  if (isFail) { btn.className = 'btn-confirm-fail'; btn.textContent = 'Xác nhận thất bại'; }
-  else { btn.className = 'btn-confirm-success'; btn.textContent = 'Xác nhận hoàn thành'; }
-
-  document.getElementById('photo-modal').style.display = 'flex';
+  document.getElementById('photo-preview').src = '';
+  document.getElementById('photo-zone').style.display = 'block';
+  document.getElementById('fail-modal').style.display = 'flex';
 }
-
 function closeModal() {
-  document.getElementById('photo-modal').style.display = 'none';
-  state.modal = { stopIndex: null, resultStatus: null, photoData: null };
+  document.getElementById('fail-modal').style.display = 'none';
+  state.pendingStop = null;
 }
-function triggerPhoto() { document.getElementById('file-inp').click(); }
+function triggerPhoto() {
+  document.getElementById('file-inp').click();
+}
 function handlePhoto(inp) {
   if (!inp.files[0]) return;
   const reader = new FileReader();
   reader.onload = e => {
     const p = document.getElementById('photo-preview');
-    p.src = e.target.result; p.style.display = 'block';
+    p.src = e.target.result;
+    p.style.display = 'block';
     document.getElementById('photo-zone').style.display = 'none';
-    document.getElementById('photo-retake').style.display = 'flex';
-    document.getElementById('photo-hint').style.display = 'none';
-    state.modal.photoData = e.target.result;
   };
   reader.readAsDataURL(inp.files[0]);
 }
-function retakePhoto() {
-  document.getElementById('file-inp').value = '';
-  document.getElementById('photo-preview').style.display = 'none';
-  document.getElementById('photo-preview').src = '';
-  document.getElementById('photo-zone').style.display = 'block';
-  document.getElementById('photo-retake').style.display = 'none';
-  state.modal.photoData = null;
-  document.getElementById('file-inp').click();
-}
-async function confirmModal() {
-  if (!state.modal.photoData) {
-    const zone = document.getElementById('photo-zone');
-    zone.classList.add('required-flash');
-    setTimeout(() => zone.classList.remove('required-flash'), 600);
-    document.getElementById('photo-hint').style.display = 'block';
-    return;
-  }
-  const { stopIndex, resultStatus, photoData } = state.modal;
-  const reason = resultStatus === 'fail' ? document.getElementById('fail-reason').value : '';
+function confirmFail() {
+  const reason = document.getElementById('fail-reason').value;
+  const photo = document.getElementById('photo-preview').src;
+  markStop(state.pendingStop, 'fail', { reason, photo_url: photo ? 'photo_attached' : '' });
   closeModal();
-  await markStop(stopIndex, resultStatus, { reason, photo_data: photoData });
 }
 </script>
 </body>
