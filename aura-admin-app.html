@@ -6,6 +6,7 @@
 <title>AURA — Quản lý</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--G:#1D9E75;--G2:#0d7a5a;--GL:#e8f7f2;--R:#e53935;--RL:#fdecea;--W:#f59e0b;--WL:#fef3c7;--B:#3b82f6;--BL:#eff6ff;--bg:#f0f4f8;--sf:#fff;--sf2:#f8fafc;--bd:#e2e8f0;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--sb:220px;--tb:56px;--r:12px;--rs:8px}
@@ -164,7 +165,7 @@ tr:hover td{background:#fafbfc}
 </div>
 
 <div class="pg" id="pg-orders">
-  <div class="ph"><div class="pt"><i class="ti ti-clipboard-list"></i>Đơn hàng</div><div style="display:flex;gap:8px"><button class="btn bs bsm" onclick="expExcel()"><i class="ti ti-table-export"></i> Xuất Excel</button><button class="btn bp" onclick="gp('neworder')"><i class="ti ti-plus"></i> Tạo đơn mới</button></div></div>
+  <div class="ph"><div class="pt"><i class="ti ti-clipboard-list"></i>Đơn hàng</div><div style="display:flex;gap:8px"><button class="btn bs bsm" onclick="expOrders()"><i class="ti ti-table-export"></i> Xuất Excel</button><button class="btn bp" onclick="gp('neworder')"><i class="ti ti-plus"></i> Tạo đơn mới</button></div></div>
   <div class="sg" style="grid-template-columns:repeat(4,1fr)">
     <div class="sc"><div class="sn" id="o-tot">0</div><div class="sl">Tổng đơn</div></div>
     <div class="sc"><div class="sn" style="color:var(--W)" id="o-pen">0</div><div class="sl">Chờ giao</div></div>
@@ -190,13 +191,13 @@ tr:hover td{background:#fafbfc}
 </div>
 
 <div class="pg" id="pg-drivers">
-  <div class="ph"><div class="pt"><i class="ti ti-users"></i>Quản lý tài xế</div><button class="btn bp" onclick="alert('Thêm tài xế trực tiếp vào sheet drivers trong Google Sheet nhé!')"><i class="ti ti-external-link"></i> Thêm tài xế</button></div>
+  <div class="ph"><div class="pt"><i class="ti ti-users"></i>Quản lý tài xế</div><div style="display:flex;gap:8px"><button class="btn bs bsm" onclick="expDrivers()"><i class="ti ti-table-export"></i> Xuất Excel</button><button class="btn bp" onclick="alert('Thêm tài xế trực tiếp vào sheet drivers trong Google Sheet nhé!')"><i class="ti ti-external-link"></i> Thêm tài xế</button></div></div>
   <div class="cd"><div class="ch"><div class="fb" style="flex:1"><input type="text" id="d-s" placeholder="Tìm tên, mã tài xế..." oninput="rDrivers()"><select id="d-sf" onchange="rDrivers()"><option value="">Tất cả</option><option value="active">Hoạt động</option><option value="off">Đã nghỉ</option><option value="locked">Bị khóa</option></select></div><button class="bic" onclick="loadDrivers()"><i class="ti ti-refresh"></i></button></div>
   <div class="tw"><table><thead><tr><th>Mã TX</th><th>Tên tài xế</th><th>Số điện thoại</th><th>Biển số xe</th><th>Trạng thái</th></tr></thead><tbody id="d-tb"><tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--tx3)">Đang tải...</td></tr></tbody></table></div></div>
 </div>
 
 <div class="pg" id="pg-vehicles">
-  <div class="ph"><div class="pt"><i class="ti ti-truck"></i>Quản lý xe</div><button class="btn bp" onclick="om('vm')"><i class="ti ti-plus"></i> Thêm xe</button></div>
+  <div class="ph"><div class="pt"><i class="ti ti-truck"></i>Quản lý xe</div><div style="display:flex;gap:8px"><button class="btn bs bsm" onclick="expVehicles()"><i class="ti ti-table-export"></i> Xuất Excel</button><button class="btn bp" onclick="om('vm')"><i class="ti ti-plus"></i> Thêm xe</button></div></div>
   <div class="sg" style="grid-template-columns:repeat(4,1fr)">
     <div class="sc"><div class="sn" style="color:var(--G)" id="v-act">0</div><div class="sl">Đang hoạt động</div></div>
     <div class="sc"><div class="sn" style="color:var(--W)" id="v-mai">0</div><div class="sl">Bảo dưỡng</div></div>
@@ -209,21 +210,21 @@ tr:hover td{background:#fafbfc}
 </div>
 
 <div class="pg" id="pg-quotes">
-  <div class="ph"><div class="pt"><i class="ti ti-receipt"></i>Báo giá</div><button class="btn bp" onclick="oqm()"><i class="ti ti-plus"></i> Tạo báo giá</button></div>
+  <div class="ph"><div class="pt"><i class="ti ti-receipt"></i>Báo giá</div><div style="display:flex;gap:8px"><button class="btn bs bsm" onclick="expQuotes()"><i class="ti ti-table-export"></i> Xuất Excel</button><button class="btn bp" onclick="oqm()"><i class="ti ti-plus"></i> Tạo báo giá</button></div></div>
   <div class="tbar"><button class="tbtn on" onclick="swTab(this,'qt-out')">Báo giá cho khách</button><button class="tbtn" onclick="swTab(this,'qt-in')">Báo giá từ vendor</button></div>
   <div class="tp on" id="qt-out"><div class="cd"><div class="ch"><div class="ct"><i class="ti ti-send"></i>Gửi cho khách hàng</div></div><div class="tw"><table><thead><tr><th>Mã BG</th><th>Khách hàng</th><th>Loại xe</th><th>Tuyến đường</th><th>Đơn giá</th><th>Ngày tạo</th><th>Hiệu lực đến</th><th>Trạng thái</th><th>File</th><th></th></tr></thead><tbody id="qo-tb"><tr><td colspan="10" style="text-align:center;padding:2rem;color:var(--tx3)">Chưa có báo giá</td></tr></tbody></table></div></div></div>
   <div class="tp" id="qt-in"><div class="cd"><div class="ch"><div class="ct"><i class="ti ti-inbox"></i>Nhận từ vendor</div></div><div class="tw"><table><thead><tr><th>Mã BG</th><th>Vendor</th><th>Dịch vụ</th><th>Đơn giá</th><th>Hiệu lực đến</th><th>Trạng thái</th><th>File</th><th></th></tr></thead><tbody id="qi-tb"><tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--tx3)">Chưa có báo giá</td></tr></tbody></table></div></div></div>
 </div>
 
 <div class="pg" id="pg-contracts">
-  <div class="ph"><div class="pt"><i class="ti ti-file-text"></i>Hợp đồng</div><button class="btn bp" onclick="ocm()"><i class="ti ti-plus"></i> Thêm hợp đồng</button></div>
+  <div class="ph"><div class="pt"><i class="ti ti-file-text"></i>Hợp đồng</div><div style="display:flex;gap:8px"><button class="btn bs bsm" onclick="expContracts()"><i class="ti ti-table-export"></i> Xuất Excel</button><button class="btn bp" onclick="ocm()"><i class="ti ti-plus"></i> Thêm hợp đồng</button></div></div>
   <div class="tbar"><button class="tbtn on" onclick="swTab(this,'ct-hd')">Bảng cứng</button><button class="tbtn" onclick="swTab(this,'ct-sf')">Bảng mềm</button></div>
   <div class="tp on" id="ct-hd"><div class="cd"><div class="ch"><div class="ct"><i class="ti ti-file-certificate"></i>Hợp đồng gốc (bảng cứng)</div></div><div class="tw"><table><thead><tr><th>Mã HĐ</th><th>Đối tác</th><th>Loại dịch vụ</th><th>Ngày ký</th><th>Hiệu lực đến</th><th>Giá trị</th><th>Trạng thái</th><th>File</th><th></th></tr></thead><tbody id="ch-tb"><tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--tx3)">Chưa có hợp đồng</td></tr></tbody></table></div></div></div>
   <div class="tp" id="ct-sf"><div class="cd"><div class="ch"><div class="ct"><i class="ti ti-table"></i>Bảng mềm (linh hoạt)</div></div><div class="tw"><table><thead><tr><th>Mã</th><th>Đối tác</th><th>Tuyến / Dịch vụ</th><th>Van 1T (VNĐ)</th><th>Tải 2T (VNĐ)</th><th>Phụ phí</th><th>Hiệu lực đến</th><th>File</th><th></th></tr></thead><tbody id="cs-tb"><tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--tx3)">Chưa có dữ liệu</td></tr></tbody></table></div></div></div>
 </div>
 
 <div class="pg" id="pg-costs">
-  <div class="ph"><div class="pt"><i class="ti ti-coin"></i>Chi phí vận hành</div><button class="btn bp" onclick="ocostm()"><i class="ti ti-plus"></i> Ghi chi phí</button></div>
+  <div class="ph"><div class="pt"><i class="ti ti-coin"></i>Chi phí vận hành</div><div style="display:flex;gap:8px"><button class="btn bs bsm" onclick="expCosts()"><i class="ti ti-table-export"></i> Xuất Excel</button><button class="btn bp" onclick="ocostm()"><i class="ti ti-plus"></i> Ghi chi phí</button></div></div>
   <div class="sg" style="grid-template-columns:repeat(4,1fr)">
     <div class="sc"><div class="sic sg-w"><i class="ti ti-gas-station"></i></div><div class="sn" id="c-fuel">0đ</div><div class="sl">Xăng dầu tháng này</div></div>
     <div class="sc"><div class="sic sg-b"><i class="ti ti-road"></i></div><div class="sn" id="c-toll">0đ</div><div class="sl">Cầu đường tháng này</div></div>
@@ -392,16 +393,182 @@ function cfAssign(){
     hL();if(r.success){toast('Gán tài xế thành công!');cm('m-assign');loadOrders();}else toast(r.message||'Lỗi','r');
   }).catch(function(){hL();toast('Lỗi kết nối','r');});
 }
-function expExcel(){
-  if(!db.orders.length){toast('Không có đơn hàng','w');return;}
-  var sm={pending:'Chờ giao',inprogress:'Đang giao',done:'Hoàn thành'};
-  var csv='Mã đơn,Ngày giao,Tài xế,Mã tài xế,Số điểm giao,Trạng thái,Ghi chú\n';
-  db.orders.forEach(function(o){
-    var row=[o.order_id||o.id||'',o.date||'',o.driver_name||'',o.driver_code||'',(o.stops||[]).filter(function(s){return s.type==='drop';}).length,sm[o.status]||o.status||'',o.note||''];
-    csv+=row.map(function(v){return'"'+String(v).replace(/"/g,'""')+'"';}).join(',')+'\n';
+function xlsxDown(wb, fileName) {
+  var wbout = XLSX.write(wb, {bookType:'xlsx', type:'binary'});
+  var buf = new ArrayBuffer(wbout.length);
+  var view = new Uint8Array(buf);
+  for (var i=0; i<wbout.length; i++) view[i] = wbout.charCodeAt(i) & 0xFF;
+  var blob = new Blob([buf], {type:'application/octet-stream'});
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fileName; a.click();
+}
+function xlsxStyle(ws, headers) {
+  // bold header row
+  headers.forEach(function(h, i) {
+    var cell = ws[XLSX.utils.encode_cell({r:0, c:i})];
+    if (cell) cell.s = {font:{bold:true}};
   });
-  var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download='AURA_DonHang.csv';a.click();
-  toast('Đã xuất Excel!');
+}
+
+function expOrders() {
+  if (!db.orders.length) { toast('Không có đơn hàng','w'); return; }
+  var sm = {pending:'Chờ giao', inprogress:'Đang giao', done:'Hoàn thành'};
+  var rows = db.orders.map(function(o) {
+    return {
+      'Mã đơn': o.order_id||o.id||'',
+      'Ngày giao': o.date||'',
+      'Tài xế': o.driver_name||'Chưa gán',
+      'Mã tài xế': o.driver_code||'',
+      'Số điểm giao': (o.stops||[]).filter(function(s){return s.type==='drop';}).length,
+      'Trạng thái': sm[o.status]||o.status||'',
+      'Ghi chú': o.note||''
+    };
+  });
+  var wb = XLSX.utils.book_new();
+  var ws = XLSX.utils.json_to_sheet(rows);
+  ws['!cols'] = [{wch:16},{wch:14},{wch:20},{wch:10},{wch:12},{wch:14},{wch:24}];
+  XLSX.utils.book_append_sheet(wb, ws, 'Đơn hàng');
+  // Sheet chi tiết điểm giao
+  var stops = [];
+  db.orders.forEach(function(o) {
+    (o.stops||[]).forEach(function(s) {
+      stops.push({'Mã đơn':o.order_id||o.id||'','Loại điểm':s.type==='pickup'?'Lấy hàng':'Giao hàng','Tên điểm':s.name||'','Địa chỉ':s.addr||'','Kết quả':s.status==='done'?'Hoàn thành':s.status==='fail'?'Thất bại':'Chờ','Lý do thất bại':s.reason||''});
+    });
+  });
+  if (stops.length) {
+    var ws2 = XLSX.utils.json_to_sheet(stops);
+    ws2['!cols'] = [{wch:16},{wch:14},{wch:22},{wch:36},{wch:14},{wch:24}];
+    XLSX.utils.book_append_sheet(wb, ws2, 'Chi tiết điểm giao');
+  }
+  var d = new Date(); var fn = 'AURA_DonHang_'+d.getFullYear()+(d.getMonth()+1+'').padStart(2,'0')+(''+d.getDate()).padStart(2,'0')+'.xlsx';
+  xlsxDown(wb, fn); toast('Đã xuất Excel đơn hàng!');
+}
+
+function expDrivers() {
+  if (!db.drivers.length) { toast('Không có tài xế','w'); return; }
+  var sm = {active:'Hoạt động', off:'Đã nghỉ', locked:'Bị khóa'};
+  var rows = db.drivers.map(function(d) {
+    return {
+      'Mã tài xế': d.driver_code||d.code||'',
+      'Tên tài xế': d.driver_name||d.name||'',
+      'Số điện thoại': d.phone||'',
+      'Biển số xe': d.license_plate||'',
+      'Trạng thái': sm[d.status]||d.status||'',
+      'Ngày tạo': d.created_at||''
+    };
+  });
+  var wb = XLSX.utils.book_new();
+  var ws = XLSX.utils.json_to_sheet(rows);
+  ws['!cols'] = [{wch:12},{wch:22},{wch:16},{wch:14},{wch:14},{wch:16}];
+  XLSX.utils.book_append_sheet(wb, ws, 'Tài xế');
+  var d = new Date(); var fn = 'AURA_TaiXe_'+d.getFullYear()+(d.getMonth()+1+'').padStart(2,'0')+(''+d.getDate()).padStart(2,'0')+'.xlsx';
+  xlsxDown(wb, fn); toast('Đã xuất Excel tài xế!');
+}
+
+function expVehicles() {
+  if (!db.vehicles.length) { toast('Không có dữ liệu xe','w'); return; }
+  var sm = {active:'Hoạt động', maintenance:'Bảo dưỡng', inactive:'Không HĐ'};
+  var rows = db.vehicles.map(function(v) {
+    return {
+      'Biển số': v.plate||'',
+      'Loại xe': v.type==='van_1t'?'Van 1 tấn':'Xe tải 2 tấn',
+      'Năm SX': v.year||'',
+      'Màu xe': v.color||'',
+      'Tài xế phụ trách': v.driver||'',
+      'Hạn đăng kiểm': v.inspection_date||'',
+      'Hạn bảo hiểm': v.insurance_date||'',
+      'Km hiện tại': v.km||0,
+      'Trạng thái': sm[v.status]||v.status||'',
+      'Ghi chú': v.note||''
+    };
+  });
+  var wb = XLSX.utils.book_new();
+  var ws = XLSX.utils.json_to_sheet(rows);
+  ws['!cols'] = [{wch:14},{wch:14},{wch:10},{wch:10},{wch:20},{wch:16},{wch:16},{wch:14},{wch:14},{wch:24}];
+  XLSX.utils.book_append_sheet(wb, ws, 'Quản lý xe');
+  var d = new Date(); var fn = 'AURA_QuanLyXe_'+d.getFullYear()+(d.getMonth()+1+'').padStart(2,'0')+(''+d.getDate()).padStart(2,'0')+'.xlsx';
+  xlsxDown(wb, fn); toast('Đã xuất Excel quản lý xe!');
+}
+
+function expQuotes() {
+  if (!db.quotes.length) { toast('Không có báo giá','w'); return; }
+  var vl = function(t){return t==='van_1t'?'Van 1T':t==='truck_2t'?'Tải 2T':'Cả hai';};
+  var rows = db.quotes.map(function(q) {
+    return {
+      'Mã báo giá': q.id||'',
+      'Loại': q.type==='out'?'Cho khách':'Từ vendor',
+      'Đối tác': q.partner||'',
+      'Loại xe': vl(q.vtype),
+      'Tuyến đường': q.route||'',
+      'Đơn giá (VNĐ)': Number(q.price)||0,
+      'Ngày tạo': q.date?new Date(q.date).toLocaleDateString('vi-VN'):'',
+      'Hiệu lực đến': q.valid||'',
+      'Ghi chú': q.note||'',
+      'File đính kèm': q.file||''
+    };
+  });
+  var wb = XLSX.utils.book_new();
+  var ws = XLSX.utils.json_to_sheet(rows);
+  ws['!cols'] = [{wch:18},{wch:12},{wch:22},{wch:10},{wch:24},{wch:18},{wch:14},{wch:14},{wch:28},{wch:28}];
+  XLSX.utils.book_append_sheet(wb, ws, 'Báo giá');
+  var d = new Date(); var fn = 'AURA_BaoGia_'+d.getFullYear()+(d.getMonth()+1+'').padStart(2,'0')+(''+d.getDate()).padStart(2,'0')+'.xlsx';
+  xlsxDown(wb, fn); toast('Đã xuất Excel báo giá!');
+}
+
+function expContracts() {
+  if (!db.contracts.length) { toast('Không có hợp đồng','w'); return; }
+  var sv = {transport:'Vận chuyển', lease:'Thuê xe', maintenance:'Bảo dưỡng', other:'Khác'};
+  var rows = db.contracts.map(function(c) {
+    return {
+      'Mã hợp đồng': c.id||'',
+      'Loại': c.type==='hard'?'Bảng cứng':'Bảng mềm',
+      'Đối tác': c.partner||'',
+      'Loại dịch vụ': sv[c.service]||c.service||'',
+      'Giá trị HĐ (VNĐ)': Number(c.value)||0,
+      'Ngày ký': c.sign||'',
+      'Hiệu lực đến': c.expire||'',
+      'Đơn giá Van 1T': Number(c.van)||0,
+      'Đơn giá Tải 2T': Number(c.truck)||0,
+      'Ghi chú': c.note||'',
+      'File đính kèm': c.file||''
+    };
+  });
+  var wb = XLSX.utils.book_new();
+  var ws = XLSX.utils.json_to_sheet(rows);
+  ws['!cols'] = [{wch:18},{wch:12},{wch:22},{wch:16},{wch:18},{wch:14},{wch:14},{wch:16},{wch:16},{wch:28},{wch:28}];
+  XLSX.utils.book_append_sheet(wb, ws, 'Hợp đồng');
+  var d = new Date(); var fn = 'AURA_HopDong_'+d.getFullYear()+(d.getMonth()+1+'').padStart(2,'0')+(''+d.getDate()).padStart(2,'0')+'.xlsx';
+  xlsxDown(wb, fn); toast('Đã xuất Excel hợp đồng!');
+}
+
+function expCosts() {
+  if (!db.costs.length) { toast('Không có dữ liệu chi phí','w'); return; }
+  var tl = {fuel:'Xăng dầu', toll:'Cầu đường', repair:'Sửa chữa', other:'Khác'};
+  var rows = db.costs.map(function(c) {
+    return {
+      'Ngày': c.date||'',
+      'Loại chi phí': tl[c.type]||c.type||'',
+      'Biển số xe': c.vehicle||'',
+      'Tài xế': c.driver||'',
+      'Số tiền (VNĐ)': Number(c.amount)||0,
+      'Ghi chú': c.note||''
+    };
+  });
+  var wb = XLSX.utils.book_new();
+  var ws = XLSX.utils.json_to_sheet(rows);
+  ws['!cols'] = [{wch:14},{wch:16},{wch:14},{wch:20},{wch:18},{wch:28}];
+  // Tổng hợp theo loại
+  var summary = [{},{},{},{}];
+  var types = ['fuel','toll','repair','other'];
+  var labels = ['Xăng dầu','Cầu đường','Sửa chữa','Khác'];
+  var totals = types.map(function(t){ return db.costs.filter(function(c){return c.type===t;}).reduce(function(a,c){return a+Number(c.amount||0);},0); });
+  var sumRows = types.map(function(t,i){ return {'Loại chi phí': labels[i], 'Tổng tiền (VNĐ)': totals[i]}; });
+  sumRows.push({'Loại chi phí':'TỔNG CỘNG','Tổng tiền (VNĐ)': totals.reduce(function(a,b){return a+b;},0)});
+  var ws2 = XLSX.utils.json_to_sheet(sumRows);
+  ws2['!cols'] = [{wch:20},{wch:20}];
+  XLSX.utils.book_append_sheet(wb, ws, 'Chi tiết chi phí');
+  XLSX.utils.book_append_sheet(wb, ws2, 'Tổng hợp');
+  var d = new Date(); var fn = 'AURA_ChiPhi_'+d.getFullYear()+(d.getMonth()+1+'').padStart(2,'0')+(''+d.getDate()).padStart(2,'0')+'.xlsx';
+  xlsxDown(wb, fn); toast('Đã xuất Excel chi phí!');
 }
 
 function fillDrv(){
