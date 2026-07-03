@@ -114,7 +114,7 @@ svg.icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;str
     </div>
     <div>
       <h1>Ahamove Scanner</h1>
-      <p>Scan mã đơn — kiểm tra trạng thái bulky · v7</p>
+      <p>Scan mã đơn — kiểm tra trạng thái bulky · v8</p>
     </div>
   </div>
 
@@ -202,9 +202,14 @@ function setStatus(type, msg) {
 function doSearch(code) {
   code = (code || '').trim().toUpperCase();
   if (!code) { document.getElementById('hint').textContent = 'Vui lòng nhập mã đơn hàng'; return; }
-  if (!sheetData) { alert('Dữ liệu chưa tải xong. Vui lòng đợi hoặc kiểm tra kết nối.'); return; }
-
   document.getElementById('inp').value = '';
+
+  if (!sheetData) {
+    // Dữ liệu chưa tải được — vẫn lưu mã đã quét vào lịch sử để copy/xóa sau, không chặn bằng popup nữa
+    renderNoData(code);
+    return;
+  }
+
   document.getElementById('loading').style.display = 'block';
   document.getElementById('result').style.display = 'none';
 
@@ -214,6 +219,25 @@ function doSearch(code) {
     const row = sheetData.find(r => (r.tracking_number || '').toString().toUpperCase() === code);
     renderResult(code, row);
   }, 250);
+}
+
+// ── Render khi CHƯA có dữ liệu để đối chiếu (API lỗi/chưa tải xong) ──
+// Vẫn hiện + lưu vào lịch sử để copy/xóa, không chặn hẳn bằng popup.
+function renderNoData(code) {
+  const area = document.getElementById('result');
+  area.style.display = 'block';
+  area.innerHTML = `
+    <div class="rcard notfound">
+      <div class="r-header">
+        <div class="r-code">${code}</div>
+        <span class="badge notfound">Chưa có dữ liệu</span>
+      </div>
+      <div class="r-rows">
+        <div class="r-row"><span class="rl">Kết quả</span><span class="rv" style="color:#c62828">Chưa tải được dữ liệu đơn hàng để đối chiếu</span></div>
+        <div class="r-row"><span class="rl">Gợi ý</span><span class="rv">Mã đã được lưu bên dưới — kiểm tra kết nối mạng rồi bấm quét/nhập lại để đối chiếu</span></div>
+      </div>
+    </div>`;
+  addHist(code, 'notfound', 'Chưa có dữ liệu');
 }
 
 // ── Render result ──
