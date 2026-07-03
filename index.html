@@ -399,10 +399,18 @@ async function toggleCam() {
     btn.classList.add('active');
     scanning = true;
 
-    const reader = getCodeReader();
-    document.getElementById('hint').textContent = reader
-      ? 'Đưa mã QR hoặc mã vạch vào khung để quét'
-      : '⚠️ Chưa tải được thư viện đọc mã vạch — chỉ quét được QR lúc này';
+    let reader = null;
+    try {
+      reader = getCodeReader();
+    } catch (e) {
+      reader = null;
+      document.getElementById('hint').textContent = '⚠️ Lỗi khởi tạo ZXing: ' + (e.message || e);
+    }
+    if (reader) {
+      document.getElementById('hint').textContent = 'Đưa mã QR hoặc mã vạch vào khung để quét';
+    } else if (typeof ZXing === 'undefined') {
+      document.getElementById('hint').textContent = '⚠️ Chưa tải được thư viện đọc mã vạch — chỉ quét được QR lúc này';
+    }
 
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -434,7 +442,12 @@ async function toggleCam() {
               doSearch(code);
             }
           } catch (e) {
-            // NotFoundException — chưa thấy mã vạch trong khung hình, bỏ qua, thử lại lần sau
+            var name = (e && e.name) || '';
+            // Các lỗi này là bình thường (chỉ nghĩa là chưa thấy mã trong khung hình) — bỏ qua
+            var normal = ['NotFoundException','ChecksumException','FormatException'].indexOf(name) !== -1;
+            if (!normal) {
+              document.getElementById('hint').textContent = '⚠️ Lỗi đọc mã vạch: ' + (name || e.message || e);
+            }
           }
         }
       }
