@@ -431,10 +431,10 @@ async function toggleCam() {
           return;
         }
 
-        // 2) Không phải QR -> thử mã vạch 1D (Code128/Code39/EAN...) trên cùng khung hình
+        // 2) Không phải QR -> thử mã vạch 1D (Code128/Code39/EAN...) — đưa thẳng video vào cho ZXing (ZXing chỉ hỗ trợ video/ảnh, không nhận canvas tự tạo)
         if (reader) {
           try {
-            const result = reader.decode(canvas);
+            const result = reader.decode(v);
             if (result && result.getText && result.getText().trim()) {
               const code = result.getText().trim().toUpperCase();
               beep();
