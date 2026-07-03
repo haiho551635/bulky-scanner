@@ -165,14 +165,16 @@ svg.icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;str
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+<script src="https://unpkg.com/@zxing/library@0.21.3"></script>
+<script src="https://unpkg.com/@zxing/browser@0.1.5"></script>
 <script>
 // ✅ URL MỚI — đã fix doGet đọc đúng header dòng 2
 const API_URL = "https://script.google.com/macros/s/AKfycbzO9kyqnuOHmujx2FkciLKGbbtD8Oyb6KXdCKC8Tu6hcHJJBfZ4TKUc22dZI2LrTRJ3jg/exec";
 
 let sheetData = null;
-let camStream = null, scanning = false, scanTimer = null;
+let camStream = null, scanning = false;
 let history = [];
+let codeReader = null, zxingControls = null; // ZXing: quét cả QR + mã vạch 1D (Code128, Code39, EAN, ITF, Codabar...)
 
 // ── Load Google Sheet ──
 async function loadSheet() {
@@ -339,6 +341,28 @@ function renderHist() {
 }
 
 // ── Camera ──
+// Dùng ZXing để quét ĐỒNG THỜI cả mã QR và mã vạch 1D (Code128, Code39, EAN-13/8, UPC, ITF, Codabar)
+// vì tem vận đơn thực tế (GHN/TikTok/Ahamove) thường in mã vạch 1D chứ không phải QR.
+function getCodeReader() {
+  if (codeReader) return codeReader;
+  const hints = new Map();
+  hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
+    ZXing.BarcodeFormat.QR_CODE,
+    ZXing.BarcodeFormat.CODE_128,
+    ZXing.BarcodeFormat.CODE_39,
+    ZXing.BarcodeFormat.CODE_93,
+    ZXing.BarcodeFormat.EAN_13,
+    ZXing.BarcodeFormat.EAN_8,
+    ZXing.BarcodeFormat.UPC_A,
+    ZXing.BarcodeFormat.UPC_E,
+    ZXing.BarcodeFormat.ITF,
+    ZXing.BarcodeFormat.CODABAR,
+  ]);
+  hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
+  codeReader = new ZXingBrowser.BrowserMultiFormatReader(hints);
+  return codeReader;
+}
+
 async function toggleCam() {
   if (scanning) { stopCam(); return; }
   const btn = document.getElementById('btnCam');
@@ -354,30 +378,24 @@ async function toggleCam() {
     btn.classList.add('active');
     scanning = true;
 
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    scanTimer = setInterval(() => {
-      if (v.readyState === v.HAVE_ENOUGH_DATA) {
-        canvas.width = v.videoWidth;
-        canvas.height = v.videoHeight;
-        ctx.drawImage(v, 0, 0);
-        const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const qr = jsQR(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' });
-        if (qr && qr.data && qr.data.trim()) {
-          const code = qr.data.trim().toUpperCase();
-          stopCam();
-          doSearch(code);
-        }
+    const reader = getCodeReader();
+    zxingControls = await reader.decodeFromStream(camStream, v, (result, err) => {
+      if (result && result.getText && result.getText().trim()) {
+        const code = result.getText().trim().toUpperCase();
+        stopCam();
+        doSearch(code);
       }
-    }, 250);
+      // NotFoundException bắn liên tục khi chưa thấy mã trong khung hình — bỏ qua, không phải lỗi thật
+    });
   } catch(e) {
     document.getElementById('hint').textContent = 'Không truy cập được camera. Dùng nhập tay bên dưới.';
   }
 }
 
 function stopCam() {
+  if (zxingControls) { try { zxingControls.stop(); } catch(e) {} zxingControls = null; }
   if (camStream) { camStream.getTracks().forEach(t => t.stop()); camStream = null; }
-  clearInterval(scanTimer); scanning = false;
+  scanning = false;
   document.getElementById('vcam').style.display = 'none';
   const btn = document.getElementById('btnCam');
   btn.innerHTML = `<svg class="icon" viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg> Mở camera scan`;
