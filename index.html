@@ -406,26 +406,11 @@ async function toggleCam() {
 
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    const vcamEl = document.getElementById('vcam');
     scanTimer = setInterval(() => {
       if (v.readyState === v.HAVE_ENOUGH_DATA) {
-        // Chỉ lấy đúng vùng trong khung đỏ cam (frame 200x200 CSS px, có margin 20%)
-        // để "zoom" gần vào mã vạch, tăng độ chi tiết cho mã dài/dày.
-        const dispW = vcamEl.clientWidth, dispH = vcamEl.clientHeight;
-        const vidW = v.videoWidth, vidH = v.videoHeight;
-        const scale = Math.max(dispW / vidW, dispH / vidH);
-        const offsetX = (vidW * scale - dispW) / 2;
-        const offsetY = (vidH * scale - dispH) / 2;
-        const frameSize = 200 * 1.2; // thêm biên 20% để không cắt sát quá
-        const frameDispX = (dispW - frameSize) / 2;
-        const frameDispY = (dispH - frameSize) / 2;
-        const nx = Math.max(0, (frameDispX + offsetX) / scale);
-        const ny = Math.max(0, (frameDispY + offsetY) / scale);
-        const nSize = frameSize / scale;
-
-        canvas.width = nSize;
-        canvas.height = nSize;
-        ctx.drawImage(v, nx, ny, nSize, nSize, 0, 0, nSize, nSize);
+        canvas.width = v.videoWidth;
+        canvas.height = v.videoHeight;
+        ctx.drawImage(v, 0, 0);
         const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
         // 1) Thử mã QR trước (jsQR)
