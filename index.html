@@ -166,7 +166,7 @@ svg.icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;str
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-<script src="https://unpkg.com/@zxing/library@0.21.3"></script>
+<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js"></script>
 <script>
 // ✅ URL MỚI — đã fix doGet đọc đúng header dòng 2
 const API_URL = "https://script.google.com/macros/s/AKfycbzO9kyqnuOHmujx2FkciLKGbbtD8Oyb6KXdCKC8Tu6hcHJJBfZ4TKUc22dZI2LrTRJ3jg/exec";
@@ -342,6 +342,7 @@ function renderHist() {
 
 // ── Camera ──
 function getCodeReader() {
+  if (typeof ZXing === 'undefined') return null; // thư viện chưa tải kịp / bị chặn -> vẫn quét QR bình thường
   if (codeReader) return codeReader;
   const hints = new Map();
   hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
@@ -374,9 +375,13 @@ async function toggleCam() {
     btn.classList.add('active');
     scanning = true;
 
+    const reader = getCodeReader();
+    document.getElementById('hint').textContent = reader
+      ? 'Đưa mã QR hoặc mã vạch vào khung để quét'
+      : '⚠️ Chưa tải được thư viện đọc mã vạch — chỉ quét được QR lúc này';
+
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    const reader = getCodeReader();
     scanTimer = setInterval(() => {
       if (v.readyState === v.HAVE_ENOUGH_DATA) {
         canvas.width = v.videoWidth;
@@ -394,15 +399,17 @@ async function toggleCam() {
         }
 
         // 2) Không phải QR -> thử mã vạch 1D (Code128/Code39/EAN...) trên cùng khung hình
-        try {
-          const result = reader.decode(canvas);
-          if (result && result.getText && result.getText().trim()) {
-            const code = result.getText().trim().toUpperCase();
-            stopCam();
-            doSearch(code);
+        if (reader) {
+          try {
+            const result = reader.decode(canvas);
+            if (result && result.getText && result.getText().trim()) {
+              const code = result.getText().trim().toUpperCase();
+              stopCam();
+              doSearch(code);
+            }
+          } catch (e) {
+            // NotFoundException — chưa thấy mã vạch trong khung hình, bỏ qua, thử lại lần sau
           }
-        } catch (e) {
-          // NotFoundException — chưa thấy mã vạch trong khung hình, bỏ qua, thử lại lần sau
         }
       }
     }, 250);
