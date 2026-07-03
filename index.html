@@ -114,7 +114,7 @@ svg.icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;str
     </div>
     <div>
       <h1>Ahamove Scanner</h1>
-      <p>Scan mã đơn — kiểm tra trạng thái bulky · v6</p>
+      <p>Scan mã đơn — kiểm tra trạng thái bulky · v7</p>
     </div>
   </div>
 
@@ -442,11 +442,12 @@ async function toggleCam() {
               doSearch(code);
             }
           } catch (e) {
-            var name = (e && e.name) || '';
-            // Các lỗi này là bình thường (chỉ nghĩa là chưa thấy mã trong khung hình) — bỏ qua
-            var normal = ['NotFoundException','ChecksumException','FormatException'].indexOf(name) !== -1;
-            if (!normal) {
-              document.getElementById('hint').textContent = '⚠️ Lỗi đọc mã vạch: ' + (name || e.message || e);
+            // Dùng getKind() của chính thư viện (chuỗi cố định, không bị đổi khi nén code)
+            // thay vì e.name / e.constructor.name — vì sau khi minify các tên đó có thể bị rút gọn (vd "N").
+            var kind = (e && typeof e.getKind === 'function') ? e.getKind() : ((e && e.name) || '');
+            var isNormal = ['NotFoundException', 'ChecksumException', 'FormatException', 'ReaderException'].indexOf(kind) !== -1;
+            if (!isNormal) {
+              document.getElementById('hint').textContent = '⚠️ Lỗi đọc mã vạch: ' + (kind || (e && e.message) || e);
             }
           }
         }
