@@ -340,6 +340,25 @@ function renderHist() {
     }).join('');
 }
 
+// ── Beep ──
+let audioCtx = null;
+function beep() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = 1000;
+    gain.gain.setValueAtTime(0.35, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.15);
+  } catch (e) { /* thiết bị không hỗ trợ âm thanh — bỏ qua */ }
+}
+
 // ── Camera ──
 function getCodeReader() {
   if (typeof ZXing === 'undefined') return null; // thư viện chưa tải kịp / bị chặn -> vẫn quét QR bình thường
@@ -364,6 +383,10 @@ async function toggleCam() {
   if (scanning) { stopCam(); return; }
   const btn = document.getElementById('btnCam');
   try {
+    // Khởi tạo AudioContext ngay trong lúc bấm nút (cần thao tác chạm để trình duyệt di động cho phép phát âm thanh)
+    if (!audioCtx) { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {} }
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+
     camStream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 } },
       audio: false
@@ -393,6 +416,7 @@ async function toggleCam() {
         const qr = jsQR(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' });
         if (qr && qr.data && qr.data.trim()) {
           const code = qr.data.trim().toUpperCase();
+          beep();
           stopCam();
           doSearch(code);
           return;
@@ -404,6 +428,7 @@ async function toggleCam() {
             const result = reader.decode(canvas);
             if (result && result.getText && result.getText().trim()) {
               const code = result.getText().trim().toUpperCase();
+              beep();
               stopCam();
               doSearch(code);
             }
