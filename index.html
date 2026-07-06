@@ -117,7 +117,7 @@ svg.icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;str
     </div>
     <div>
       <h1>Ahamove Scanner</h1>
-      <p>Scan mã đơn — kiểm tra trạng thái bulky · v11</p>
+      <p>Scan mã đơn — kiểm tra trạng thái bulky · v12</p>
     </div>
   </div>
 
@@ -493,7 +493,10 @@ async function toggleCam() {
         }
 
         // 2) Mã vạch 1D (Code128/Code39/ITF/EAN...) — thử toàn khung trước
-        if (tryBarcode(reader, canvas)) return;
+        //    Dùng thẳng lõi giải mã gốc của ZXing (RGBLuminanceSource + HybridBinarizer)
+        //    thay vì các hàm decode()/decodeFromCanvas() của lớp bọc Browser — các hàm đó
+        //    không ổn định trên Safari/iOS và gây lỗi IndexSizeError liên tục dù ảnh hợp lệ.
+        if (tryBarcode(reader, img)) return;
 
         // 3) Nếu không thấy — cắt dải ngang ở giữa khung (đúng hình dạng mã vạch dài) và
         //    phóng to 2x trước khi thử lại. Cách này giúp đọc được mã vạch dày/dài như
@@ -506,8 +509,10 @@ async function toggleCam() {
           zcanvas.height = stripH * 2;
           zctx.imageSmoothingEnabled = true;
           zctx.drawImage(canvas, sx, sy, stripW, stripH, 0, 0, zcanvas.width, zcanvas.height);
-          enhanceContrast(zctx, zcanvas.width, zcanvas.height);
-          tryBarcode(reader, zcanvas);
+          const zImg = zctx.getImageData(0, 0, zcanvas.width, zcanvas.height);
+          enhanceContrastData(zImg);
+          zctx.putImageData(zImg, 0, 0);
+          tryBarcode(reader, zImg);
         }
 
         dbg.textContent = `#${tickCount} — ${vw}x${vh} — chưa thấy mã — lỗi cuối: ${lastErrKind || '(none)'}`;
@@ -516,11 +521,11 @@ async function toggleCam() {
       }
     }, 180);
 
-    function tryBarcode(rdr, source) {
+    function tryBarcode(rdr, imageData) {
       try {
-        const result = (typeof rdr.decodeFromCanvas === 'function')
-          ? rdr.decodeFromCanvas(source)
-          : rdr.decode(source);
+        const luminanceSource = new ZXing.RGBLuminanceSource(new Uint32Array(imageData.data.buffer), imageData.width, imageData.height);
+        const binaryBitmap = new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(luminanceSource));
+        const result = rdr.decodeBitmap(binaryBitmap);
         if (result && result.getText && result.getText().trim()) { handleCode(result.getText()); return true; }
       } catch (e) {
         // Dùng getKind() của chính thư viện (chuỗi cố định, không bị đổi khi nén code)
@@ -548,8 +553,7 @@ async function toggleCam() {
 
 // Tăng tương phản + chuyển xám cho vùng ảnh đã cắt — mã vạch rõ nét hơn trong điều kiện
 // ánh sáng yếu (kho hàng thiếu sáng) hoặc tem in mờ.
-function enhanceContrast(ctx, w, h) {
-  const imgData = ctx.getImageData(0, 0, w, h);
+function enhanceContrastData(imgData) {
   const d = imgData.data;
   const factor = 1.6; // hệ số tăng tương phản
   for (let i = 0; i < d.length; i += 4) {
@@ -558,7 +562,6 @@ function enhanceContrast(ctx, w, h) {
     v = v < 0 ? 0 : v > 255 ? 255 : v;
     d[i] = d[i+1] = d[i+2] = v;
   }
-  ctx.putImageData(imgData, 0, 0);
 }
 
 async function toggleTorch() {
