@@ -142,7 +142,8 @@ svg.icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;str
         <button class="torchbtn" id="btnTorch" onclick="toggleTorch()" style="display:none">
           <svg viewBox="0 0 24 24"><path d="M13 2L3 14h7v8l10-12h-7z"/></svg>
         </button>
-        <div class="camlabel">Đưa mã vạch/QR vào khung, giữ camera cách 10-15cm</div>
+        <div class="camlabel" id="camlabel">Đưa mã vạch/QR vào khung, giữ camera cách 10-15cm</div>
+        <div id="dbgline" style="position:absolute;top:6px;left:6px;right:50px;font-size:10px;color:#0f0;background:rgba(0,0,0,0.5);padding:3px 6px;border-radius:6px;font-family:monospace;pointer-events:none"></div>
       </div>
       <div class="btnrow">
         <button class="btn-main" id="btnCam" onclick="toggleCam()">
@@ -171,8 +172,8 @@ svg.icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;str
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js" onerror="window.__jsQRFailed=true"></script>
+<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js" onerror="window.__zxingFailed=true"></script>
 <script>
 // ✅ URL MỚI — đã fix doGet đọc đúng header dòng 2
 const API_URL = "https://script.google.com/macros/s/AKfycbzO9kyqnuOHmujx2FkciLKGbbtD8Oyb6KXdCKC8Tu6hcHJJBfZ4TKUc22dZI2LrTRJ3jg/exec";
@@ -452,11 +453,18 @@ async function toggleCam() {
       reader = null;
       document.getElementById('hint').textContent = '⚠️ Lỗi khởi tạo ZXing: ' + (e.message || e);
     }
+    const dbg = document.getElementById('dbgline');
+    if (window.__jsQRFailed) dbg.textContent = '⚠️ jsQR CDN lỗi';
+    else if (window.__zxingFailed || typeof ZXing === 'undefined') dbg.textContent = '⚠️ ZXing CDN lỗi — chỉ đọc được QR';
+    else if (!reader) dbg.textContent = '⚠️ ZXing tải được nhưng reader = null';
+    else dbg.textContent = 'reader: OK — đang quét...';
+
     if (reader) {
       document.getElementById('hint').textContent = 'Đưa mã QR hoặc mã vạch vào khung để quét';
     } else if (typeof ZXing === 'undefined') {
       document.getElementById('hint').textContent = '⚠️ Chưa tải được thư viện đọc mã vạch — chỉ quét được QR lúc này';
     }
+    let tickCount = 0, lastErrKind = '';
 
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -465,6 +473,7 @@ async function toggleCam() {
 
     scanTimer = setInterval(() => {
       if (v.readyState === v.HAVE_ENOUGH_DATA) {
+        tickCount++;
         canvas.width = v.videoWidth;
         canvas.height = v.videoHeight;
         ctx.drawImage(v, 0, 0);
@@ -474,7 +483,10 @@ async function toggleCam() {
         const qr = jsQR(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' });
         if (qr && qr.data && qr.data.trim()) { handleCode(qr.data); return; }
 
-        if (!reader) return;
+        if (!reader) {
+          dbg.textContent = `#${tickCount} — ${canvas.width}x${canvas.height} — không có reader (chỉ QR)`;
+          return;
+        }
 
         // 2) Mã vạch 1D (Code128/Code39/ITF/EAN...) — thử toàn khung trước
         if (tryBarcode(reader, canvas)) return;
@@ -491,6 +503,10 @@ async function toggleCam() {
         zctx.drawImage(canvas, sx, sy, stripW, stripH, 0, 0, zcanvas.width, zcanvas.height);
         enhanceContrast(zctx, zcanvas.width, zcanvas.height);
         tryBarcode(reader, zcanvas);
+
+        dbg.textContent = `#${tickCount} — ${canvas.width}x${canvas.height} — chưa thấy mã — lỗi cuối: ${lastErrKind || '(none)'}`;
+      } else {
+        dbg.textContent = `video chưa sẵn sàng (readyState=${v.readyState})`;
       }
     }, 180);
 
@@ -502,9 +518,10 @@ async function toggleCam() {
         // Dùng getKind() của chính thư viện (chuỗi cố định, không bị đổi khi nén code)
         // thay vì e.name / e.constructor.name — vì sau khi minify các tên đó có thể bị rút gọn (vd "N").
         var kind = (e && typeof e.getKind === 'function') ? e.getKind() : ((e && e.name) || '');
+        lastErrKind = kind || (e && e.message) || String(e);
         var isNormal = ['NotFoundException', 'ChecksumException', 'FormatException', 'ReaderException'].indexOf(kind) !== -1;
         if (!isNormal) {
-          document.getElementById('hint').textContent = '⚠️ Lỗi đọc mã vạch: ' + (kind || (e && e.message) || e);
+          document.getElementById('hint').textContent = '⚠️ Lỗi đọc mã vạch: ' + lastErrKind;
         }
       }
       return false;
