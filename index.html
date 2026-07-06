@@ -35,7 +35,7 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
 #vcam{width:100%;aspect-ratio:4/3;background:#111;display:none;position:relative}
 #video{width:100%;height:100%;object-fit:cover;display:block}
 .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
-.frame{width:200px;height:200px;position:relative}
+.frame{width:260px;height:140px;position:relative}
 .corner{position:absolute;width:28px;height:28px;border-color:#FF6B00;border-style:solid}
 .tl{top:0;left:0;border-width:3px 0 0 3px;border-radius:3px 0 0 0}
 .tr{top:0;right:0;border-width:3px 3px 0 0;border-radius:0 3px 0 0}
@@ -44,6 +44,9 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
 .scanline{position:absolute;left:5%;right:5%;height:2px;background:#FF6B00;animation:sl 2s ease-in-out infinite}
 @keyframes sl{0%,100%{top:5%}50%{top:90%}}
 .camlabel{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:12px;color:rgba(255,255,255,0.7)}
+.torchbtn{position:absolute;top:10px;right:10px;width:36px;height:36px;background:rgba(0,0,0,0.45);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;pointer-events:auto;cursor:pointer}
+.torchbtn.on{background:#FF6B00}
+.torchbtn svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
 /* CONTROLS */
 .btnrow{display:flex;gap:8px;padding:12px}
@@ -114,7 +117,7 @@ svg.icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;str
     </div>
     <div>
       <h1>Ahamove Scanner</h1>
-      <p>Scan mã đơn — kiểm tra trạng thái bulky · v8</p>
+      <p>Scan mã đơn — kiểm tra trạng thái bulky · v9</p>
     </div>
   </div>
 
@@ -136,7 +139,10 @@ svg.icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;str
             <div class="scanline"></div>
           </div>
         </div>
-        <div class="camlabel">Đưa mã vạch vào khung đỏ cam</div>
+        <button class="torchbtn" id="btnTorch" onclick="toggleTorch()" style="display:none">
+          <svg viewBox="0 0 24 24"><path d="M13 2L3 14h7v8l10-12h-7z"/></svg>
+        </button>
+        <div class="camlabel">Đưa mã vạch/QR vào khung, giữ camera cách 10-15cm</div>
       </div>
       <div class="btnrow">
         <button class="btn-main" id="btnCam" onclick="toggleCam()">
@@ -175,6 +181,7 @@ let sheetData = null;
 let camStream = null, scanning = false, scanTimer = null;
 let history = [];
 let codeReader = null; // ZXing: chỉ dùng để đọc thêm mã vạch 1D (Code128/Code39/EAN...), không đụng tới camera/video
+let torchOn = false;
 
 // ── Load Google Sheet ──
 async function loadSheet() {
@@ -413,7 +420,11 @@ async function toggleCam() {
     if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
 
     camStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } },
+      video: {
+        facingMode: { ideal: 'environment' },
+        width: { ideal: 1920, min: 1280 },
+        height: { ideal: 1080, min: 720 }
+      },
       audio: false
     });
     const v = document.getElementById('video');
@@ -422,6 +433,17 @@ async function toggleCam() {
     btn.innerHTML = `<svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Dừng camera`;
     btn.classList.add('active');
     scanning = true;
+
+    // Bật lấy nét liên tục nếu thiết bị hỗ trợ — giúp đọc mã vạch rõ nét hơn khi tay rung/di chuyển
+    const track = camStream.getVideoTracks()[0];
+    try {
+      const caps = track.getCapabilities ? track.getCapabilities() : {};
+      const adv = [];
+      if (caps.focusMode && caps.focusMode.includes('continuous')) adv.push({ focusMode: 'continuous' });
+      if (adv.length) await track.applyConstraints({ advanced: adv });
+      // Hiện nút đèn flash nếu thiết bị có đèn (hữu ích khi soi mã trong kho tối)
+      document.getElementById('btnTorch').style.display = caps.torch ? 'flex' : 'none';
+    } catch(e) { /* một số thiết bị không hỗ trợ applyConstraints nâng cao — bỏ qua */ }
 
     let reader = null;
     try {
@@ -438,6 +460,9 @@ async function toggleCam() {
 
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
+    const zcanvas = document.createElement('canvas'); // dải cắt giữa khung, phóng to 2x — giúp đọc mã vạch dài/nhỏ/xa camera
+    const zctx = zcanvas.getContext('2d', { willReadFrequently: true });
+
     scanTimer = setInterval(() => {
       if (v.readyState === v.HAVE_ENOUGH_DATA) {
         canvas.width = v.videoWidth;
@@ -445,47 +470,89 @@ async function toggleCam() {
         ctx.drawImage(v, 0, 0);
         const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-        // 1) Thử mã QR trước (jsQR)
+        // 1) Thử mã QR trước (jsQR) trên toàn khung hình
         const qr = jsQR(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' });
-        if (qr && qr.data && qr.data.trim()) {
-          const code = qr.data.trim().toUpperCase();
-          beep();
-          stopCam();
-          doSearch(code);
-          return;
-        }
+        if (qr && qr.data && qr.data.trim()) { handleCode(qr.data); return; }
 
-        // 2) Không phải QR -> thử mã vạch 1D (Code128/Code39/EAN...) — đưa thẳng video vào cho ZXing (ZXing chỉ hỗ trợ video/ảnh, không nhận canvas tự tạo)
-        if (reader) {
-          try {
-            const result = reader.decode(v);
-            if (result && result.getText && result.getText().trim()) {
-              const code = result.getText().trim().toUpperCase();
-              beep();
-              stopCam();
-              doSearch(code);
-            }
-          } catch (e) {
-            // Dùng getKind() của chính thư viện (chuỗi cố định, không bị đổi khi nén code)
-            // thay vì e.name / e.constructor.name — vì sau khi minify các tên đó có thể bị rút gọn (vd "N").
-            var kind = (e && typeof e.getKind === 'function') ? e.getKind() : ((e && e.name) || '');
-            var isNormal = ['NotFoundException', 'ChecksumException', 'FormatException', 'ReaderException'].indexOf(kind) !== -1;
-            if (!isNormal) {
-              document.getElementById('hint').textContent = '⚠️ Lỗi đọc mã vạch: ' + (kind || (e && e.message) || e);
-            }
-          }
+        if (!reader) return;
+
+        // 2) Mã vạch 1D (Code128/Code39/ITF/EAN...) — thử toàn khung trước
+        if (tryBarcode(reader, canvas)) return;
+
+        // 3) Nếu không thấy — cắt dải ngang ở giữa khung (đúng hình dạng mã vạch dài) và
+        //    phóng to 2x trước khi thử lại. Cách này giúp đọc được mã vạch dày/dài như
+        //    trên tem GHN/Ahamove khi camera đứng hơi xa hoặc mã hơi mờ.
+        const cw = canvas.width, ch = canvas.height;
+        const stripW = cw * 0.9, stripH = ch * 0.35;
+        const sx = (cw - stripW) / 2, sy = (ch - stripH) / 2;
+        zcanvas.width = stripW * 2;
+        zcanvas.height = stripH * 2;
+        zctx.imageSmoothingEnabled = true;
+        zctx.drawImage(canvas, sx, sy, stripW, stripH, 0, 0, zcanvas.width, zcanvas.height);
+        enhanceContrast(zctx, zcanvas.width, zcanvas.height);
+        tryBarcode(reader, zcanvas);
+      }
+    }, 180);
+
+    function tryBarcode(rdr, source) {
+      try {
+        const result = rdr.decode(source);
+        if (result && result.getText && result.getText().trim()) { handleCode(result.getText()); return true; }
+      } catch (e) {
+        // Dùng getKind() của chính thư viện (chuỗi cố định, không bị đổi khi nén code)
+        // thay vì e.name / e.constructor.name — vì sau khi minify các tên đó có thể bị rút gọn (vd "N").
+        var kind = (e && typeof e.getKind === 'function') ? e.getKind() : ((e && e.name) || '');
+        var isNormal = ['NotFoundException', 'ChecksumException', 'FormatException', 'ReaderException'].indexOf(kind) !== -1;
+        if (!isNormal) {
+          document.getElementById('hint').textContent = '⚠️ Lỗi đọc mã vạch: ' + (kind || (e && e.message) || e);
         }
       }
-    }, 250);
+      return false;
+    }
+
+    function handleCode(raw) {
+      const code = raw.trim().toUpperCase();
+      beep();
+      stopCam();
+      doSearch(code);
+    }
   } catch(e) {
     document.getElementById('hint').textContent = 'Không truy cập được camera. Dùng nhập tay bên dưới.';
   }
 }
 
+// Tăng tương phản + chuyển xám cho vùng ảnh đã cắt — mã vạch rõ nét hơn trong điều kiện
+// ánh sáng yếu (kho hàng thiếu sáng) hoặc tem in mờ.
+function enhanceContrast(ctx, w, h) {
+  const imgData = ctx.getImageData(0, 0, w, h);
+  const d = imgData.data;
+  const factor = 1.6; // hệ số tăng tương phản
+  for (let i = 0; i < d.length; i += 4) {
+    const gray = 0.299 * d[i] + 0.587 * d[i+1] + 0.114 * d[i+2];
+    let v = (gray - 128) * factor + 128 + 15;
+    v = v < 0 ? 0 : v > 255 ? 255 : v;
+    d[i] = d[i+1] = d[i+2] = v;
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+async function toggleTorch() {
+  if (!camStream) return;
+  const track = camStream.getVideoTracks()[0];
+  try {
+    const caps = track.getCapabilities ? track.getCapabilities() : {};
+    if (!caps.torch) { document.getElementById('hint').textContent = 'Thiết bị không hỗ trợ đèn flash'; return; }
+    torchOn = !torchOn;
+    await track.applyConstraints({ advanced: [{ torch: torchOn }] });
+    document.getElementById('btnTorch').classList.toggle('on', torchOn);
+  } catch(e) { document.getElementById('hint').textContent = 'Không bật được đèn flash trên thiết bị này'; }
+}
+
 function stopCam() {
   if (camStream) { camStream.getTracks().forEach(t => t.stop()); camStream = null; }
-  clearInterval(scanTimer); scanning = false;
+  clearInterval(scanTimer); scanning = false; torchOn = false;
   document.getElementById('vcam').style.display = 'none';
+  document.getElementById('btnTorch').classList.remove('on');
   const btn = document.getElementById('btnCam');
   btn.innerHTML = `<svg class="icon" viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg> Mở camera scan`;
   btn.classList.remove('active');
